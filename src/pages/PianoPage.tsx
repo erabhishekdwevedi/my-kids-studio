@@ -20,7 +20,6 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../contexts/AppContext';
 import PageNavigation from '../components/PageNavigation';
-import MuteButton from '../components/MuteButton';
 import { speak, stop } from '../utils/textToSpeech';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
@@ -400,15 +399,7 @@ const PianoPage: React.FC = () => {
         showTitle={false}
         onBackClick={handleBackToSubject}
         onHomeClick={handleBackToHome}
-      />
-
-      {/* Mute Button */}
-      <MuteButton 
-        size="small" 
-        position="absolute" 
-        top={16} 
-        right={80} 
-        color={selectedTheme.textColor}
+        showMuteButton={true}
       />
 
       <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1, mt: 2 }}>

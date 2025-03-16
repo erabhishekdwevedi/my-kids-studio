@@ -6,7 +6,7 @@ import { getMuteState, toggleMute } from '../utils/textToSpeech';
 
 interface MuteButtonProps {
   size?: 'small' | 'medium' | 'large';
-  position?: 'fixed' | 'absolute' | 'relative';
+  position?: 'fixed' | 'absolute' | 'relative' | 'static';
   top?: string | number;
   right?: string | number;
   bottom?: string | number;
@@ -66,7 +66,7 @@ const MuteButton: React.FC<MuteButtonProps> = ({
           zIndex,
           backgroundColor,
           color,
-          boxShadow: '0px 3px 8px rgba(0,0,0,0.2)',
+          boxShadow: position !== 'static' ? '0px 3px 8px rgba(0,0,0,0.2)' : 'none',
           '&:hover': {
             backgroundColor: 'rgba(255, 255, 255, 0.9)',
           },

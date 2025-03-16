@@ -27,7 +27,8 @@ import CreateIcon from '@mui/icons-material/Create';
 import ColorizeIcon from '@mui/icons-material/Colorize';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import GestureIcon from '@mui/icons-material/Gesture';
-import TopMenu from '../components/TopMenu';
+import PageNavigation from '../components/PageNavigation';
+import { useApp } from '../contexts/AppContext';
 
 const colors = [
   '#f44336', // Red
@@ -65,6 +66,7 @@ type DrawingTool = 'brush' | 'pencil' | 'crayon' | 'eraser';
 
 const DrawingBoardPage: React.FC = () => {
   const navigate = useNavigate();
+  const { selectedProfile, selectedTheme } = useApp();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -102,291 +104,282 @@ const DrawingBoardPage: React.FC = () => {
     },
     crayon: {
       name: 'Crayon',
-      icon: <GestureIcon />,
+      icon: <AutoFixHighIcon />,
       lineWidth: (size) => size * 1.2,
-      apply: (ctx, x, y, prevX, prevY) => {
+      apply: (ctx) => {
         ctx.globalAlpha = 0.9;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        
-        // Create crayon texture effect
-        if (x === undefined || y === undefined || prevX === undefined || prevY === undefined) return;
-        
-        const length = Math.sqrt(Math.pow(x - prevX, 2) + Math.pow(y - prevY, 2));
-        
-        if (length < 1) return;
-        
-        const noise = 0.5;
-        const angle = Math.atan2(y - prevY, x - prevX);
-        
-        // Draw multiple offset lines for texture
-        for (let i = 0; i < 3; i++) {
-          const offset = (Math.random() - 0.5) * noise;
-          ctx.beginPath();
-          ctx.moveTo(
-            prevX + Math.cos(angle - Math.PI/2) * offset,
-            prevY + Math.sin(angle - Math.PI/2) * offset
-          );
-          ctx.lineTo(
-            x + Math.cos(angle - Math.PI/2) * offset,
-            y + Math.sin(angle - Math.PI/2) * offset
-          );
-          ctx.stroke();
-        }
+        ctx.lineCap = 'square';
+        ctx.lineJoin = 'bevel';
       },
-      cursor: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\'%3E%3Cpath d=\'M7 14c-1.66 0-3 1.34-3 3 0 1.31-1.16 2-2 2 .92 1.22 2.49 2 4 2 2.21 0 4-1.79 4-4 0-1.66-1.34-3-3-3z\' fill=\'%23ff9800\' fill-opacity=\'0.6\'/%3E%3C/svg%3E") 2 22, auto'
+      cursor: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\'%3E%3Cpath d=\'M7 14c-1.66 0-3 1.34-3 3 0 1.31-1.16 2-2 2 .92 1.22 2.49 2 4 2 2.21 0 4-1.79 4-4 0-1.66-1.34-3-3-3z\' fill=\'%23000000\' fill-opacity=\'0.4\'/%3E%3C/svg%3E") 12 12, auto'
     },
     eraser: {
       name: 'Eraser',
-      icon: <AutoFixHighIcon />,
+      icon: <ColorizeIcon />,
       lineWidth: (size) => size * 1.5,
-      apply: (ctx) => {
-        ctx.globalAlpha = 1;
+      apply: (ctx, x, y, prevX, prevY) => {
+        ctx.globalCompositeOperation = 'destination-out';
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
-        ctx.globalCompositeOperation = 'destination-out';
       },
-      cursor: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\'%3E%3Crect x=\'6\' y=\'6\' width=\'12\' height=\'12\' fill=\'%23ffffff\' stroke=\'%23000000\' stroke-width=\'1\'/%3E%3C/svg%3E") 12 12, auto'
+      cursor: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\'%3E%3Crect x=\'8\' y=\'8\' width=\'8\' height=\'8\' fill=\'%23ffffff\' stroke=\'%23000000\' stroke-width=\'1\'/%3E%3C/svg%3E") 12 12, auto'
     }
   }), []);
 
-  // Initialize canvas
+  // Initialize canvas and set up event listeners
   useEffect(() => {
+    if (!canvasRef.current || !containerRef.current) return;
+
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
-    const context = canvas.getContext('2d');
-    if (!context) return;
+    // Set initial canvas size
+    const updateCanvasSize = () => {
+      if (!containerRef.current) return;
+      
+      const container = containerRef.current;
+      const rect = container.getBoundingClientRect();
+      
+      // Set canvas size to match container
+      const newWidth = rect.width;
+      const newHeight = rect.height;
+      
+      setCanvasSize({ width: newWidth, height: newHeight });
+      
+      // Update canvas dimensions
+      canvas.width = newWidth;
+      canvas.height = newHeight;
+      
+      // Restore drawing after resize
+      if (drawingHistory.length > 0 && historyIndex >= 0) {
+        ctx.putImageData(drawingHistory[historyIndex], 0, 0);
+      } else {
+        // Clear canvas with white background
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Save initial state
+        const initialState = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        setDrawingHistory([initialState]);
+        setHistoryIndex(0);
+      }
+    };
 
-    // Only initialize if canvas has valid dimensions
-    if (canvas.width > 0 && canvas.height > 0) {
-      // Set canvas background to white
-      context.fillStyle = '#ffffff';
-      context.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Save initial state
-      const initialState = context.getImageData(0, 0, canvas.width, canvas.height);
-      setDrawingHistory([initialState]);
-      setHistoryIndex(0);
-    }
-  }, [canvasSize]);
-
-  // Prevent touch scrolling on the entire document when drawing
-  useEffect(() => {
+    // Prevent touch scrolling on canvas
     const preventTouchScroll = (e: TouchEvent) => {
-      if (isDrawing) {
+      if (e.target === canvas) {
         e.preventDefault();
       }
     };
 
+    // Add event listeners
+    window.addEventListener('resize', updateCanvasSize);
     document.addEventListener('touchmove', preventTouchScroll, { passive: false });
-    
+
+    // Initial setup
+    updateCanvasSize();
+
+    // Cleanup
     return () => {
+      window.removeEventListener('resize', updateCanvasSize);
       document.removeEventListener('touchmove', preventTouchScroll);
     };
-  }, [isDrawing]);
+  }, [drawingHistory, historyIndex]);
 
   // Handle resize
-  useEffect(() => {
-    const handleResize = () => {
-      if (containerRef.current) {
-        const containerWidth = containerRef.current.clientWidth;
-        // Use the container's height instead of a percentage of viewport height
-        const containerHeight = containerRef.current.clientHeight;
-        
-        setCanvasSize({
-          width: containerWidth - 20, // Subtract padding
-          height: containerHeight - 20 // Subtract padding
-        });
-      }
-    };
-
-    // Initial size calculation
-    handleResize();
+  const handleResize = () => {
+    if (!canvasRef.current || !containerRef.current) return;
     
-    // Set up resize listener
-    window.addEventListener('resize', handleResize);
+    const canvas = canvasRef.current;
+    const container = containerRef.current;
+    const rect = container.getBoundingClientRect();
     
-    // Create a ResizeObserver to detect container size changes
-    const resizeObserver = new ResizeObserver(handleResize);
-    if (containerRef.current) {
-      resizeObserver.observe(containerRef.current);
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+    
+    // Restore drawing after resize
+    const ctx = canvas.getContext('2d');
+    if (ctx && drawingHistory.length > 0 && historyIndex >= 0) {
+      ctx.putImageData(drawingHistory[historyIndex], 0, 0);
     }
-    
-    // Clean up
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      resizeObserver.disconnect();
-    };
-  }, []);
+  };
 
   // Start drawing
-  const startDrawing = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+  const startDrawing = useCallback((x: number, y: number) => {
     if (!canvasRef.current) return;
     
     const canvas = canvasRef.current;
-    const context = canvas.getContext('2d');
-    if (!context) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
     
     setIsDrawing(true);
+    setLastPosition({ x, y });
     
-    // Get coordinates
-    let clientX, clientY;
-    if ('touches' in e) {
-      e.preventDefault(); // Prevent scrolling on touch devices
-      clientX = e.touches[0].clientX;
-      clientY = e.touches[0].clientY;
-    } else {
-      clientX = e.clientX;
-      clientY = e.clientY;
-    }
-    
-    const rect = canvas.getBoundingClientRect();
-    const x = clientX - rect.left;
-    const y = clientY - rect.top;
-    
-    // Set drawing properties based on selected tool
-    context.strokeStyle = color;
-    context.lineWidth = toolOptions[selectedTool].lineWidth(brushSize);
-    
-    // Reset composite operation (for after using eraser)
-    context.globalCompositeOperation = 'source-over';
+    // Apply tool settings
+    ctx.strokeStyle = selectedTool === 'eraser' ? '#ffffff' : color;
+    ctx.lineWidth = toolOptions[selectedTool].lineWidth(brushSize);
+    ctx.globalCompositeOperation = 'source-over'; // Reset composite operation
     
     // Apply tool-specific settings
-    toolOptions[selectedTool].apply(context);
+    toolOptions[selectedTool].apply(ctx);
     
-    // For single dot
-    context.beginPath();
-    context.arc(x, y, context.lineWidth / 2, 0, Math.PI * 2);
-    context.fill();
-    
-    setLastPosition({ x, y });
-  }, [canvasRef, color, selectedTool, brushSize, toolOptions]);
+    // Start a new path
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+  }, [brushSize, color, selectedTool, toolOptions]);
 
   // Draw
-  const draw = useCallback((e: React.MouseEvent | React.TouchEvent) => {
-    if (!isDrawing || !canvasRef.current || !lastPosition) return;
+  const draw = useCallback((x: number, y: number) => {
+    if (!isDrawing || !canvasRef.current) return;
     
     const canvas = canvasRef.current;
-    const context = canvas.getContext('2d');
-    if (!context) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
     
-    // Get coordinates
-    let clientX, clientY;
-    if ('touches' in e) {
-      e.preventDefault(); // Prevent scrolling on touch devices
-      clientX = e.touches[0].clientX;
-      clientY = e.touches[0].clientY;
-    } else {
-      clientX = e.clientX;
-      clientY = e.clientY;
-    }
+    // Apply tool settings
+    ctx.strokeStyle = selectedTool === 'eraser' ? '#ffffff' : color;
+    ctx.lineWidth = toolOptions[selectedTool].lineWidth(brushSize);
     
-    const rect = canvas.getBoundingClientRect();
-    const x = clientX - rect.left;
-    const y = clientY - rect.top;
+    // Apply tool-specific settings
+    toolOptions[selectedTool].apply(ctx, x, y, lastPosition.x, lastPosition.y);
     
-    // Set drawing properties
-    context.strokeStyle = color;
-    context.lineWidth = toolOptions[selectedTool].lineWidth(brushSize);
+    // Draw line
+    ctx.lineTo(x, y);
+    ctx.stroke();
     
-    // Reset composite operation (for after using eraser)
-    context.globalCompositeOperation = 'source-over';
-    
-    // Apply tool-specific settings and draw
+    // For crayon effect, add some randomness
     if (selectedTool === 'crayon') {
-      toolOptions[selectedTool].apply(context, x, y, lastPosition.x, lastPosition.y);
-    } else {
-      toolOptions[selectedTool].apply(context);
-      
-      // Draw line
-      context.beginPath();
-      context.moveTo(lastPosition.x, lastPosition.y);
-      context.lineTo(x, y);
-      context.stroke();
+      for (let i = 0; i < 3; i++) {
+        const offsetX = (Math.random() - 0.5) * brushSize * 0.5;
+        const offsetY = (Math.random() - 0.5) * brushSize * 0.5;
+        ctx.beginPath();
+        ctx.moveTo(lastPosition.x + offsetX, lastPosition.y + offsetY);
+        ctx.lineTo(x + offsetX, y + offsetY);
+        ctx.stroke();
+      }
     }
     
     setLastPosition({ x, y });
-  }, [isDrawing, canvasRef, lastPosition, color, selectedTool, brushSize, toolOptions]);
+  }, [isDrawing, color, brushSize, selectedTool, lastPosition, toolOptions]);
 
+  // Stop drawing
   const stopDrawing = () => {
-    if (!isDrawing) return;
-
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const context = canvas.getContext('2d');
-    if (!context) return;
-
-    context.closePath();
-    context.globalAlpha = 1; // Reset alpha
-    context.shadowBlur = 0; // Reset shadow
-    setIsDrawing(false);
-
-    // Save current state to history
-    const currentState = context.getImageData(0, 0, canvas.width, canvas.height);
+    if (!isDrawing || !canvasRef.current) return;
     
-    // Remove any states after current index (if we've undone and then drawn something new)
+    setIsDrawing(false);
+    
+    // Save the current state to history
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    // Get current canvas state
+    const currentState = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    
+    // Remove any "redo" states
     const newHistory = drawingHistory.slice(0, historyIndex + 1);
     
+    // Add current state to history
     setDrawingHistory([...newHistory, currentState]);
     setHistoryIndex(newHistory.length);
   };
 
+  // Handle mouse/touch events
+  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    startDrawing(x, y);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (e.touches.length > 0) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const touch = e.touches[0];
+      const x = touch.clientX - rect.left;
+      const y = touch.clientY - rect.top;
+      startDrawing(x, y);
+    }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    draw(x, y);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (e.touches.length > 0) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const touch = e.touches[0];
+      const x = touch.clientX - rect.left;
+      const y = touch.clientY - rect.top;
+      draw(x, y);
+    }
+  };
+
+  // Clear canvas
   const clearCanvas = () => {
+    if (!canvasRef.current) return;
+    
     const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const context = canvas.getContext('2d');
-    if (!context) return;
-
-    context.fillStyle = '#ffffff';
-    context.fillRect(0, 0, canvas.width, canvas.height);
-
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    // Clear canvas with white background
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
     // Save cleared state to history
-    const clearedState = context.getImageData(0, 0, canvas.width, canvas.height);
-    setDrawingHistory([...drawingHistory, clearedState]);
-    setHistoryIndex(drawingHistory.length);
+    const clearedState = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    
+    // Add to history
+    const newHistory = [...drawingHistory, clearedState];
+    setDrawingHistory(newHistory);
+    setHistoryIndex(newHistory.length - 1);
   };
 
+  // Undo
   const undo = () => {
-    if (historyIndex <= 0) return;
-
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const context = canvas.getContext('2d');
-    if (!context) return;
-
-    const newIndex = historyIndex - 1;
-    context.putImageData(drawingHistory[newIndex], 0, 0);
-    setHistoryIndex(newIndex);
+    if (historyIndex > 0 && canvasRef.current) {
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      
+      // Go back one step in history
+      const newIndex = historyIndex - 1;
+      setHistoryIndex(newIndex);
+      
+      // Apply the previous state
+      ctx.putImageData(drawingHistory[newIndex], 0, 0);
+    }
   };
 
+  // Redo
   const redo = () => {
-    if (historyIndex >= drawingHistory.length - 1) return;
-
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const context = canvas.getContext('2d');
-    if (!context) return;
-
-    const newIndex = historyIndex + 1;
-    context.putImageData(drawingHistory[newIndex], 0, 0);
-    setHistoryIndex(newIndex);
+    if (historyIndex < drawingHistory.length - 1 && canvasRef.current) {
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      
+      // Go forward one step in history
+      const newIndex = historyIndex + 1;
+      setHistoryIndex(newIndex);
+      
+      // Apply the next state
+      ctx.putImageData(drawingHistory[newIndex], 0, 0);
+    }
   };
 
+  // Save drawing
   const saveDrawing = () => {
     if (!canvasRef.current) return;
     
     // Create a temporary link element
     const link = document.createElement('a');
-    
-    // Set the download attribute with a filename
-    link.download = `drawing-${new Date().toISOString().slice(0, 10)}.png`;
-    
-    // Convert the canvas to a data URL and set it as the href
+    link.download = 'my-drawing.png';
     link.href = canvasRef.current.toDataURL('image/png');
     
     // Append the link to the document, click it, and remove it
@@ -396,7 +389,7 @@ const DrawingBoardPage: React.FC = () => {
   };
 
   const handleBack = () => {
-    navigate(-1);
+    navigate('/subject/art');
   };
 
   const handleHome = () => {
@@ -412,20 +405,33 @@ const DrawingBoardPage: React.FC = () => {
     }
   };
 
+  if (!selectedProfile || !selectedTheme) {
+    return <Box sx={{ p: 4, textAlign: 'center' }}>Loading...</Box>;
+  }
+
   return (
     <Box sx={{ 
-      height: '100vh', 
-      bgcolor: '#f5f5f5',
+      minHeight: '100vh',
+      background: selectedTheme.gradient,
+      position: 'relative',
+      overflow: 'hidden',
       display: 'flex',
       flexDirection: 'column',
-      overflow: 'hidden' // Prevent scrolling on the main container
+      padding: 3
     }}>
       {/* Top Navigation */}
-      <TopMenu title="Drawing Board" showTitle={true} />
+      <PageNavigation 
+        profile={selectedProfile}
+        theme={selectedTheme}
+        showTitle={false}
+        title="Drawing Board"
+        onBackClick={handleBack}
+        onHomeClick={handleHome}
+      />
 
       <Box sx={{ 
         flexGrow: 1, 
-        p: 2, 
+        mt: 2,
         display: 'flex', 
         flexDirection: 'column',
         overflow: 'hidden' // Prevent scrolling
@@ -489,52 +495,63 @@ const DrawingBoardPage: React.FC = () => {
               {/* Drawing Tools */}
               <Box sx={{ width: '100%', mb: 2 }}>
                 <Grid container spacing={2} alignItems="center">
-                  <Grid item>
+                  <Grid item xs={12} sm={6} md={4}>
                     <ToggleButtonGroup
                       value={selectedTool}
                       exclusive
                       onChange={handleToolChange}
                       aria-label="drawing tool"
+                      size="small"
+                      sx={{ 
+                        width: '100%',
+                        '& .MuiToggleButton-root': {
+                          flex: 1,
+                          border: '1px solid rgba(0,0,0,0.1)',
+                        }
+                      }}
                     >
-                      {Object.entries(toolOptions).map(([toolKey, tool]) => (
-                        <ToggleButton 
-                          key={toolKey} 
-                          value={toolKey as DrawingTool}
-                          aria-label={tool.name}
-                        >
-                          {tool.icon}
-                        </ToggleButton>
-                      ))}
+                      <ToggleButton value="brush" aria-label="brush">
+                        <BrushIcon />
+                      </ToggleButton>
+                      <ToggleButton value="pencil" aria-label="pencil">
+                        <CreateIcon />
+                      </ToggleButton>
+                      <ToggleButton value="crayon" aria-label="crayon">
+                        <AutoFixHighIcon />
+                      </ToggleButton>
+                      <ToggleButton value="eraser" aria-label="eraser">
+                        <ColorizeIcon />
+                      </ToggleButton>
                     </ToggleButtonGroup>
                   </Grid>
-                  <Grid item xs>
-                    <Box sx={{ px: 2 }}>
-                      <Typography variant="body2" gutterBottom>
-                        Brush Size
+                  
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Typography variant="body2" sx={{ mr: 2, minWidth: '80px' }}>
+                        Brush Size: {brushSize}
                       </Typography>
                       <Slider
                         value={brushSize}
                         onChange={(_, newValue) => setBrushSize(newValue as number)}
                         min={1}
                         max={30}
-                        valueLabelDisplay="auto"
+                        aria-label="Brush Size"
+                        sx={{ 
+                          color: selectedTheme.textColor,
+                          '& .MuiSlider-thumb': {
+                            width: 16,
+                            height: 16,
+                          }
+                        }}
                       />
                     </Box>
                   </Grid>
-                  <Grid item>
-                    <Stack direction="row" spacing={1}>
+                  
+                  <Grid item xs={12} sm={12} md={4}>
+                    <Stack direction="row" spacing={1} justifyContent={{ xs: 'center', md: 'flex-end' }}>
                       <Button 
                         variant="outlined" 
-                        color="error" 
-                        startIcon={<DeleteIcon />}
-                        onClick={clearCanvas}
-                        size="small"
-                      >
-                        Clear
-                      </Button>
-                      <Button 
-                        variant="outlined" 
-                        startIcon={<UndoIcon />}
+                        startIcon={<UndoIcon />} 
                         onClick={undo}
                         disabled={historyIndex <= 0}
                         size="small"
@@ -543,7 +560,7 @@ const DrawingBoardPage: React.FC = () => {
                       </Button>
                       <Button 
                         variant="outlined" 
-                        startIcon={<RedoIcon />}
+                        startIcon={<RedoIcon />} 
                         onClick={redo}
                         disabled={historyIndex >= drawingHistory.length - 1}
                         size="small"
@@ -551,9 +568,18 @@ const DrawingBoardPage: React.FC = () => {
                         Redo
                       </Button>
                       <Button 
+                        variant="outlined" 
+                        color="error" 
+                        startIcon={<DeleteIcon />} 
+                        onClick={clearCanvas}
+                        size="small"
+                      >
+                        Clear
+                      </Button>
+                      <Button 
                         variant="contained" 
-                        color="success" 
-                        startIcon={<SaveIcon />}
+                        color="primary" 
+                        startIcon={<SaveIcon />} 
                         onClick={saveDrawing}
                         size="small"
                       >
@@ -563,95 +589,42 @@ const DrawingBoardPage: React.FC = () => {
                   </Grid>
                 </Grid>
               </Box>
-
-              {/* Canvas */}
+              
+              {/* Canvas Container */}
               <Box 
                 ref={containerRef}
                 sx={{ 
-                  width: '100%', 
-                  flexGrow: 1,
-                  display: 'flex', 
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  mb: 2,
-                  border: '1px solid #ccc',
-                  borderRadius: '8px',
-                  backgroundColor: '#fff',
-                  overflow: 'hidden' // Prevent scrolling
+                  flex: 1, 
+                  position: 'relative',
+                  backgroundColor: '#f5f5f5',
+                  borderRadius: 1,
+                  overflow: 'hidden',
+                  boxShadow: 'inset 0 0 5px rgba(0,0,0,0.1)'
                 }}
               >
                 <canvas
                   ref={canvasRef}
                   width={canvasSize.width}
                   height={canvasSize.height}
-                  onMouseDown={startDrawing}
-                  onMouseMove={draw}
+                  onMouseDown={handleMouseDown}
+                  onMouseMove={handleMouseMove}
                   onMouseUp={stopDrawing}
                   onMouseLeave={stopDrawing}
-                  onTouchStart={startDrawing}
-                  onTouchMove={draw}
+                  onTouchStart={handleTouchStart}
+                  onTouchMove={handleTouchMove}
                   onTouchEnd={stopDrawing}
-                  style={{ 
-                    touchAction: 'none', // Prevent scrolling on touch devices
+                  style={{
                     display: 'block',
-                    cursor: toolOptions[selectedTool].cursor
+                    width: '100%',
+                    height: '100%',
+                    cursor: toolOptions[selectedTool].cursor,
+                    touchAction: 'none' // Prevent scrolling on touch devices
                   }}
                 />
-              </Box>
-
-              {/* Tool Info */}
-              <Box sx={{ width: '100%', mt: 1 }}>
-                <Typography variant="body2" color="text.secondary" align="center">
-                  Currently using: <strong>{toolOptions[selectedTool].name}</strong> | 
-                  Color: <Box component="span" sx={{ 
-                    display: 'inline-block', 
-                    width: 12, 
-                    height: 12, 
-                    bgcolor: selectedTool === 'eraser' ? '#ffffff' : color,
-                    border: '1px solid #ccc',
-                    verticalAlign: 'middle',
-                    mx: 0.5
-                  }}></Box> | 
-                  Size: {brushSize}
-                </Typography>
               </Box>
             </Paper>
           </Grid>
         </Grid>
-      </Box>
-
-      {/* Status Bar */}
-      <Box sx={{ 
-        p: 1, 
-        display: 'flex', 
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-        backgroundColor: '#e0e0e0',
-        fontSize: '0.875rem'
-      }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Typography variant="body2">
-            Tool: {toolOptions[selectedTool].name}
-          </Typography>
-          <Box sx={{ 
-            width: 16, 
-            height: 16, 
-            borderRadius: '50%', 
-            backgroundColor: color,
-            border: '1px solid #999',
-            display: 'inline-block',
-            marginLeft: 1,
-            marginRight: 1
-          }} />
-          <Typography variant="body2">
-            Size: {brushSize}px
-          </Typography>
-        </Box>
-        
-        <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
-          {isDrawing ? 'Drawing...' : 'Ready'}
-        </Typography>
       </Box>
     </Box>
   );

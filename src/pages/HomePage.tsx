@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Box, 
@@ -7,11 +7,15 @@ import {
   CardContent, 
   Avatar, 
   Container,
-  Grid
+  Grid,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import IcecreamIcon from '@mui/icons-material/Icecream';
 import CakeIcon from '@mui/icons-material/Cake';
+import PageNavigation from '../components/PageNavigation';
+import { useApp } from '../contexts/AppContext';
 
 // Define profiles
 const profiles = [
@@ -66,9 +70,14 @@ const Sprinkle = ({ color, top, left, delay }: { color: string, top: string, lef
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
+  const { selectedProfile } = useApp();
 
-  // Generate random sprinkles
-  const sprinkles = Array.from({ length: 30 }, (_, i) => ({
+  // Generate random sprinkles - fewer on mobile for performance
+  const sprinkleCount = isMobile ? 15 : isTablet ? 20 : 30;
+  const sprinkles = Array.from({ length: sprinkleCount }, (_, i) => ({
     id: i,
     color: ['#c8e6c9', '#bbdefb', '#ffcc80', '#f8bbd0', '#b39ddb'][Math.floor(Math.random() * 5)],
     top: `${Math.random() * 100}%`,
@@ -86,8 +95,8 @@ const HomePage = () => {
 
   return (
     <Box
+      className="page-container vh-fix"
       sx={{
-        minHeight: '100vh',
         background: 'linear-gradient(135deg, #fff8e1 0%, #fffde7 100%)',
         position: 'relative',
         overflow: 'hidden',
@@ -95,7 +104,7 @@ const HomePage = () => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 3
+        padding: { xs: 2, sm: 3, md: 4 }
       }}
     >
       {/* Decorative sprinkles */}
@@ -109,7 +118,9 @@ const HomePage = () => {
         />
       ))}
 
-      <Container maxWidth="md">
+
+
+      <Container maxWidth="md" sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -123,7 +134,8 @@ const HomePage = () => {
               fontWeight: 700, 
               color: '#f06292',
               textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
-              mb: 2
+              mb: { xs: 1, sm: 2 },
+              fontSize: { xs: '2.5rem', sm: '3rem', md: '3.5rem' }
             }}
           >
             Welcome to My Kids Studio!
@@ -133,16 +145,17 @@ const HomePage = () => {
             variant="h4" 
             align="center" 
             sx={{ 
-              mb: 6, 
+              mb: { xs: 3, sm: 4, md: 6 }, 
               color: '#8d6e63',
-              opacity: 0.9
+              opacity: 0.9,
+              fontSize: { xs: '1.5rem', sm: '1.8rem', md: '2rem' }
             }}
           >
             Who's ready to learn today?
           </Typography>
         </motion.div>
 
-        <Grid container spacing={4} justifyContent="center">
+        <Grid container spacing={{ xs: 2, sm: 3, md: 4 }} justifyContent="center">
           {profiles.map((profile, index) => (
             <Grid item xs={12} sm={6} key={profile.id}>
               <motion.div
@@ -155,13 +168,14 @@ const HomePage = () => {
                   transition: { duration: 0.2 }
                 }}
                 whileTap={{ scale: 0.98 }}
+                style={{ height: '100%' }}
               >
                 <Card
                   onClick={() => handleProfileSelect(profile.id)}
                   sx={{
                     cursor: 'pointer',
                     background: profile.gradient,
-                    borderRadius: 4,
+                    borderRadius: { xs: 3, sm: 4 },
                     boxShadow: `0 8px 24px ${profile.shadowColor}`,
                     transition: 'all 0.3s ease',
                     border: '6px solid white',
@@ -171,11 +185,18 @@ const HomePage = () => {
                     }
                   }}
                 >
-                  <CardContent sx={{ p: 4, textAlign: 'center' }}>
+                  <CardContent sx={{ 
+                    p: { xs: 2, sm: 3, md: 4 }, 
+                    textAlign: 'center',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
                     <Avatar
                       sx={{
-                        width: 120,
-                        height: 120,
+                        width: { xs: 80, sm: 100, md: 120 },
+                        height: { xs: 80, sm: 100, md: 120 },
                         backgroundColor: 'white',
                         color: profile.textColor,
                         margin: '0 auto 16px',
@@ -191,7 +212,8 @@ const HomePage = () => {
                       sx={{ 
                         fontWeight: 700, 
                         color: 'white',
-                        textShadow: '1px 1px 2px rgba(0,0,0,0.2)'
+                        textShadow: '1px 1px 2px rgba(0,0,0,0.2)',
+                        fontSize: { xs: '1.8rem', sm: '2.2rem', md: '2.5rem' }
                       }}
                     >
                       {profile.name}

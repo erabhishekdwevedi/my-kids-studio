@@ -1,14 +1,61 @@
-# KIDS Learning Studio
+# My Kids Studio
 
-KIDS Learning Studio is an interactive educational platform designed for children to learn and explore various subjects through engaging activities and games.
+An interactive educational platform for children featuring games, quizzes, and creative activities.
 
 ## Features
 
-- **Interactive Learning**: Engaging activities and exercises that make learning fun and memorable for children of all ages.
-- **Child-Friendly Design**: Colorful, intuitive interface designed specifically for children to navigate easily and safely.
-- **Educational Content**: Curriculum-aligned materials that support classroom learning while making education enjoyable.
-- **Multiple Subjects**: Explore math, reading, science, art, and more through fun activities.
-- **Games & Activities**: Educational games that reinforce learning concepts while being entertaining.
+- Profile selection for multiple users
+- Theme customization
+- Various educational subjects
+- Interactive games and activities
+- Drawing board
+- Piano learning tool
+- Quiz system
+- Car racing game
+- Snake game
+
+## Navigation
+
+The application uses a consistent navigation pattern across all pages:
+
+- **PageNavigation**: A reusable component that provides:
+  - Back button (left side)
+  - Home button (left side, next to back button)
+  - Title or Profile display (right side)
+  - Mute button (right side) for audio control
+
+This consistent navigation pattern ensures users always have access to essential controls regardless of which page they're on.
+
+![Navigation Example](public/navigation-example.png)
+
+## Development
+
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+### Available Scripts
+
+In the project directory, you can run:
+
+#### `npm start`
+
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+
+#### `npm test`
+
+Launches the test runner in the interactive watch mode.
+
+#### `npm run build`
+
+Builds the app for production to the `build` folder.
+
+## Technologies Used
+
+- React
+- TypeScript
+- Material UI
+- Framer Motion
+- React Router
 
 ## Learning Categories
 
@@ -17,14 +64,6 @@ KIDS Learning Studio is an interactive educational platform designed for childre
 - **Science Explorers**: Discover the wonders of science
 - **Art & Creativity**: Express yourself through art and crafts
 - **Fun & Games**: Educational games that make learning fun
-
-## Technologies Used
-
-- React
-- TypeScript
-- Material-UI
-- Framer Motion
-- React Router
 
 ## Getting Started
 

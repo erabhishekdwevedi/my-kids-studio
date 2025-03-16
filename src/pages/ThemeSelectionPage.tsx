@@ -20,6 +20,8 @@ import HomeIcon from '@mui/icons-material/Home';
 import StarIcon from '@mui/icons-material/Star';
 import FaceIcon from '@mui/icons-material/Face';
 import Face3Icon from '@mui/icons-material/Face3';
+import PageNavigation from '../components/PageNavigation';
+import { useApp } from '../contexts/AppContext';
 
 // Define profiles
 const profiles = [
@@ -111,22 +113,26 @@ const Sprinkle = ({ color, top, left, delay }: { color: string, top: string, lef
 
 const ThemeSelectionPage = () => {
   const navigate = useNavigate();
-  const [selectedProfile, setSelectedProfile] = useState<any>(null);
+  const { selectedProfile } = useApp();
+  const [selectedTheme, setSelectedTheme] = useState<any>(null);
 
   useEffect(() => {
     // Get selected profile from localStorage
     const profileId = localStorage.getItem('selectedProfile');
-    if (profileId) {
-      const profile = profiles.find(p => p.id === profileId);
-      if (profile) {
-        setSelectedProfile(profile);
-      } else {
-        // If profile not found, redirect to home
-        navigate('/');
-      }
-    } else {
-      // If no profile selected, redirect to home
+    
+    // If no profile is selected, redirect to home page
+    if (!profileId) {
       navigate('/');
+      return;
+    }
+    
+    // Find the profile by ID
+    const profile = profiles.find(p => p.id === profileId);
+    
+    // If profile not found, redirect to home page
+    if (!profile) {
+      navigate('/');
+      return;
     }
   }, [navigate]);
 
@@ -163,8 +169,7 @@ const ThemeSelectionPage = () => {
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
-        padding: 3,
-        paddingTop: 8 // Add extra padding at the top for the menu
+        padding: 3
       }}
     >
       {/* Decorative sprinkles */}
@@ -179,71 +184,16 @@ const ThemeSelectionPage = () => {
       ))}
 
       {/* Top Navigation */}
-      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', mb: 4, zIndex: 10, position: 'absolute', top: 16, left: 0, right: 0, px: 3 }}>
-        {/* Back Button */}
-        <Fab 
-          color="default" 
-          aria-label="back"
-          onClick={handleBackToProfiles}
-          sx={{
-            boxShadow: '0px 3px 8px rgba(0,0,0,0.2)',
-            bgcolor: 'white'
-          }}
-        >
-          <ArrowBackIcon />
-        </Fab>
+      <PageNavigation 
+        profile={selectedProfile}
+        theme={selectedProfile} // Use profile as theme since we don't have a theme yet
+        showTitle={false}
+        title="Choose Your Theme"
+        onBackClick={handleBackToProfiles}
+        onHomeClick={handleBackToProfiles}
+      />
 
-        {/* Profile Pill Button */}
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            backgroundColor: 'white',
-            borderRadius: 30,
-            padding: '4px 16px',
-            boxShadow: '0px 3px 8px rgba(0,0,0,0.2)',
-            border: `2px solid ${selectedProfile.textColor}`,
-          }}
-        >
-          <Typography 
-            sx={{ 
-              fontWeight: 'bold', 
-              color: selectedProfile.textColor,
-              fontSize: '1rem',
-              marginRight: 1
-            }}
-          >
-            {selectedProfile.name}
-          </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <StarIcon sx={{ color: '#ffd54f', fontSize: 20, marginRight: 0.5 }} />
-            <Typography 
-              sx={{ 
-                fontWeight: 'bold', 
-                color: selectedProfile.textColor,
-                fontSize: '1rem'
-              }}
-            >
-              {selectedProfile.score}
-            </Typography>
-          </Box>
-        </Box>
-
-        {/* Home Button */}
-        <Fab 
-          color="default" 
-          aria-label="home"
-          onClick={handleBackToProfiles}
-          sx={{ 
-            boxShadow: '0px 3px 8px rgba(0,0,0,0.2)',
-            bgcolor: 'white'
-          }}
-        >
-          <HomeIcon />
-        </Fab>
-      </Box>
-
-      <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1 }}>
+      <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1, mt: 4 }}>
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -255,24 +205,12 @@ const ThemeSelectionPage = () => {
             gutterBottom
             sx={{ 
               fontWeight: 700, 
-              color: 'white',
+              color: selectedProfile.textColor,
               textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
-              mb: 2
+              mb: 4
             }}
           >
-            Hi {selectedProfile.name}!
-          </Typography>
-
-          <Typography 
-            variant="h4" 
-            align="center" 
-            sx={{ 
-              mb: 6, 
-              color: 'white',
-              opacity: 0.9
-            }}
-          >
-            Choose your learning theme
+            Choose Your Theme
           </Typography>
         </motion.div>
 

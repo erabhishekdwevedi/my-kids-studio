@@ -4,13 +4,15 @@ import { Box, CircularProgress, Typography, Button } from '@mui/material';
 import { quizData } from '../data/quizData';
 import Quiz from '../components/Quiz';
 import { initSpeech, speak, stop } from '../utils/textToSpeech';
-import MuteButton from '../components/MuteButton';
+import PageNavigation from '../components/PageNavigation';
+import { useApp } from '../contexts/AppContext';
 
 const QuizPage: React.FC = () => {
   const { category } = useParams<{ category: string }>();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { selectedProfile, selectedTheme } = useApp();
 
   // Initialize text-to-speech on component mount
   useEffect(() => {
@@ -50,6 +52,14 @@ const QuizPage: React.FC = () => {
     return () => clearTimeout(timer);
   }, [category, navigate]);
 
+  const handleBack = () => {
+    navigate('/subject/gk');
+  };
+
+  const handleHome = () => {
+    navigate('/');
+  };
+
   if (loading) {
     return (
       <Box
@@ -62,13 +72,24 @@ const QuizPage: React.FC = () => {
           width: '100vw',
         }}
       >
+        {selectedProfile && selectedTheme && (
+          <Box sx={{ position: 'absolute', top: 16, left: 0, right: 0, px: 3 }}>
+            <PageNavigation 
+              profile={selectedProfile}
+              theme={selectedTheme}
+              showTitle={true}
+              title="Loading Quiz..."
+              onBackClick={handleBack}
+              onHomeClick={handleHome}
+              showMuteButton={true}
+            />
+          </Box>
+        )}
+        
         <CircularProgress size={60} />
         <Typography variant="h6" sx={{ mt: 2 }}>
           Loading Quiz...
         </Typography>
-        
-        {/* Mute Button */}
-        <MuteButton position="absolute" bottom={16} right={16} />
       </Box>
     );
   }
@@ -86,6 +107,20 @@ const QuizPage: React.FC = () => {
           width: '100vw',
         }}
       >
+        {selectedProfile && selectedTheme && (
+          <Box sx={{ position: 'absolute', top: 16, left: 0, right: 0, px: 3 }}>
+            <PageNavigation 
+              profile={selectedProfile}
+              theme={selectedTheme}
+              showTitle={true}
+              title="Error"
+              onBackClick={handleBack}
+              onHomeClick={handleHome}
+              showMuteButton={true}
+            />
+          </Box>
+        )}
+        
         <Typography variant="h5" color="error">
           {error || 'Quiz not found'}
         </Typography>
@@ -96,9 +131,6 @@ const QuizPage: React.FC = () => {
         >
           Back to Subjects
         </Button>
-        
-        {/* Mute Button */}
-        <MuteButton position="absolute" bottom={16} right={16} />
       </Box>
     );
   }

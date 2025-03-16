@@ -35,7 +35,6 @@ import { generateSprinkles, getThemeColors, generateJungleAnimals } from '../uti
 import PageNavigation from '../components/PageNavigation';
 import Sprinkle from '../components/Sprinkle';
 import JungleAnimal from '../components/JungleAnimal';
-import MuteButton from '../components/MuteButton';
 
 // Define themes
 const themes = [
@@ -372,19 +371,11 @@ const SubjectPage = () => {
       <PageNavigation 
         profile={selectedProfile}
         theme={selectedTheme}
-        showTitle={true}
+        showTitle={false}
         title={currentSubject.name}
         onBackClick={handleBackToSubjects}
         onHomeClick={handleBackToHome}
-      />
-
-      {/* Mute Button */}
-      <MuteButton 
-        size="small" 
-        position="absolute" 
-        top={16} 
-        right={80} 
-        color={selectedTheme.textColor}
+        showMuteButton={true}
       />
 
       <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>

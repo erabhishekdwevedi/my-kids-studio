@@ -17,7 +17,6 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../contexts/AppContext';
 import { QuizQuestion } from '../data/quizData';
 import PageNavigation from './PageNavigation';
-import MuteButton from './MuteButton';
 import { speak, stop } from '../utils/textToSpeech';
 
 interface QuizProps {
@@ -142,15 +141,7 @@ const Quiz: React.FC<QuizProps> = ({ title, description, questions, category }) 
         showTitle={false}
         onBackClick={handleBackToSubject}
         onHomeClick={handleBackToHome}
-      />
-
-      {/* Mute Button */}
-      <MuteButton 
-        size="small" 
-        position="absolute" 
-        top={16} 
-        right={80} 
-        color={selectedTheme.textColor}
+        showMuteButton={true}
       />
 
       <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1 }}>

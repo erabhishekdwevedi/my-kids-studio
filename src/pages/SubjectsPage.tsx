@@ -6,20 +6,12 @@ import {
   Card, 
   CardContent, 
   Container,
-  Grid,
-  Button,
-  Avatar,
-  Chip,
-  Fab
+  Grid
 } from '@mui/material';
 import { motion } from 'framer-motion';
-import IcecreamIcon from '@mui/icons-material/Icecream';
-import CakeIcon from '@mui/icons-material/Cake';
 import ForestIcon from '@mui/icons-material/Forest';
 import CelebrationIcon from '@mui/icons-material/Celebration';
-import StarIcon from '@mui/icons-material/Star';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import HomeIcon from '@mui/icons-material/Home';
+import IcecreamIcon from '@mui/icons-material/Icecream';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import PsychologyIcon from '@mui/icons-material/Psychology';
 import BrushIcon from '@mui/icons-material/Brush';
@@ -33,6 +25,8 @@ import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import FlightIcon from '@mui/icons-material/Flight';
 import Face3Icon from '@mui/icons-material/Face3';
+import { useApp } from '../contexts/AppContext';
+import PageNavigation from '../components/PageNavigation';
 
 // Define profiles
 const profiles = [
@@ -228,8 +222,7 @@ const JungleAnimal = ({ type, position, delay }: { type: 'tiger' | 'zebra' | 'gi
 
 const SubjectsPage = () => {
   const navigate = useNavigate();
-  const [selectedProfile, setSelectedProfile] = useState<any>(null);
-  const [selectedTheme, setSelectedTheme] = useState<any>(null);
+  const { selectedProfile, selectedTheme } = useApp();
 
   useEffect(() => {
     // Get selected profile from localStorage
@@ -237,7 +230,7 @@ const SubjectsPage = () => {
     if (profileId) {
       const profile = profiles.find(p => p.id === profileId);
       if (profile) {
-        setSelectedProfile(profile);
+        // No need to set selectedProfile here, as it's already handled in useApp
       } else {
         // If profile not found, redirect to home
         navigate('/');
@@ -252,7 +245,7 @@ const SubjectsPage = () => {
     if (themeId) {
       const theme = themes.find(t => t.id === themeId);
       if (theme) {
-        setSelectedTheme(theme);
+        // No need to set selectedTheme here, as it's already handled in useApp
       } else {
         // If theme not found, redirect to theme selection
         navigate('/theme-selection');
@@ -314,6 +307,8 @@ const SubjectsPage = () => {
     <Box
       sx={{
         minHeight: '100vh',
+        width: '100vw',
+        maxWidth: '100%',
         background: selectedTheme.gradient,
         position: 'relative',
         overflow: 'hidden',
@@ -344,77 +339,35 @@ const SubjectsPage = () => {
       ))}
 
       {/* Top Navigation */}
-      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', mb: 4, zIndex: 10 }}>
-        {/* Back Button */}
-        <Fab 
-          color="default" 
-          aria-label="back"
-          onClick={handleBackToThemes}
-          sx={{
-            boxShadow: '0px 3px 8px rgba(0,0,0,0.2)',
-            bgcolor: 'white'
-          }}
-        >
-          <ArrowBackIcon />
-        </Fab>
+      <PageNavigation 
+        profile={selectedProfile}
+        theme={selectedTheme}
+        showTitle={true}
+        title="Subjects"
+        onBackClick={handleBackToThemes}
+        onHomeClick={handleBackToHome}
+        showMuteButton={true}
+      />
 
-        {/* Profile Pill Button */}
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            backgroundColor: 'white',
-            borderRadius: 30,
-            padding: '4px 16px',
-            boxShadow: '0px 3px 8px rgba(0,0,0,0.2)',
-            border: `2px solid ${selectedProfile.textColor}`,
-          }}
-        >
-          <Typography 
-            sx={{ 
-              fontWeight: 'bold', 
-              color: selectedProfile.textColor,
-              fontSize: '1rem',
-              marginRight: 1
-            }}
-          >
-            {selectedProfile.name}
-          </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <StarIcon sx={{ color: '#ffd54f', fontSize: 20, marginRight: 0.5 }} />
-            <Typography 
-              sx={{ 
-                fontWeight: 'bold', 
-                color: selectedProfile.textColor,
-                fontSize: '1rem'
-              }}
-            >
-              {selectedProfile.score}
-            </Typography>
-          </Box>
-        </Box>
-
-        {/* Home Button */}
-        <Fab 
-          color="default" 
-          aria-label="home"
-          onClick={handleBackToHome}
-          sx={{ 
-            boxShadow: '0px 3px 8px rgba(0,0,0,0.2)',
-            bgcolor: 'white'
-          }}
-        >
-          <HomeIcon />
-        </Fab>
-      </Box>
-
-      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1, mt: 2, width: '100%' }}>
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-         
+          <Typography 
+            variant="h2" 
+            align="center" 
+            gutterBottom
+            sx={{ 
+              fontWeight: 700, 
+              color: selectedTheme.textColor,
+              textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
+              mb: 4
+            }}
+          >
+            Choose a Subject
+          </Typography>
         </motion.div>
 
         <Grid container spacing={4}>

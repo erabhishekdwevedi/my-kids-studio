@@ -7,13 +7,19 @@ body {
   -moz-osx-font-smoothing: grayscale;
   height: 100%;
   width: 100%;
-  overflow: hidden;
+  overflow-x: hidden;
+  position: relative;
 }
 
 html {
   height: 100%;
   width: 100%;
-  overflow: hidden;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
 }
 
 #root {
@@ -37,6 +43,7 @@ code {
   
   #root {
     height: -webkit-fill-available;
+    min-height: -webkit-fill-available;
   }
 }
 
@@ -48,6 +55,7 @@ code {
   height: 100%;
   width: 100%;
   overflow: hidden;
+  position: relative;
 }
 
 /* Ensure content areas take remaining height */
@@ -55,6 +63,8 @@ code {
   flex: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  width: 100%;
+  position: relative;
 }
 
 /* Prevent text selection on touch devices */
@@ -63,6 +73,11 @@ code {
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
     user-select: none;
+  }
+  
+  input, textarea, [contenteditable] {
+    user-select: text;
+    -webkit-user-select: text;
   }
 }
 
@@ -84,7 +99,7 @@ html {
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -93,9 +108,41 @@ html {
 
 ::-webkit-scrollbar-thumb {
   background: #4caf50;
-  border-radius: 5px;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #3d8b40;
+}
+
+/* Responsive media queries */
+@media screen and (max-width: 600px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+  
+  .mobile-padding {
+    padding: 16px !important;
+  }
+  
+  .mobile-text-center {
+    text-align: center !important;
+  }
+}
+
+@media screen and (min-width: 601px) and (max-width: 960px) {
+  .hide-on-tablet {
+    display: none !important;
+  }
+  
+  .tablet-padding {
+    padding: 24px !important;
+  }
+}
+
+/* Fix for iOS Safari 100vh issue */
+@supports (-webkit-touch-callout: none) {
+  .vh-fix {
+    height: -webkit-fill-available;
+  }
 }

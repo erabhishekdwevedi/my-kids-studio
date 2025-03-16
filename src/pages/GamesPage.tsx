@@ -24,6 +24,8 @@ import IcecreamIcon from '@mui/icons-material/Icecream';
 import CakeIcon from '@mui/icons-material/Cake';
 import ForestIcon from '@mui/icons-material/Forest';
 import CelebrationIcon from '@mui/icons-material/Celebration';
+import PageNavigation from '../components/PageNavigation';
+import { useApp } from '../contexts/AppContext';
 
 const MotionContainer = motion.create(Container);
 const MotionTypography = motion.create(Typography);
@@ -150,8 +152,7 @@ const Sprinkle = ({ color, top, left, delay }: { color: string, top: string, lef
 
 const GamesPage: React.FC = () => {
   const navigate = useNavigate();
-  const [selectedProfile, setSelectedProfile] = useState<any>(null);
-  const [selectedTheme, setSelectedTheme] = useState<any>(null);
+  const { selectedProfile, selectedTheme } = useApp();
 
   useEffect(() => {
     // Get selected profile from localStorage
@@ -159,7 +160,7 @@ const GamesPage: React.FC = () => {
     if (profileId) {
       const profile = profiles.find(p => p.id === profileId);
       if (profile) {
-        setSelectedProfile(profile);
+        // selectedProfile is managed by useApp, no need to set it here
       } else {
         // If profile not found, redirect to home
         navigate('/');
@@ -174,7 +175,7 @@ const GamesPage: React.FC = () => {
     if (themeId) {
       const theme = themes.find(t => t.id === themeId);
       if (theme) {
-        setSelectedTheme(theme);
+        // selectedTheme is managed by useApp, no need to set it here
       } else {
         // If theme not found, redirect to theme selection
         navigate('/theme-selection');
@@ -211,11 +212,11 @@ const GamesPage: React.FC = () => {
     navigate(path);
   };
 
-  const handleBackToSubjects = () => {
+  const handleBack = () => {
     navigate('/subjects');
   };
 
-  const handleBackToHome = () => {
+  const handleHome = () => {
     navigate('/');
   };
 
@@ -247,74 +248,36 @@ const GamesPage: React.FC = () => {
       ))}
 
       {/* Top Navigation */}
-      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', mb: 4, zIndex: 10 }}>
-        {/* Back Button */}
-        <Fab 
-          color="default" 
-          aria-label="back"
-          onClick={handleBackToSubjects}
-          sx={{
-            boxShadow: '0px 3px 8px rgba(0,0,0,0.2)',
-            bgcolor: 'white'
-          }}
-        >
-          <ArrowBackIcon />
-        </Fab>
+      <PageNavigation 
+        profile={selectedProfile}
+        theme={selectedTheme}
+        showTitle={false}
+        title="Games"
+        onBackClick={handleBack}
+        onHomeClick={handleHome}
+      />
 
-        {/* Profile Pill Button */}
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            backgroundColor: 'white',
-            borderRadius: 30,
-            padding: '4px 16px 4px 4px',
-            boxShadow: '0px 3px 8px rgba(0,0,0,0.2)',
-            border: `2px solid ${selectedProfile.textColor}`,
-          }}
+      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1, mt: 2 }}>
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
         >
-          <Avatar
-            sx={{
-              width: 40,
-              height: 40,
-              backgroundColor: selectedProfile.backgroundColor,
-              color: selectedProfile.textColor,
-              marginRight: 1,
-              border: `2px solid ${selectedProfile.textColor}`
+          <Typography 
+            variant="h2" 
+            align="center" 
+            gutterBottom
+            sx={{ 
+              fontWeight: 700, 
+              color: selectedTheme.textColor,
+              textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
+              mb: 4
             }}
           >
-            {selectedProfile.icon}
-          </Avatar>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <StarIcon sx={{ color: '#ffd54f', fontSize: 20, marginRight: 0.5 }} />
-            <Typography 
-              sx={{ 
-                fontWeight: 'bold', 
-                color: selectedProfile.textColor,
-                fontSize: '1rem'
-              }}
-            >
-              {selectedProfile.score}
-            </Typography>
-          </Box>
-        </Box>
+            Fun Games
+          </Typography>
+        </motion.div>
 
-        {/* Home Button */}
-        <Fab 
-          color="default" 
-          aria-label="home"
-          onClick={handleBackToHome}
-          sx={{ 
-            boxShadow: '0px 3px 8px rgba(0,0,0,0.2)',
-            bgcolor: 'white'
-          }}
-        >
-          <HomeIcon />
-        </Fab>
-      </Box>
-
-      {/* Games Section */}
-      <Container maxWidth="lg" sx={{ mb: 4, zIndex: 1 }}>
         <Grid container spacing={4} justifyContent="center">
           {games.map((game, index) => (
             <Grid item xs={12} sm={6} key={game.title}>

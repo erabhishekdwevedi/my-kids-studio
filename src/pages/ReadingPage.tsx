@@ -132,7 +132,7 @@ const ReadingPage: React.FC = () => {
       background: 'linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)'
     }}>
       {/* App Header */}
-      <TopMenu title="Reading Adventures" showTitle={true} />
+      <TopMenu title="Reading Adventures" showTitle={false} />
 
       {/* Main Content */}
       <Box

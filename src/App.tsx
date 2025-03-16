@@ -36,10 +36,10 @@ function App() {
   const getAppDimensions = () => {
     if (isMobile || isSmallScreen) {
       return {
-        width: '100%',
-        height: '100vh',
+        width: '100vw',
+        height: '100%',
         maxWidth: '100%',
-        maxHeight: '100vh',
+        maxHeight: '100%',
         margin: '0',
         boxShadow: 'none',
         border: 'none',
@@ -47,26 +47,26 @@ function App() {
       };
     } else if (isTablet || isMediumScreen) {
       return {
-        width: '100%',
-        height: '100vh',
-        maxWidth: '768px',
-        maxHeight: '100vh',
-        margin: '0 auto',
-        boxShadow: '0px 0px 15px rgba(0, 0, 0, 0.1)',
-        border: '1px solid #e0e0e0',
-        borderRadius: '8px',
+        width: '100vw',
+        height: '100%',
+        maxWidth: '100%',
+        maxHeight: '100%',
+        margin: '0',
+        boxShadow: 'none',
+        border: 'none',
+        borderRadius: '0',
       };
     } else {
-      // Desktop or large screens
+      // Desktop or large screens - still use full width for consistency
       return {
-        width: '100%',
-        height: '100vh',
-        maxWidth: '1024px',
-        maxHeight: '100vh',
-        margin: '0 auto',
-        boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.15)',
-        border: '1px solid #e0e0e0',
-        borderRadius: '12px',
+        width: '100vw',
+        height: '100%',
+        maxWidth: '100%',
+        maxHeight: '100%',
+        margin: '0',
+        boxShadow: 'none',
+        border: 'none',
+        borderRadius: '0',
       };
     }
   };
@@ -94,6 +94,7 @@ function App() {
                 min-height: -webkit-fill-available;
                 width: 100vw;
                 max-width: 100%;
+                overflow-x: hidden;
               }
               
               #root {
@@ -102,6 +103,17 @@ function App() {
                 align-items: center;
                 justify-content: center;
                 background-color: #f5f5f5;
+                height: 100%;
+                width: 100vw;
+                max-width: 100%;
+              }
+
+              @supports (-webkit-touch-callout: none) {
+                body, html, #root {
+                  height: -webkit-fill-available;
+                  width: 100vw;
+                  max-width: 100%;
+                }
               }
             `}
           </style>
@@ -115,10 +127,13 @@ function App() {
                   user-select: none;
                   -webkit-user-select: none;
                   -webkit-tap-highlight-color: transparent;
+                  width: 100vw;
+                  max-width: 100%;
                 }
                 
-                body {
-                  position: fixed;
+                input, textarea {
+                  user-select: text;
+                  -webkit-user-select: text;
                 }
               `}
             </style>

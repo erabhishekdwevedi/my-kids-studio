@@ -27,7 +27,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { CarRaceGame } from '../games/CarRaceGame';
-import TopMenu from '../components/TopMenu';
+import PageNavigation from '../components/PageNavigation';
 
 // Create a theme with consistent fonts
 const theme = createTheme({
@@ -130,61 +130,52 @@ const Sprinkle = ({ color, top, left, delay }: { color: string, top: string, lef
   />
 );
 
+// Define the type for the game ref
+interface CarRaceGameHandle {
+  movePlayer: (direction: 'up' | 'down' | 'left' | 'right') => void;
+}
+
 const CarRacePage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [score, setScore] = useState(0);
   const [selectedProfile, setSelectedProfile] = useState<any>(null);
   const [selectedTheme, setSelectedTheme] = useState<any>(null);
-  const [score, setScore] = useState<number>(0);
-  
-  // Reference to the game component
-  const gameRef = useRef<any>(null);
-  
-  // Initial position for the controller
-  const [controllerPosition, setControllerPosition] = useState({ x: 0, y: 0 });
+  const [sprinkles, setSprinkles] = useState<any[]>([]);
+  const gameRef = useRef<CarRaceGameHandle>(null);
+  const controlsRef = useRef<any>(null);
   const dragControls = useDragControls();
   
   useEffect(() => {
     // Get selected profile from localStorage
     const profileId = localStorage.getItem('selectedProfile');
+    const themeId = localStorage.getItem('selectedTheme');
+    
     if (profileId) {
       const profile = profiles.find(p => p.id === profileId);
       if (profile) {
         setSelectedProfile(profile);
-      } else {
-        // If profile not found, redirect to home
-        navigate('/');
       }
-    } else {
-      // If no profile selected, redirect to home
-      navigate('/');
     }
-
-    // Get selected theme from localStorage
-    const themeId = localStorage.getItem('selectedTheme');
+    
     if (themeId) {
       const theme = themes.find(t => t.id === themeId);
       if (theme) {
         setSelectedTheme(theme);
-      } else {
-        // If theme not found, redirect to theme selection
-        navigate('/theme-selection');
       }
-    } else {
-      // If no theme selected, redirect to theme selection
-      navigate('/theme-selection');
     }
-  }, [navigate]);
-  
-  // Generate random sprinkles based on theme
-  const generateSprinkles = () => {
-    if (!selectedTheme) return [];
     
-    const colors = selectedTheme.id === 'icecream' 
-      ? ['#f8bbd0', '#bbdefb', '#ffcc80', '#c5e1a5', '#b39ddb']
-      : selectedTheme.id === 'jungle'
-        ? ['#a5d6a7', '#c8e6c9', '#ffcc80', '#bcaaa4', '#81c784']
-        : ['#f8bbd0', '#bbdefb', '#ffe082', '#b39ddb', '#90caf9'];
+    // Generate sprinkles
+    if (themeId) {
+      setSprinkles(generateSprinkles(themeId));
+    }
+  }, []);
+  
+  const generateSprinkles = (themeId: string) => {
+    const theme = themes.find(t => t.id === themeId);
+    if (!theme) return [];
+    
+    const colors = [theme.textColor, theme.accentColor, '#ffffff'];
     
     return Array.from({ length: 30 }, (_, i) => ({
       id: i,
@@ -194,16 +185,13 @@ const CarRacePage = () => {
       delay: Math.random() * 2
     }));
   };
-
-  const sprinkles = generateSprinkles();
   
   const handleScoreChange = (newScore: number) => {
     setScore(newScore);
   };
   
   const handleControlPress = (direction: 'up' | 'down' | 'left' | 'right') => {
-    // Forward the control press to the game component
-    if (gameRef.current && gameRef.current.movePlayer) {
+    if (gameRef.current) {
       gameRef.current.movePlayer(direction);
     }
   };
@@ -247,262 +235,178 @@ const CarRacePage = () => {
         ))}
 
         {/* Top Navigation */}
-        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', mb: 4, zIndex: 10 }}>
-          {/* Back Button */}
-          <Fab 
-            color="default" 
-            aria-label="back"
-            onClick={handleBack}
-            sx={{
-              boxShadow: '0px 3px 8px rgba(0,0,0,0.2)',
-              bgcolor: 'white'
-            }}
-          >
-            <ArrowBackIcon />
-          </Fab>
+        <PageNavigation 
+          profile={selectedProfile}
+          theme={selectedTheme}
+          showTitle={false}
+          title="Car Race"
+          onBackClick={handleBack}
+          onHomeClick={handleHome}
+          showMuteButton={true}
+        />
 
-          {/* Profile Pill Button */}
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              backgroundColor: 'white',
-              borderRadius: 30,
-              padding: '4px 16px 4px 4px',
-              boxShadow: '0px 3px 8px rgba(0,0,0,0.2)',
-              border: `2px solid ${selectedProfile.textColor}`,
-            }}
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1, mt: 2 }}>
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
           >
-            <Avatar
-              sx={{
-                width: 40,
-                height: 40,
-                backgroundColor: selectedProfile.backgroundColor,
-                color: selectedProfile.textColor,
-                marginRight: 1,
-                border: `2px solid ${selectedProfile.textColor}`
+            <Typography 
+              variant="h2" 
+              align="center" 
+              gutterBottom
+              sx={{ 
+                fontWeight: 700, 
+                color: selectedTheme.textColor,
+                textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
+                mb: 2
               }}
             >
-              {selectedProfile.icon}
-            </Avatar>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <StarIcon sx={{ color: '#ffd54f', fontSize: 20, marginRight: 0.5 }} />
-              <Typography 
-                sx={{ 
-                  fontWeight: 'bold', 
-                  color: selectedProfile.textColor,
-                  fontSize: '1rem'
-                }}
-              >
-                {selectedProfile.score}
-              </Typography>
-            </Box>
-          </Box>
+              Car Race
+            </Typography>
+          </motion.div>
 
-          {/* Home Button */}
-          <Fab 
-            color="default" 
-            aria-label="home"
-            onClick={handleHome}
+          {/* Game Container */}
+          <Paper 
+            elevation={3}
             sx={{ 
-              boxShadow: '0px 3px 8px rgba(0,0,0,0.2)',
-              bgcolor: 'white'
+              p: 2, 
+              borderRadius: 4,
+              overflow: 'hidden',
+              position: 'relative',
+              height: '60vh',
+              maxHeight: '500px',
+              mb: 3
             }}
           >
-            <HomeIcon />
-          </Fab>
-        </Box>
+            <Box 
+              sx={{ 
+                width: '100%', 
+                height: '100%', 
+                backgroundColor: '#222',
+                borderRadius: 2,
+                position: 'relative',
+                overflow: 'hidden'
+              }}
+            >
+              <CarRaceGame 
+                ref={gameRef}
+                onScoreChange={handleScoreChange}
+                themeColor={selectedTheme.textColor}
+              />
+            </Box>
+            
+            {/* Score Display */}
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 16,
+                left: 16,
+                backgroundColor: 'rgba(255,255,255,0.8)',
+                borderRadius: 2,
+                padding: '4px 12px',
+                display: 'flex',
+                alignItems: 'center'
+              }}
+            >
+              <StarIcon sx={{ color: '#ffd54f', fontSize: 20, marginRight: 0.5 }} />
+              <Typography sx={{ fontWeight: 'bold' }}>
+                {score}
+              </Typography>
+            </Box>
+          </Paper>
 
-        {/* Game Title */}
-        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
-          <Grid container spacing={4}>
-            {/* Game Display Container */}
-            <Grid item xs={12}>
-              <Paper
-                elevation={3}
-                sx={{
-                  p: 2,
-                  borderRadius: 4,
-                  backgroundColor: 'white',
-                  border: selectedTheme.id === 'icecream' 
-                    ? '5px solid #f8bbd0'
-                    : selectedTheme.id === 'jungle'
-                      ? '5px solid #a5d6a7'
-                      : '5px solid #b3e5fc',
-                  height: '450px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  mb: 4 // Reduced margin since controller is now floating
-                }}
-              >
-                {/* Game Display */}
-                <Box 
-                  sx={{ 
-                    width: '100%', 
-                    height: '100%', 
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    position: 'relative',
-                    padding: 2
-                  }}
-                >
-                  <CarRaceGame 
-                    ref={gameRef}
-                    onScoreChange={handleScoreChange} 
-                    themeColor={selectedTheme.textColor} 
-                  />
-                  
-                  {/* Score Display */}
-                  <Box 
-                    sx={{ 
-                      position: 'absolute', 
-                      top: 10, 
-                      right: 10, 
-                      backgroundColor: selectedTheme.backgroundColor,
-                      padding: '5px 15px',
-                      borderRadius: 20,
-                      display: 'flex',
-                      alignItems: 'center',
-                      zIndex: 100
-                    }}
-                  >
-                    <StarIcon sx={{ color: '#ffd54f', fontSize: 20, marginRight: 0.5 }} />
-                    <Typography 
-                      sx={{ 
-                        fontWeight: 'bold', 
-                        color: selectedTheme.textColor,
-                        fontSize: '1rem',
-                        fontFamily: theme.typography.fontFamily // Apply consistent font
-                      }}
-                    >
-                      {score}
-                    </Typography>
-                  </Box>
-                </Box>
-              </Paper>
-            </Grid>
-          </Grid>
-
-          {/* Floating Controls Container */}
+          {/* Game Controls */}
           <motion.div
             drag
             dragControls={dragControls}
             dragMomentum={false}
-            initial={{ x: 0, y: 0 }}
-            style={{ 
-              position: 'fixed',
-              bottom: '50px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              zIndex: 100,
-              touchAction: 'none'
-            }}
+            dragElastic={0.1}
+            ref={controlsRef}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            whileTap={{ scale: 0.98 }}
           >
-            <Box
+            <Paper
+              elevation={3}
               sx={{
-                backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                p: 2,
                 borderRadius: 4,
-                padding: 2,
-                boxShadow: '0px 4px 10px rgba(0,0,0,0.2)',
-                border: `2px solid ${selectedTheme.textColor}`,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                width: '100%',
-                maxWidth: 300,
+                width: 'fit-content',
+                margin: '0 auto',
                 position: 'relative'
               }}
             >
-              {/* Drag Handle */}
-              <Box 
+              <DragIndicatorIcon 
                 sx={{ 
                   position: 'absolute', 
-                  top: 5, 
-                  left: 0, 
-                  right: 0, 
-                  display: 'flex', 
-                  justifyContent: 'center',
-                  cursor: 'grab',
-                  color: selectedTheme.textColor,
-                  '&:active': { cursor: 'grabbing' }
+                  top: 8, 
+                  left: '50%', 
+                  transform: 'translateX(-50%)',
+                  color: 'text.secondary',
+                  cursor: 'grab'
                 }}
                 onPointerDown={(e) => dragControls.start(e)}
-              >
-                <DragIndicatorIcon />
-              </Box>
+              />
               
-              {/* Up Button */}
-              <IconButton 
-                color="primary" 
-                sx={{ 
-                  backgroundColor: selectedTheme.backgroundColor,
-                  color: selectedTheme.textColor,
-                  '&:hover': { backgroundColor: selectedTheme.accentColor, color: 'white' },
-                  mb: 1,
-                  mt: 3, // Added margin top to make space for drag handle
-                  width: 80,
-                  height: 80,
-                  boxShadow: '0px 4px 8px rgba(0,0,0,0.2)'
-                }}
-                onClick={() => handleControlPress('up')}
-              >
-                <ArrowUpwardIcon sx={{ fontSize: 40 }} />
-              </IconButton>
-
-              {/* Middle Row (Left, Right) */}
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', mb: 1 }}>
-                <IconButton 
-                  color="primary" 
-                  sx={{ 
-                    backgroundColor: selectedTheme.backgroundColor,
-                    color: selectedTheme.textColor,
-                    '&:hover': { backgroundColor: selectedTheme.accentColor, color: 'white' },
-                    width: 80,
-                    height: 80,
-                    boxShadow: '0px 4px 8px rgba(0,0,0,0.2)'
-                  }}
-                  onClick={() => handleControlPress('left')}
-                >
-                  <ArrowBackIosNewIcon sx={{ fontSize: 40 }} />
-                </IconButton>
-
-                <IconButton 
-                  color="primary" 
-                  sx={{ 
-                    backgroundColor: selectedTheme.backgroundColor,
-                    color: selectedTheme.textColor,
-                    '&:hover': { backgroundColor: selectedTheme.accentColor, color: 'white' },
-                    width: 80,
-                    height: 80,
-                    boxShadow: '0px 4px 8px rgba(0,0,0,0.2)'
-                  }}
-                  onClick={() => handleControlPress('right')}
-                >
-                  <ArrowForwardIcon sx={{ fontSize: 40 }} />
-                </IconButton>
-              </Box>
-
-              {/* Down Button */}
-              <IconButton 
-                color="primary" 
-                sx={{ 
-                  backgroundColor: selectedTheme.backgroundColor,
-                  color: selectedTheme.textColor,
-                  '&:hover': { backgroundColor: selectedTheme.accentColor, color: 'white' },
-                  width: 80,
-                  height: 80,
-                  boxShadow: '0px 4px 8px rgba(0,0,0,0.2)'
-                }}
-                onClick={() => handleControlPress('down')}
-              >
-                <ArrowDownwardIcon sx={{ fontSize: 40 }} />
-              </IconButton>
-            </Box>
+              <Grid container spacing={1} sx={{ mt: 2 }}>
+                <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <IconButton 
+                    color="primary" 
+                    size="large"
+                    onMouseDown={() => handleControlPress('up')}
+                    onTouchStart={() => handleControlPress('up')}
+                    sx={{ 
+                      bgcolor: 'rgba(0,0,0,0.05)',
+                      '&:hover': { bgcolor: 'rgba(0,0,0,0.1)' }
+                    }}
+                  >
+                    <ArrowUpwardIcon />
+                  </IconButton>
+                </Grid>
+                <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <Box sx={{ display: 'flex', gap: 2 }}>
+                    <IconButton 
+                      color="primary" 
+                      size="large"
+                      onMouseDown={() => handleControlPress('left')}
+                      onTouchStart={() => handleControlPress('left')}
+                      sx={{ 
+                        bgcolor: 'rgba(0,0,0,0.05)',
+                        '&:hover': { bgcolor: 'rgba(0,0,0,0.1)' }
+                      }}
+                    >
+                      <ArrowBackIosNewIcon />
+                    </IconButton>
+                    <IconButton 
+                      color="primary" 
+                      size="large"
+                      onMouseDown={() => handleControlPress('down')}
+                      onTouchStart={() => handleControlPress('down')}
+                      sx={{ 
+                        bgcolor: 'rgba(0,0,0,0.05)',
+                        '&:hover': { bgcolor: 'rgba(0,0,0,0.1)' }
+                      }}
+                    >
+                      <ArrowDownwardIcon />
+                    </IconButton>
+                    <IconButton 
+                      color="primary" 
+                      size="large"
+                      onMouseDown={() => handleControlPress('right')}
+                      onTouchStart={() => handleControlPress('right')}
+                      sx={{ 
+                        bgcolor: 'rgba(0,0,0,0.05)',
+                        '&:hover': { bgcolor: 'rgba(0,0,0,0.1)' }
+                      }}
+                    >
+                      <ArrowForwardIcon />
+                    </IconButton>
+                  </Box>
+                </Grid>
+              </Grid>
+            </Paper>
           </motion.div>
         </Container>
       </Box>

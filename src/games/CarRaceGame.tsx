@@ -42,72 +42,83 @@ const fontFamily = [
   '"Segoe UI Symbol"'
 ].join(',');
 
-// Car colors
-const CAR_COLORS = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4caf50'];
+// Car colors - removed red from the list so only player car is red
+const CAR_COLORS = ['#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4caf50', '#8bc34a', '#cddc39', '#ffc107', '#ff9800'];
 
-// SVG Car component
+// SVG Car component - Updated to look more like a sedan
 const CarSVG = ({ color, size = 40, rotation = 0 }: { color: string, size?: number, rotation?: number }) => (
   <svg 
-    width={size} 
-    height={size * 0.6} 
-    viewBox="0 0 100 60" 
+    width={size * 0.6} 
+    height={size} 
+    viewBox="0 0 60 100" 
     style={{ transform: `rotate(${rotation}deg)` }}
   >
-    {/* Car body */}
-    <rect x="10" y="20" width="80" height="25" rx="5" fill={color} />
-    <rect x="20" y="10" width="60" height="15" rx="5" fill={color} />
+    {/* Car body - sedan style */}
+    <rect x="10" y="55" width="40" height="35" rx="5" fill={color} /> {/* Main body */}
+    <rect x="12" y="30" width="36" height="25" rx="8" fill={color} /> {/* Hood */}
+    <rect x="15" y="15" width="30" height="20" rx="6" fill={color} /> {/* Roof */}
     
     {/* Windows */}
-    <rect x="25" y="12" width="50" height="10" rx="2" fill="#111" />
+    <rect x="17" y="20" width="26" height="12" rx="2" fill="#111" /> {/* Rear window */}
+    <rect x="16" y="35" width="28" height="15" rx="2" fill="#111" /> {/* Front window */}
+    <rect x="13" y="37" width="5" height="10" rx="1" fill="#111" /> {/* Left window */}
+    <rect x="42" y="37" width="5" height="10" rx="1" fill="#111" /> {/* Right window */}
     
-    {/* Lights */}
-    <rect x="85" y="25" width="5" height="5" rx="1" fill="#ffeb3b" />
-    <rect x="85" y="35" width="5" height="5" rx="1" fill="#ffeb3b" />
-    <rect x="10" y="25" width="5" height="5" rx="1" fill="#f44336" />
-    <rect x="10" y="35" width="5" height="5" rx="1" fill="#f44336" />
+    {/* Lights - front */}
+    <rect x="12" y="85" width="10" height="5" rx="2" fill="#ffeb3b" />
+    <rect x="38" y="85" width="10" height="5" rx="2" fill="#ffeb3b" />
+    
+    {/* Lights - back */}
+    <rect x="12" y="15" width="10" height="5" rx="2" fill="#f44336" />
+    <rect x="38" y="15" width="10" height="5" rx="2" fill="#f44336" />
     
     {/* Wheels */}
-    <circle cx="25" cy="45" r="8" fill="#111" />
-    <circle cx="75" cy="45" r="8" fill="#111" />
-    <circle cx="25" cy="45" r="3" fill="#555" />
-    <circle cx="75" cy="45" r="3" fill="#555" />
+    <circle cx="15" cy="70" r="6" fill="#111" />
+    <circle cx="15" cy="70" r="3" fill="#555" />
+    <circle cx="45" cy="70" r="6" fill="#111" />
+    <circle cx="45" cy="70" r="3" fill="#555" />
+    <circle cx="15" cy="30" r="6" fill="#111" />
+    <circle cx="15" cy="30" r="3" fill="#555" />
+    <circle cx="45" cy="30" r="6" fill="#111" />
+    <circle cx="45" cy="30" r="3" fill="#555" />
     
-    {/* Racing stripes */}
-    <rect x="30" y="10" width="5" height="35" fill="white" />
-    <rect x="65" y="10" width="5" height="35" fill="white" />
+    {/* Details */}
+    <rect x="20" y="60" width="20" height="2" fill="#ddd" /> {/* Grill */}
+    <rect x="25" y="50" width="10" height="1" fill="#ddd" /> {/* Hood detail */}
   </svg>
 );
 
-// Truck SVG component
+// Truck SVG component - Updated to face upward
 const TruckSVG = ({ color, size = 50, rotation = 0 }: { color: string, size?: number, rotation?: number }) => (
   <svg 
-    width={size} 
-    height={size * 0.6} 
-    viewBox="0 0 120 70" 
+    width={size * 0.6} 
+    height={size} 
+    viewBox="0 0 70 120" 
     style={{ transform: `rotate(${rotation}deg)` }}
   >
     {/* Truck cab */}
-    <rect x="10" y="30" width="40" height="25" rx="5" fill={color} />
-    <rect x="15" y="15" width="30" height="15" rx="3" fill={color} />
+    <rect x="15" y="70" width="40" height="40" rx="5" fill={color} />
     
     {/* Truck cargo */}
-    <rect x="50" y="20" width="60" height="35" rx="2" fill="#ddd" />
-    <rect x="50" y="20" width="60" height="5" fill="#bbb" />
+    <rect x="10" y="20" width="50" height="50" rx="2" fill="#ddd" />
+    <rect x="10" y="65" width="50" height="5" fill="#bbb" />
     
     {/* Windows */}
-    <rect x="20" y="17" width="20" height="10" rx="2" fill="#111" />
+    <rect x="20" y="75" width="30" height="15" rx="2" fill="#111" />
     
-    {/* Lights */}
-    <rect x="10" y="35" width="5" height="5" rx="1" fill="#f44336" />
-    <rect x="45" y="35" width="5" height="5" rx="1" fill="#ffeb3b" />
+    {/* Lights - front */}
+    <rect x="15" y="105" width="10" height="5" rx="1" fill="#ffeb3b" />
+    <rect x="45" y="105" width="10" height="5" rx="1" fill="#ffeb3b" />
+    
+    {/* Lights - back */}
+    <rect x="15" y="20" width="10" height="5" rx="1" fill="#f44336" />
+    <rect x="45" y="20" width="10" height="5" rx="1" fill="#f44336" />
     
     {/* Wheels */}
-    <circle cx="25" cy="55" r="8" fill="#111" />
-    <circle cx="60" cy="55" r="8" fill="#111" />
-    <circle cx="90" cy="55" r="8" fill="#111" />
-    <circle cx="25" cy="55" r="3" fill="#555" />
-    <circle cx="60" cy="55" r="3" fill="#555" />
-    <circle cx="90" cy="55" r="3" fill="#555" />
+    <circle cx="15" cy="35" r="5" fill="#111" />
+    <circle cx="55" cy="35" r="5" fill="#111" />
+    <circle cx="15" cy="95" r="5" fill="#111" />
+    <circle cx="55" cy="95" r="5" fill="#111" />
   </svg>
 );
 
@@ -174,23 +185,59 @@ const FlowerSVG = ({ size = 15, xOffset = 0 }: { size?: number, xOffset?: number
   </svg>
 );
 
+// Add a new Blast SVG component for crash animation with more dynamic appearance
+const BlastSVG = ({ size = 100 }: { size?: number }) => (
+  <svg 
+    width={size} 
+    height={size} 
+    viewBox="0 0 100 100"
+  >
+    {/* Outer explosion */}
+    <circle cx="50" cy="50" r="45" fill="#ff5722" />
+    <circle cx="50" cy="50" r="35" fill="#ff9800" />
+    <circle cx="50" cy="50" r="25" fill="#ffeb3b" />
+    <circle cx="50" cy="50" r="15" fill="#fff" />
+    
+    {/* Explosion rays */}
+    <polygon points="50,5 60,25 40,25" fill="#ff5722" />
+    <polygon points="50,95 60,75 40,75" fill="#ff5722" />
+    <polygon points="5,50 25,60 25,40" fill="#ff5722" />
+    <polygon points="95,50 75,60 75,40" fill="#ff5722" />
+    <polygon points="15,15 30,30 5,5" fill="#ff5722" />
+    <polygon points="85,85 70,70 95,95" fill="#ff5722" />
+    <polygon points="15,85 30,70 5,95" fill="#ff5722" />
+    <polygon points="85,15 70,30 95,5" fill="#ff5722" />
+    
+    {/* Debris particles */}
+    <circle cx="65" cy="35" r="3" fill="#555" />
+    <circle cx="30" cy="60" r="2" fill="#555" />
+    <circle cx="70" cy="65" r="4" fill="#555" />
+    <circle cx="40" cy="30" r="3" fill="#555" />
+    <circle cx="60" cy="75" r="2" fill="#555" />
+    <circle cx="25" cy="45" r="3" fill="#555" />
+  </svg>
+);
+
 const CarRaceGame = forwardRef<CarRaceGameHandle, CarRaceGameProps>(({ onScoreChange, themeColor }, ref) => {
   const gameAreaRef = useRef<HTMLDivElement>(null);
   const [playerPosition, setPlayerPosition] = useState<Position>({ x: 50, y: 85 }); // Moved player down to 85%
   const [playerLane, setPlayerLane] = useState<number>(0); // Start in left lane (0-indexed)
+  const [targetLane, setTargetLane] = useState<number>(0); // Target lane for smooth animation
   const [obstacles, setObstacles] = useState<Obstacle[]>([]);
   const [gameOver, setGameOver] = useState<boolean>(false);
   const [score, setScore] = useState<number>(0);
   const [carsAvoided, setCarsAvoided] = useState<number>(0);
   const [gameStarted, setGameStarted] = useState<boolean>(false);
   const [gameSpeed, setGameSpeed] = useState<number>(50); // milliseconds between updates
-  const [roadSpeed, setRoadSpeed] = useState<number>(5); // Initial road speed
+  const [roadSpeed, setRoadSpeed] = useState<number>(3); // Reduced from 5 to 3 for slower initial speed
   const [roadOffset, setRoadOffset] = useState<number>(0); // For road animation
   const [showDebug, setShowDebug] = useState<boolean>(false); // Debug mode off by default
+  const [crashPosition, setCrashPosition] = useState<Position | null>(null); // Track crash position for blast animation
+  const [showBlast, setShowBlast] = useState<boolean>(false); // Control blast animation visibility
   
   const obstacleTypes = ['car', 'truck', 'traffic'];
   
-  // Road configuration - narrower road with 2 lanes
+  // Road configuration - road with 2 lanes
   const roadLeft = 25; // Road starts at 25% from left
   const roadWidth = 50; // Road width is 50% of screen
   
@@ -207,9 +254,10 @@ const CarRaceGame = forwardRef<CarRaceGameHandle, CarRaceGameProps>(({ onScoreCh
     setCarsAvoided(0);
     setObstacles([]);
     setPlayerLane(0); // Start in left lane
-    setPlayerPosition({ x: lanes[0], y: 85 }); // Reset to 85% down
+    setTargetLane(0); // Reset target lane
+    setPlayerPosition({ x: lanes[0], y: 85 }); // Reset to 85% down in left lane
     setGameSpeed(50);
-    setRoadSpeed(5);
+    setRoadSpeed(3); // Reduced from 5 to 3
     onScoreChange(0);
   };
   
@@ -225,16 +273,20 @@ const CarRaceGame = forwardRef<CarRaceGameHandle, CarRaceGameProps>(({ onScoreCh
         return;
       }
       
-      // Only allow left and right movement
+      // Only allow left and right movement - direct lane switching
       switch (direction) {
         case 'left':
           if (playerLane > 0) {
-            setPlayerLane(prev => prev - 1);
+            // Directly set player lane for immediate response
+            setPlayerLane(0);
+            setTargetLane(0);
           }
           break;
         case 'right':
           if (playerLane < lanes.length - 1) {
-            setPlayerLane(prev => prev + 1);
+            // Directly set player lane for immediate response
+            setPlayerLane(1);
+            setTargetLane(1);
           }
           break;
         default:
@@ -243,7 +295,12 @@ const CarRaceGame = forwardRef<CarRaceGameHandle, CarRaceGameProps>(({ onScoreCh
     }
   }));
   
-  // Update player position based on lane
+  // Initialize targetLane
+  useEffect(() => {
+    setTargetLane(playerLane);
+  }, [playerLane]);
+  
+  // Update player position based on lane - with smooth transition
   useEffect(() => {
     setPlayerPosition(prev => ({
       ...prev,
@@ -289,22 +346,51 @@ const CarRaceGame = forwardRef<CarRaceGameHandle, CarRaceGameProps>(({ onScoreCh
         return updatedObstacles;
       });
       
-      // Increase difficulty over time
-      if (carsAvoided > 0 && carsAvoided % 5 === 0) {
-        setRoadSpeed(prev => Math.min(prev + 0.5, 15)); // Cap at max speed
+      // Increase difficulty over time - more gradually
+      if (carsAvoided > 0 && carsAvoided % 10 === 0) { // Changed from 5 to 10
+        setRoadSpeed(prev => Math.min(prev + 0.3, 10)); // Reduced from 0.5 to 0.3, max from 15 to 10
       }
     }, gameSpeed);
     
     return () => clearInterval(gameInterval);
   }, [gameStarted, gameOver, score, carsAvoided, gameSpeed, roadSpeed, playerPosition.y, onScoreChange]);
   
+  // Initialize the game with some obstacles
+  useEffect(() => {
+    if (gameStarted && obstacles.length === 0) {
+      // Add initial obstacles
+      const initialObstacles: Obstacle[] = [];
+      
+      // Add 2 cars at different positions
+      for (let i = 0; i < 2; i++) {
+        const lane = Math.floor(Math.random() * lanes.length);
+        const color = CAR_COLORS[Math.floor(Math.random() * CAR_COLORS.length)];
+        const yPos = -10 - (i * 40); // Stagger the initial positions, increased spacing
+        
+        initialObstacles.push({
+          id: Date.now() + Math.random() + i,
+          position: {
+            x: lanes[lane],
+            y: yPos
+          },
+          type: 'car',
+          lane,
+          speed: roadSpeed * 0.6 * (1 + Math.random() * 0.2), // Reduced from 0.8 to 0.6
+          color
+        });
+      }
+      
+      setObstacles(initialObstacles);
+    }
+  }, [gameStarted, obstacles.length, lanes, roadSpeed]);
+  
   // Spawn obstacles more frequently
   useEffect(() => {
     if (!gameStarted || gameOver) return;
     
     const obstacleInterval = setInterval(() => {
-      // Higher base probability for spawning
-      const spawnProbability = 0.5 + Math.min(carsAvoided / 50, 0.3);
+      // Lower base probability for spawning
+      const spawnProbability = 0.6 + Math.min(carsAvoided / 100, 0.2); // Reduced from 0.8 to 0.6
       
       if (Math.random() < spawnProbability) {
         // Choose a random lane
@@ -313,21 +399,21 @@ const CarRaceGame = forwardRef<CarRaceGameHandle, CarRaceGameProps>(({ onScoreCh
         // Choose a random obstacle type with higher chance for cars
         const typeRandom = Math.random();
         let type: 'car' | 'truck' | 'traffic';
-        if (typeRandom < 0.7) {
+        if (typeRandom < 0.85) {
           type = 'car';
-        } else if (typeRandom < 0.9) {
+        } else if (typeRandom < 0.95) {
           type = 'truck';
         } else {
           type = 'traffic';
         }
         
-        // Choose a random color for the vehicle
+        // Choose a random color for the vehicle (not red)
         const color = CAR_COLORS[Math.floor(Math.random() * CAR_COLORS.length)];
         
-        // Speed varies by obstacle type and increases with score
-        const baseSpeed = roadSpeed * 0.8;
-        const speedVariation = type === 'truck' ? 0.7 : type === 'traffic' ? 0.8 : 1;
-        const speed = baseSpeed * speedVariation * (1 + Math.random() * 0.4);
+        // Speed varies by obstacle type and increases with score - reduced overall
+        const baseSpeed = roadSpeed * 0.6; // Reduced from 0.8 to 0.6
+        const speedVariation = type === 'truck' ? 0.6 : type === 'traffic' ? 0.7 : 0.8; // All reduced
+        const speed = baseSpeed * speedVariation * (1 + Math.random() * 0.3); // Reduced from 0.4 to 0.3
         
         const newObstacle: Obstacle = {
           id: Date.now() + Math.random(),
@@ -343,22 +429,40 @@ const CarRaceGame = forwardRef<CarRaceGameHandle, CarRaceGameProps>(({ onScoreCh
         
         setObstacles(prevObstacles => [...prevObstacles, newObstacle]);
       }
-    }, 500 - Math.min(carsAvoided * 5, 300)); // Spawn rate increases with cars avoided
+    }, 500 - Math.min(carsAvoided * 3, 200)); // Increased from 350 to 500, reduced rate of increase
     
     return () => clearInterval(obstacleInterval);
   }, [gameStarted, gameOver, carsAvoided, roadSpeed, lanes]);
   
-  // Collision detection
+  // Collision detection with improved accuracy
   useEffect(() => {
     if (!gameStarted || gameOver) return;
     
     const checkCollisions = () => {
       for (const obstacle of obstacles) {
+        // Calculate collision box sizes based on vehicle types
+        const playerWidth = 30; // Width of player car in percentage of lane
+        const obstacleWidth = obstacle.type === 'truck' ? 35 : obstacle.type === 'car' ? 30 : 20;
+        
+        // Calculate vertical distance
+        const verticalDistance = Math.abs(obstacle.position.y - playerPosition.y);
+        const verticalThreshold = 15; // Reduced from 20 to match sedan shape
+        
         // Only check obstacles that are near the player's y position
-        if (Math.abs(obstacle.position.y - playerPosition.y) < 20) {
+        if (verticalDistance < verticalThreshold) {
           // Check if in the same lane
           if (obstacle.lane === playerLane) {
-            setGameOver(true);
+            // Set crash position for blast animation
+            setCrashPosition({
+              x: playerPosition.x,
+              y: playerPosition.y - 5 // Adjust to center of car
+            });
+            setShowBlast(true);
+            
+            // Set game over after a short delay to show the blast
+            setTimeout(() => {
+              setGameOver(true);
+            }, 600); // Increased from 500ms to 600ms for longer blast animation
             break;
           }
         }
@@ -369,6 +473,14 @@ const CarRaceGame = forwardRef<CarRaceGameHandle, CarRaceGameProps>(({ onScoreCh
     
     return () => clearInterval(collisionInterval);
   }, [obstacles, playerPosition, playerLane, gameStarted, gameOver]);
+  
+  // Reset blast animation when game is reset
+  useEffect(() => {
+    if (!gameOver) {
+      setCrashPosition(null);
+      setShowBlast(false);
+    }
+  }, [gameOver]);
   
   // Handle keyboard controls
   useEffect(() => {
@@ -385,12 +497,16 @@ const CarRaceGame = forwardRef<CarRaceGameHandle, CarRaceGameProps>(({ onScoreCh
       switch (e.key) {
         case 'ArrowLeft':
           if (playerLane > 0) {
-            setPlayerLane(prev => prev - 1);
+            // Direct lane switching
+            setPlayerLane(0);
+            setTargetLane(0);
           }
           break;
         case 'ArrowRight':
           if (playerLane < lanes.length - 1) {
-            setPlayerLane(prev => prev + 1);
+            // Direct lane switching
+            setPlayerLane(1);
+            setTargetLane(1);
           }
           break;
         default:
@@ -407,9 +523,9 @@ const CarRaceGame = forwardRef<CarRaceGameHandle, CarRaceGameProps>(({ onScoreCh
   const getObstacleComponent = (obstacle: Obstacle) => {
     switch (obstacle.type) {
       case 'car':
-        return <CarSVG color={obstacle.color} size={60} rotation={180} />;
+        return <CarSVG color={obstacle.color} size={65} rotation={0} />; // Increased size from 60 to 65
       case 'truck':
-        return <TruckSVG color={obstacle.color} size={70} rotation={180} />;
+        return <TruckSVG color={obstacle.color} size={75} rotation={0} />; // Increased size from 70 to 75
       case 'traffic':
         return <TrafficConeSVG size={40} />;
       default:
@@ -532,9 +648,11 @@ const CarRaceGame = forwardRef<CarRaceGameHandle, CarRaceGameProps>(({ onScoreCh
       onClick={() => {
         if (!gameStarted) {
           setGameStarted(true);
-        } else {
-          // Toggle debug mode on click when game is running
-          setShowDebug(prev => !prev);
+        } else if (!gameOver && !showBlast) {
+          // Toggle lane on click when game is running
+          setPlayerLane(prev => prev === 0 ? 1 : 0);
+        } else if (gameOver) {
+          resetGame();
         }
       }}
     >
@@ -604,18 +722,21 @@ const CarRaceGame = forwardRef<CarRaceGameHandle, CarRaceGameProps>(({ onScoreCh
       {rightBushes}
       {flowers}
       
-      {/* Player car - Fixed position at the bottom of the screen */}
-      <Box
-        sx={{
-          position: 'absolute',
-          left: `${playerPosition.x}%`,
-          bottom: '10%',
-          transform: 'translateX(-50%)',
-          zIndex: 10
-        }}
-      >
-        <CarSVG color={themeColor} size={70} />
-      </Box>
+      {/* Player car - Fixed position at the bottom of the screen - Hide when showing blast */}
+      {!showBlast && (
+        <Box
+          sx={{
+            position: 'absolute',
+            left: `${playerPosition.x}%`,
+            bottom: '10%',
+            transform: 'translateX(-50%)',
+            zIndex: 10,
+            transition: 'left 0.15s ease-out' // Slightly faster transition
+          }}
+        >
+          <CarSVG color="#f44336" size={70} rotation={0} /> {/* Always red for player */}
+        </Box>
+      )}
       
       {/* Obstacles - Fixed positioning */}
       {obstacles.map(obstacle => (
@@ -724,20 +845,45 @@ const CarRaceGame = forwardRef<CarRaceGameHandle, CarRaceGameProps>(({ onScoreCh
           }}
         >
           <Box sx={{ mb: 2 }}>
-            <CarSVG color={themeColor} size={80} />
+            <CarSVG color="#f44336" size={80} rotation={0} /> {/* Red car in start screen */}
           </Box>
           <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold', fontFamily: fontFamily }}>
             Crazy Racer
           </Typography>
           <Typography variant="body1" sx={{ mb: 1, fontFamily: fontFamily }}>
-            Use ← → arrows to avoid other cars
+            Use ← → arrows or tap screen to switch lanes
           </Typography>
           <Typography variant="body2" sx={{ mb: 1, fontFamily: fontFamily }}>
-            Score points for each car you avoid!
+            Avoid other cars to score points!
           </Typography>
           <Typography variant="body2" sx={{ fontFamily: fontFamily }}>
             Click or press any arrow key to start
           </Typography>
+        </Box>
+      )}
+      
+      {/* Blast animation at crash position */}
+      {showBlast && crashPosition && (
+        <Box
+          sx={{
+            position: 'absolute',
+            left: `${crashPosition.x}%`,
+            top: `${crashPosition.y}%`,
+            transform: 'translate(-50%, -50%)',
+            zIndex: 20,
+            animation: 'pulse 0.6s infinite alternate'
+          }}
+        >
+          <motion.div
+            initial={{ scale: 0, rotate: 0 }}
+            animate={{ scale: 1.3, rotate: 15 }}
+            transition={{ 
+              duration: 0.6,
+              ease: "easeOut"
+            }}
+          >
+            <BlastSVG size={120} />
+          </motion.div>
         </Box>
       )}
       
@@ -774,10 +920,30 @@ const CarRaceGame = forwardRef<CarRaceGameHandle, CarRaceGameProps>(({ onScoreCh
             Cars Avoided: {carsAvoided}
           </Typography>
           <Typography variant="body2" sx={{ fontFamily: fontFamily }}>
-            Press any arrow key to restart
+            Press any arrow key or click to restart
           </Typography>
         </Box>
       )}
+      
+      {/* Add keyframes for pulse animation */}
+      <Box
+        sx={{
+          '@keyframes pulse': {
+            '0%': {
+              opacity: 1,
+              transform: 'scale(1) translate(-50%, -50%) rotate(0deg)'
+            },
+            '50%': {
+              opacity: 0.9,
+              transform: 'scale(1.1) translate(-45%, -45%) rotate(5deg)'
+            },
+            '100%': {
+              opacity: 0.8,
+              transform: 'scale(1.2) translate(-40%, -40%) rotate(-5deg)'
+            }
+          }
+        }}
+      />
     </Box>
   );
 });
