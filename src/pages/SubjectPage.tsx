@@ -194,6 +194,15 @@ const topicsBySubject = {
       description: 'Create colorful drawings and art'
     }
   ],
+  music: [
+    {
+      id: 'piano',
+      name: 'Piano',
+      icon: <MusicNoteIcon sx={{ fontSize: 40 }} />,
+      path: '/subject/music/topic/piano',
+      description: 'Play piano and learn songs'
+    }
+  ],
   gk: [
     {
       id: 'flags',
@@ -305,6 +314,8 @@ const SubjectPage = () => {
       navigate('/snake');
     } else if (path === '/subject/art/topic/drawing-board') {
       navigate('/drawing-board');
+    } else if (path === '/subject/music/topic/piano') {
+      navigate('/piano');
     } 
     // Handle GK quiz topics
     else if (path === '/subject/gk/topic/flags') {

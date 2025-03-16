@@ -18,6 +18,7 @@ import DashboardPage from './pages/DashboardPage';
 import DrawingBoardPage from './pages/DrawingBoardPage';
 import ThemeSelectionPage from './pages/ThemeSelectionPage';
 import QuizPage from './pages/QuizPage';
+import PianoPage from './pages/PianoPage';
 
 // Custom hook for device optimization
 import { useTabletSize } from './hooks/useTabletSize';
@@ -152,6 +153,7 @@ function App() {
                 <Route path="/snake" element={<SnakePage />} />
                 <Route path="/car-race" element={<CarRacePage />} />
                 <Route path="/drawing-board" element={<DrawingBoardPage />} />
+                <Route path="/piano" element={<PianoPage />} />
                 
                 {/* Game paths from GamesPage */}
                 <Route path="/games/snake" element={<SnakePage />} />
