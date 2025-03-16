@@ -1,193 +1,185 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ThemeProvider, CssBaseline, useMediaQuery, useTheme } from '@mui/material';
 import { AnimatePresence } from 'framer-motion';
+import Box from '@mui/material/Box';
+
+// Theme
+import theme from './theme/index';
 
 // Pages
 import HomePage from './pages/HomePage';
-import ThemeSelectionPage from './pages/ThemeSelectionPage';
 import SubjectsPage from './pages/SubjectsPage';
 import SubjectPage from './pages/SubjectPage';
 import ComingSoonPage from './pages/ComingSoonPage';
 import CarRacePage from './pages/CarRacePage';
 import SnakePage from './pages/SnakePage';
-import GamePage from './pages/GamePage';
-import ArtPage from './pages/ArtPage';
-import MathPage from './pages/MathPage';
-import SciencePage from './pages/SciencePage';
-import ReadingPage from './pages/ReadingPage';
-import GamesPage from './pages/GamesPage';
 import DashboardPage from './pages/DashboardPage';
 import DrawingBoardPage from './pages/DrawingBoardPage';
+import ThemeSelectionPage from './pages/ThemeSelectionPage';
+import QuizPage from './pages/QuizPage';
 
-// Create a theme instance
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#f06292', // Pink (strawberry)
-      light: '#f8bbd0',
-      dark: '#c2185b',
-    },
-    secondary: {
-      main: '#7986cb', // Indigo (blueberry)
-      light: '#9fa8da',
-      dark: '#5c6bc0',
-    },
-    background: {
-      default: '#fff8e1', // Light cream/vanilla
-      paper: '#ffffff',
-    },
-    text: {
-      primary: '#5d4037', // Chocolate brown
-      secondary: '#8d6e63', // Lighter brown
-    },
-    error: {
-      main: '#e53935',
-      light: '#ef5350',
-    },
-    warning: {
-      main: '#ffb74d', // Orange (orange sherbet)
-      light: '#ffcc80',
-    },
-    info: {
-      main: '#4fc3f7', // Light blue (blue raspberry)
-      light: '#81d4fa',
-    },
-    success: {
-      main: '#aed581', // Light green (mint)
-      light: '#c5e1a5',
-    },
-  },
-  typography: {
-    fontFamily: '"Comic Sans MS", "Comic Sans", cursive',
-    fontSize: 16,
-    h1: {
-      fontWeight: 700,
-      fontSize: '3rem',
-    },
-    h2: {
-      fontWeight: 600,
-      fontSize: '2.5rem',
-    },
-    h3: {
-      fontWeight: 600,
-      fontSize: '2rem',
-    },
-    h4: {
-      fontWeight: 600,
-      fontSize: '1.5rem',
-    },
-    h5: {
-      fontWeight: 600,
-      fontSize: '1.25rem',
-    },
-    h6: {
-      fontWeight: 600,
-      fontSize: '1rem',
-    },
-    button: {
-      fontWeight: 600,
-      textTransform: 'none',
-    },
-  },
-  shape: {
-    borderRadius: 16,
-  },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: 30,
-          padding: '10px 20px',
-          boxShadow: '0px 3px 5px rgba(0, 0, 0, 0.1)',
-          '&:hover': {
-            transform: 'translateY(-2px)',
-            boxShadow: '0px 5px 8px rgba(0, 0, 0, 0.15)',
-          },
-        },
-      },
-    },
-    MuiCard: {
-      styleOverrides: {
-        root: {
-          boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
-          transition: 'all 0.3s ease',
-          '&:hover': {
-            boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.15)',
-          },
-        },
-      },
-    },
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
-        },
-      },
-    },
-    MuiFab: {
-      styleOverrides: {
-        root: {
-          boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.2)',
-        },
-      },
-    },
-  },
-});
+// Custom hook for device optimization
+import { useTabletSize } from './hooks/useTabletSize';
+
+// Context
+import { AppProvider } from './contexts/AppContext';
 
 function App() {
+  const { isMobile, isTablet } = useTabletSize();
+  const muiTheme = useTheme();
+  const isSmallScreen = useMediaQuery(muiTheme.breakpoints.down('sm'));
+  const isMediumScreen = useMediaQuery(muiTheme.breakpoints.between('sm', 'lg'));
+
+  // Determine the appropriate dimensions based on screen size
+  const getAppDimensions = () => {
+    if (isMobile || isSmallScreen) {
+      return {
+        width: '100%',
+        height: '100vh',
+        maxWidth: '100%',
+        maxHeight: '100vh',
+        margin: '0',
+        boxShadow: 'none',
+        border: 'none',
+        borderRadius: '0',
+      };
+    } else if (isTablet || isMediumScreen) {
+      return {
+        width: '100%',
+        height: '100vh',
+        maxWidth: '768px',
+        maxHeight: '100vh',
+        margin: '0 auto',
+        boxShadow: '0px 0px 15px rgba(0, 0, 0, 0.1)',
+        border: '1px solid #e0e0e0',
+        borderRadius: '8px',
+      };
+    } else {
+      // Desktop or large screens
+      return {
+        width: '100%',
+        height: '100vh',
+        maxWidth: '1024px',
+        maxHeight: '100vh',
+        margin: '0 auto',
+        boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.15)',
+        border: '1px solid #e0e0e0',
+        borderRadius: '12px',
+      };
+    }
+  };
+
+  const dimensions = getAppDimensions();
+
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Router>
-        <AnimatePresence mode="wait">
-          <Routes>
-            {/* Core Pages - Do not modify */}
-            <Route path="/" element={<HomePage />} />
-            <Route path="/theme-selection" element={<ThemeSelectionPage />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
-            
-            {/* Subject Level */}
-            <Route path="/subjects" element={<SubjectsPage />} />
-            
-            {/* Subject Pages */}
-            <Route path="/subject/gk" element={<SubjectPage />} />
-            <Route path="/subject/story" element={<SubjectPage />} />
-            <Route path="/subject/art" element={<ArtPage />} />
-            <Route path="/subject/music" element={<SubjectPage />} />
-            <Route path="/subject/math" element={<ComingSoonPage />} />
-            <Route path="/subject/science" element={<ComingSoonPage />} />
-            <Route path="/subject/games" element={<GamesPage />} />
-            <Route path="/subject/habits" element={<SubjectPage />} />
-            <Route path="/subject/travel" element={<SubjectPage />} />
-            <Route path="/subject/reading" element={<ReadingPage />} />
-            
-            {/* Topic Level */}
-            <Route path="/subject/:subject/topic/:topic" element={<SubjectPage />} />
-            
-            {/* Games Main Page */}
-            <Route path="/games" element={<GamesPage />} />
-            
-            {/* Game Pages */}
-            <Route path="/games/car-race" element={<CarRacePage />} />
-            <Route path="/games/snake" element={<SnakePage />} />
-            <Route path="/games/game" element={<ComingSoonPage />} />
-            
-            {/* Art Pages */}
-            <Route path="/art/drawing-board" element={<DrawingBoardPage />} />
-            
-            {/* Chapter Level */}
-            <Route path="/subject/:subject/topic/:topic/chapter/:chapter" element={<SubjectPage />} />
-            
-            {/* Section Level */}
-            <Route path="/subject/:subject/topic/:topic/chapter/:chapter/section/:section" element={<SubjectPage />} />
-            
-            {/* Catch-all route */}
-            <Route path="*" element={<ComingSoonPage />} />
-          </Routes>
-        </AnimatePresence>
-      </Router>
-    </ThemeProvider>
+    <AppProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Router>
+          {/* Global styles to ensure full height usage */}
+          <style>
+            {`
+              html, body, #root {
+                height: 100%;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+              }
+              
+              body {
+                min-height: 100vh;
+                min-height: -webkit-fill-available;
+                width: 100vw;
+                max-width: 100%;
+              }
+              
+              #root {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                background-color: #f5f5f5;
+              }
+            `}
+          </style>
+          
+          {/* Additional touch-specific styles for mobile and tablet */}
+          {(isMobile || isTablet) && (
+            <style>
+              {`
+                html, body {
+                  touch-action: manipulation;
+                  user-select: none;
+                  -webkit-user-select: none;
+                  -webkit-tap-highlight-color: transparent;
+                }
+                
+                body {
+                  position: fixed;
+                }
+              `}
+            </style>
+          )}
+          
+          <Box
+            sx={{
+              width: dimensions.width,
+              height: dimensions.height,
+              maxWidth: dimensions.maxWidth,
+              maxHeight: dimensions.maxHeight,
+              margin: dimensions.margin,
+              overflow: 'hidden',
+              position: 'relative',
+              boxShadow: dimensions.boxShadow,
+              border: dimensions.border,
+              borderRadius: dimensions.borderRadius,
+              display: 'flex',
+              flexDirection: 'column',
+              flex: 1,
+            }}
+          >
+            <AnimatePresence mode="wait">
+              <Routes>
+                {/* Main Pages */}
+                <Route path="/" element={<HomePage />} />
+                <Route path="/subjects" element={<SubjectsPage />} />
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/theme-selection" element={<ThemeSelectionPage />} />
+                
+                {/* Games */}
+                <Route path="/snake" element={<SnakePage />} />
+                <Route path="/car-race" element={<CarRacePage />} />
+                <Route path="/drawing-board" element={<DrawingBoardPage />} />
+                
+                {/* Game paths from GamesPage */}
+                <Route path="/games/snake" element={<SnakePage />} />
+                <Route path="/games/car-race" element={<CarRacePage />} />
+                
+                {/* Quiz Routes */}
+                <Route path="/quiz/:category" element={<QuizPage />} />
+                
+                {/* Subject Pages */}
+                <Route path="/subject/:subject" element={<SubjectPage />} />
+                <Route path="/subject/:subject/topic/:topic" element={<SubjectPage />} />
+                <Route path="/subject/:subject/topic/:topic/chapter/:chapter" element={<SubjectPage />} />
+                
+                {/* Section Level */}
+                <Route path="/subject/:subject/topic/:topic/chapter/:chapter/section/:section" element={<SubjectPage />} />
+                
+                {/* Redirect profile and settings to coming soon */}
+                <Route path="/profile" element={<ComingSoonPage />} />
+                <Route path="/settings" element={<ComingSoonPage />} />
+                
+                {/* Catch-all route */}
+                <Route path="*" element={<ComingSoonPage />} />
+              </Routes>
+            </AnimatePresence>
+          </Box>
+        </Router>
+      </ThemeProvider>
+    </AppProvider>
   );
 }
 

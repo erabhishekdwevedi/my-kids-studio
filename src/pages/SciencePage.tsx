@@ -30,8 +30,8 @@ import AirIcon from '@mui/icons-material/Air';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router-dom';
 
-const MotionCard = motion(Card);
-const MotionPaper = motion(Paper);
+const MotionCard = motion.create(Card);
+const MotionPaper = motion.create(Paper);
 
 const scienceActivities = [
   {

@@ -18,14 +18,16 @@ import CelebrationIcon from '@mui/icons-material/Celebration';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import HomeIcon from '@mui/icons-material/Home';
 import StarIcon from '@mui/icons-material/Star';
+import FaceIcon from '@mui/icons-material/Face';
+import Face3Icon from '@mui/icons-material/Face3';
 
 // Define profiles
 const profiles = [
   {
     id: 'vidushi',
     name: 'Vidushi',
-    icon: <CakeIcon sx={{ fontSize: 40 }} />,
-    description: 'Mint Cake',
+    icon: <Face3Icon sx={{ fontSize: 40 }} />,
+    description: 'Girl with Green',
     backgroundColor: '#c8e6c9', // Light green
     gradient: 'linear-gradient(135deg, #c8e6c9 0%, #81c784 100%)',
     shadowColor: 'rgba(129, 199, 132, 0.4)',
@@ -35,8 +37,8 @@ const profiles = [
   {
     id: 'rishika',
     name: 'Rishika',
-    icon: <IcecreamIcon sx={{ fontSize: 40 }} />,
-    description: 'Blueberry Ice Cream',
+    icon: <Face3Icon sx={{ fontSize: 40 }} />,
+    description: 'Girl with Blue',
     backgroundColor: '#bbdefb', // Light blue
     gradient: 'linear-gradient(135deg, #bbdefb 0%, #90caf9 100%)',
     shadowColor: 'rgba(144, 202, 249, 0.4)',
@@ -161,10 +163,8 @@ const ThemeSelectionPage = () => {
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
         padding: 3,
-        paddingBottom: 10 // Add padding at the bottom for the floating footer
+        paddingTop: 8 // Add extra padding at the top for the menu
       }}
     >
       {/* Decorative sprinkles */}
@@ -178,7 +178,72 @@ const ThemeSelectionPage = () => {
         />
       ))}
 
-      <Container maxWidth="md">
+      {/* Top Navigation */}
+      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', mb: 4, zIndex: 10, position: 'absolute', top: 16, left: 0, right: 0, px: 3 }}>
+        {/* Back Button */}
+        <Fab 
+          color="default" 
+          aria-label="back"
+          onClick={handleBackToProfiles}
+          sx={{
+            boxShadow: '0px 3px 8px rgba(0,0,0,0.2)',
+            bgcolor: 'white'
+          }}
+        >
+          <ArrowBackIcon />
+        </Fab>
+
+        {/* Profile Pill Button */}
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            backgroundColor: 'white',
+            borderRadius: 30,
+            padding: '4px 16px',
+            boxShadow: '0px 3px 8px rgba(0,0,0,0.2)',
+            border: `2px solid ${selectedProfile.textColor}`,
+          }}
+        >
+          <Typography 
+            sx={{ 
+              fontWeight: 'bold', 
+              color: selectedProfile.textColor,
+              fontSize: '1rem',
+              marginRight: 1
+            }}
+          >
+            {selectedProfile.name}
+          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <StarIcon sx={{ color: '#ffd54f', fontSize: 20, marginRight: 0.5 }} />
+            <Typography 
+              sx={{ 
+                fontWeight: 'bold', 
+                color: selectedProfile.textColor,
+                fontSize: '1rem'
+              }}
+            >
+              {selectedProfile.score}
+            </Typography>
+          </Box>
+        </Box>
+
+        {/* Home Button */}
+        <Fab 
+          color="default" 
+          aria-label="home"
+          onClick={handleBackToProfiles}
+          sx={{ 
+            boxShadow: '0px 3px 8px rgba(0,0,0,0.2)',
+            bgcolor: 'white'
+          }}
+        >
+          <HomeIcon />
+        </Fab>
+      </Box>
+
+      <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1 }}>
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -276,73 +341,6 @@ const ThemeSelectionPage = () => {
           ))}
         </Grid>
       </Container>
-
-      {/* Floating Footer with Navigation Icons */}
-      <Box sx={{ position: 'fixed', bottom: 16, width: '100%', display: 'flex', justifyContent: 'space-between', px: 3, zIndex: 10 }}>
-        {/* Back Button */}
-        <Fab 
-          color="default" 
-          aria-label="back"
-          onClick={handleBackToProfiles}
-          sx={{
-            boxShadow: '0px 3px 8px rgba(0,0,0,0.2)',
-            bgcolor: 'white'
-          }}
-        >
-          <ArrowBackIcon />
-        </Fab>
-
-        {/* Profile Pill Button */}
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            backgroundColor: 'white',
-            borderRadius: 30,
-            padding: '4px 16px 4px 4px',
-            boxShadow: '0px 3px 8px rgba(0,0,0,0.2)',
-            border: `2px solid ${selectedProfile.textColor}`,
-          }}
-        >
-          <Avatar
-            sx={{
-              width: 40,
-              height: 40,
-              backgroundColor: selectedProfile.backgroundColor,
-              color: selectedProfile.textColor,
-              marginRight: 1,
-              border: `2px solid ${selectedProfile.textColor}`
-            }}
-          >
-            {selectedProfile.icon}
-          </Avatar>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <StarIcon sx={{ color: '#ffd54f', fontSize: 20, marginRight: 0.5 }} />
-            <Typography 
-              sx={{ 
-                fontWeight: 'bold', 
-                color: selectedProfile.textColor,
-                fontSize: '1rem'
-              }}
-            >
-              {selectedProfile.score}
-            </Typography>
-          </Box>
-        </Box>
-
-        {/* Home Button */}
-        <Fab 
-          color="default" 
-          aria-label="home"
-          onClick={handleBackToProfiles}
-          sx={{ 
-            boxShadow: '0px 3px 8px rgba(0,0,0,0.2)',
-            bgcolor: 'white'
-          }}
-        >
-          <HomeIcon />
-        </Fab>
-      </Box>
     </Box>
   );
 };

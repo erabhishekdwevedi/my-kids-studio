@@ -27,8 +27,8 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import CloseIcon from '@mui/icons-material/Close';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-const MotionContainer = motion(Container);
-const MotionTypography = motion(Typography);
+const MotionContainer = motion.create(Container);
+const MotionTypography = motion.create(Typography);
 
 const mathActivities = [
   {

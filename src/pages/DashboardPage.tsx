@@ -24,10 +24,10 @@ import PetsIcon from '@mui/icons-material/Pets';
 import CelebrationIcon from '@mui/icons-material/Celebration';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
-const MotionContainer = motion(Container);
-const MotionTypography = motion(Typography);
-const MotionGrid = motion(Grid);
-const MotionBox = motion(Box);
+const MotionContainer = motion.create(Container);
+const MotionTypography = motion.create(Typography);
+const MotionGrid = motion.create(Grid);
+const MotionBox = motion.create(Box);
 
 // Theme definitions
 const themes = [

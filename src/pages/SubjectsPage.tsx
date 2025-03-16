@@ -32,14 +32,15 @@ import EmojiNatureIcon from '@mui/icons-material/EmojiNature';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import FlightIcon from '@mui/icons-material/Flight';
+import Face3Icon from '@mui/icons-material/Face3';
 
 // Define profiles
 const profiles = [
   {
     id: 'vidushi',
     name: 'Vidushi',
-    icon: <CakeIcon sx={{ fontSize: 40 }} />,
-    description: 'Strawberry Cake',
+    icon: <Face3Icon sx={{ fontSize: 40 }} />,
+    description: 'Girl with Pink',
     backgroundColor: '#f8bbd0', // Light pink
     gradient: 'linear-gradient(135deg, #f8bbd0 0%, #f48fb1 100%)',
     shadowColor: 'rgba(244, 143, 177, 0.4)',
@@ -49,8 +50,8 @@ const profiles = [
   {
     id: 'rishika',
     name: 'Rishika',
-    icon: <IcecreamIcon sx={{ fontSize: 40 }} />,
-    description: 'Blueberry Ice Cream',
+    icon: <Face3Icon sx={{ fontSize: 40 }} />,
+    description: 'Girl with Blue',
     backgroundColor: '#bbdefb', // Light blue
     gradient: 'linear-gradient(135deg, #bbdefb 0%, #90caf9 100%)',
     shadowColor: 'rgba(144, 202, 249, 0.4)',
@@ -364,23 +365,21 @@ const SubjectsPage = () => {
             alignItems: 'center',
             backgroundColor: 'white',
             borderRadius: 30,
-            padding: '4px 16px 4px 4px',
+            padding: '4px 16px',
             boxShadow: '0px 3px 8px rgba(0,0,0,0.2)',
             border: `2px solid ${selectedProfile.textColor}`,
           }}
         >
-          <Avatar
-            sx={{
-              width: 40,
-              height: 40,
-              backgroundColor: selectedProfile.backgroundColor,
+          <Typography 
+            sx={{ 
+              fontWeight: 'bold', 
               color: selectedProfile.textColor,
-              marginRight: 1,
-              border: `2px solid ${selectedProfile.textColor}`
+              fontSize: '1rem',
+              marginRight: 1
             }}
           >
-            {selectedProfile.icon}
-          </Avatar>
+            {selectedProfile.name}
+          </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <StarIcon sx={{ color: '#ffd54f', fontSize: 20, marginRight: 0.5 }} />
             <Typography 

@@ -25,9 +25,9 @@ import CakeIcon from '@mui/icons-material/Cake';
 import ForestIcon from '@mui/icons-material/Forest';
 import CelebrationIcon from '@mui/icons-material/Celebration';
 
-const MotionContainer = motion(Container);
-const MotionTypography = motion(Typography);
-const MotionBox = motion(Box);
+const MotionContainer = motion.create(Container);
+const MotionTypography = motion.create(Typography);
+const MotionBox = motion.create(Box);
 
 // Define the Game interface
 interface Game {
@@ -51,7 +51,7 @@ const games: Game[] = [
     ageRange: '5-10 years',
     rating: 4.9,
     color: '#ffebee',
-    path: '/games/car-race'
+    path: '/car-race'
   },
   {
     title: 'Snake Game',
@@ -61,7 +61,7 @@ const games: Game[] = [
     ageRange: '6-12 years',
     rating: 4.7,
     color: '#e8f5e9',
-    path: '/games/snake'
+    path: '/snake'
   }
 ];
 
@@ -207,6 +207,7 @@ const GamesPage: React.FC = () => {
   const sprinkles = generateSprinkles();
 
   const handlePlayGame = (path: string) => {
+    console.log('Navigating to:', path);
     navigate(path);
   };
 

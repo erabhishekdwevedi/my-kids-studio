@@ -25,7 +25,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router-dom';
 import TopMenu from '../components/TopMenu';
 
-const MotionCard = motion(Card);
+const MotionCard = motion.create(Card);
 
 const readingActivities = [
   {

@@ -13,13 +13,12 @@ import {
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import GestureIcon from '@mui/icons-material/Gesture';
-import IcecreamIcon from '@mui/icons-material/Icecream';
-import CakeIcon from '@mui/icons-material/Cake';
 import ForestIcon from '@mui/icons-material/Forest';
 import CelebrationIcon from '@mui/icons-material/Celebration';
 import StarIcon from '@mui/icons-material/Star';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import HomeIcon from '@mui/icons-material/Home';
+import Face3Icon from '@mui/icons-material/Face3';
 import TopMenu from '../components/TopMenu';
 
 // Define profiles
@@ -27,7 +26,7 @@ const profiles = [
   {
     id: 'vidushi',
     name: 'Vidushi',
-    icon: <CakeIcon sx={{ fontSize: 40 }} />,
+    icon: <Face3Icon sx={{ fontSize: 40 }} />,
     backgroundColor: '#f8bbd0', // Light pink
     gradient: 'linear-gradient(135deg, #f8bbd0 0%, #f48fb1 100%)',
     shadowColor: 'rgba(244, 143, 177, 0.4)',
@@ -37,7 +36,7 @@ const profiles = [
   {
     id: 'rishika',
     name: 'Rishika',
-    icon: <IcecreamIcon sx={{ fontSize: 40 }} />,
+    icon: <Face3Icon sx={{ fontSize: 40 }} />,
     backgroundColor: '#bbdefb', // Light blue
     gradient: 'linear-gradient(135deg, #bbdefb 0%, #90caf9 100%)',
     shadowColor: 'rgba(144, 202, 249, 0.4)',
@@ -51,7 +50,7 @@ const themes = [
   {
     id: 'icecream',
     name: 'Ice Cream Shop',
-    icon: <IcecreamIcon sx={{ fontSize: 40 }} />,
+    icon: <Face3Icon sx={{ fontSize: 40 }} />,
     backgroundColor: '#fff8e1', // Light cream
     gradient: 'linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%)',
     shadowColor: 'rgba(255, 236, 179, 0.6)',
