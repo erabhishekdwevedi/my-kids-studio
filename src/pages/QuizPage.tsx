@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, CircularProgress, Typography, Button } from '@mui/material';
-import { quizData } from '../data/quizData';
+import { gkQuizData } from '../data/gkQuizData';
 import Quiz from '../components/Quiz';
 import { initSpeech, speak, stop } from '../utils/textToSpeech';
 import PageNavigation from '../components/PageNavigation';
@@ -32,7 +32,7 @@ const QuizPage: React.FC = () => {
       return;
     }
 
-    if (!quizData[category as keyof typeof quizData]) {
+    if (!gkQuizData[category as keyof typeof gkQuizData]) {
       setError(`Invalid quiz category: ${category}`);
       navigate('/subjects');
       return;
@@ -43,8 +43,8 @@ const QuizPage: React.FC = () => {
       setLoading(false);
       
       // Announce the quiz is ready
-      if (quizData[category as keyof typeof quizData]) {
-        const quizTitle = quizData[category as keyof typeof quizData].title;
+      if (gkQuizData[category as keyof typeof gkQuizData]) {
+        const quizTitle = gkQuizData[category as keyof typeof gkQuizData].title;
         speak(`${quizTitle} is ready. Let's begin!`, 1);
       }
     }, 1000);
@@ -70,6 +70,7 @@ const QuizPage: React.FC = () => {
           justifyContent: 'center',
           height: '100vh',
           width: '100vw',
+          background: selectedTheme?.gradient || 'white'
         }}
       >
         {selectedProfile && selectedTheme && (
@@ -86,15 +87,12 @@ const QuizPage: React.FC = () => {
           </Box>
         )}
         
-        <CircularProgress size={60} />
-        <Typography variant="h6" sx={{ mt: 2 }}>
-          Loading Quiz...
-        </Typography>
+        <CircularProgress size={60} thickness={4} />
       </Box>
     );
   }
 
-  if (error || !category || !quizData[category as keyof typeof quizData]) {
+  if (error || !category || !gkQuizData[category as keyof typeof gkQuizData]) {
     // This should not happen due to the redirect in useEffect
     return (
       <Box
@@ -105,6 +103,7 @@ const QuizPage: React.FC = () => {
           justifyContent: 'center',
           height: '100vh',
           width: '100vw',
+          background: selectedTheme?.gradient || 'white'
         }}
       >
         {selectedProfile && selectedTheme && (
@@ -121,13 +120,18 @@ const QuizPage: React.FC = () => {
           </Box>
         )}
         
-        <Typography variant="h5" color="error">
+        <Typography variant="h5" color="error" sx={{ mb: 2 }}>
           {error || 'Quiz not found'}
         </Typography>
         <Button 
           variant="contained" 
           onClick={() => navigate('/subjects')}
-          sx={{ mt: 2 }}
+          sx={{ 
+            p: 2,
+            borderRadius: 3,
+            fontSize: '1.2rem',
+            fontWeight: 600
+          }}
         >
           Back to Subjects
         </Button>
@@ -135,7 +139,7 @@ const QuizPage: React.FC = () => {
     );
   }
 
-  const quizCategoryData = quizData[category as keyof typeof quizData];
+  const quizCategoryData = gkQuizData[category as keyof typeof gkQuizData];
 
   return (
     <Quiz
