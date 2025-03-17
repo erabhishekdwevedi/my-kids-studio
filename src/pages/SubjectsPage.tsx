@@ -128,34 +128,15 @@ const subjects = [
     path: '/subject/math',
     description: 'Solve puzzles and learn numbers'
   },
-  {
-    id: 'science',
-    name: 'Science Lab',
-    icon: <ScienceIcon sx={{ fontSize: 40 }} />,
-    path: '/subject/science',
-    description: 'Discover how things work'
-  },
+
   {
     id: 'games',
     name: 'Fun Games',
     icon: <SportsEsportsIcon sx={{ fontSize: 40 }} />,
     path: '/subject/games',
     description: 'Play educational games and have fun'
-  },
-  {
-    id: 'habits',
-    name: 'Good Habits',
-    icon: <EmojiEventsIcon sx={{ fontSize: 40 }} />,
-    path: '/subject/habits',
-    description: 'Learn good habits for a healthy lifestyle'
-  },
-  {
-    id: 'travel',
-    name: 'Travel Adventures',
-    icon: <FlightIcon sx={{ fontSize: 40 }} />,
-    path: '/subject/travel',
-    description: 'Explore different places around the world'
   }
+  
 ];
 
 // Sprinkle component for decoration
@@ -288,7 +269,12 @@ const SubjectsPage = () => {
   ] : [];
 
   const handleSubjectSelect = (path: string) => {
-    navigate(path);
+    // Special handling for math subject
+    if (path === '/subject/math') {
+      navigate('/math');
+    } else {
+      navigate(path);
+    }
   };
 
   const handleBackToThemes = () => {

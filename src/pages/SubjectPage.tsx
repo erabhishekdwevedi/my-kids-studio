@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { 
   Box, 
   Typography, 
   Container,
   Grid,
   Card,
-  CardContent
+  CardContent,
+  Button
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import IcecreamIcon from '@mui/icons-material/Icecream';
@@ -19,9 +20,6 @@ import BrushIcon from '@mui/icons-material/Brush';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import CalculateIcon from '@mui/icons-material/Calculate';
 import ScienceIcon from '@mui/icons-material/Science';
-import PetsIcon from '@mui/icons-material/Pets';
-import CrisisAlertIcon from '@mui/icons-material/CrisisAlert';
-import EmojiNatureIcon from '@mui/icons-material/EmojiNature';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import FlightIcon from '@mui/icons-material/Flight';
@@ -35,6 +33,9 @@ import { generateSprinkles, getThemeColors, generateJungleAnimals } from '../uti
 import PageNavigation from '../components/PageNavigation';
 import Sprinkle from '../components/Sprinkle';
 import JungleAnimal from '../components/JungleAnimal';
+import { panchatantraStories } from '../data/storyData';
+import StoryCard from '../components/StoryCard';
+import { useTheme } from '@mui/material/styles';
 
 // Define themes
 const themes = [
@@ -237,6 +238,7 @@ const topicsBySubject = {
 const SubjectPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const theme = useTheme();
   const [selectedProfile, setSelectedProfile] = useState<any>(null);
   const [selectedTheme, setSelectedTheme] = useState<any>(null);
   const [currentSubject, setCurrentSubject] = useState<any>(null);
@@ -325,6 +327,10 @@ const SubjectPage = () => {
       navigate('/quiz/monuments');
     } else if (path === '/subject/gk/topic/people') {
       navigate('/quiz/people');
+    } 
+    // Handle math subject
+    else if (path === '/subject/math') {
+      navigate('/math');
     } else {
       navigate(path);
     }
@@ -399,7 +405,7 @@ const SubjectPage = () => {
           </Typography>
         </motion.div>
 
-        {/* Display topics if available, otherwise show coming soon */}
+        {/* Display topics if available, otherwise show coming soon or redirect for special subjects */}
         {hasTopics ? (
           <Grid container spacing={4}>
             {currentTopics.map((topic, index) => (
@@ -461,7 +467,56 @@ const SubjectPage = () => {
             ))}
           </Grid>
         ) : (
-          <Box sx={{ p: 4, textAlign: 'center' }}>Coming Soon</Box>
+          // Special handling for math subject
+          currentSubject.id === 'math' ? (
+            <Box sx={{ textAlign: 'center', mt: 2 }}>
+              <Button
+                variant="contained"
+                color="primary"
+                size="large"
+                onClick={() => navigate('/math')}
+                sx={{
+                  px: 4,
+                  py: 2,
+                  borderRadius: 2,
+                  fontSize: '1.2rem',
+                  backgroundColor: selectedTheme.textColor,
+                  '&:hover': {
+                    backgroundColor: selectedTheme.textColor + 'dd',
+                  }
+                }}
+              >
+                Go to Math Activities
+              </Button>
+            </Box>
+          ) : (
+            <Box sx={{ p: 4, textAlign: 'center' }}>Coming Soon</Box>
+          )
+        )}
+
+        {currentSubject.id === 'story' && (
+          <Box sx={{ mt: 4 }}>
+            <Typography 
+              variant="h5" 
+              component="h2" 
+              gutterBottom
+              sx={{ 
+                fontWeight: 'bold',
+                color: selectedTheme?.textColor || theme.palette.text.primary,
+                mb: 3
+              }}
+            >
+              Panchatantra Stories
+            </Typography>
+            
+            <Grid container spacing={3}>
+              {panchatantraStories.map((story, index) => (
+                <Grid item xs={12} sm={6} md={4} key={story.id}>
+                  <StoryCard story={story} delay={index} />
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
         )}
       </Container>
     </Box>

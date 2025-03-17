@@ -21,6 +21,9 @@ import DrawingBoardPage from './pages/DrawingBoardPage';
 import ThemeSelectionPage from './pages/ThemeSelectionPage';
 import QuizPage from './pages/QuizPage';
 import PianoPage from './pages/PianoPage';
+import StoryReaderPage from './pages/StoryReaderPage';
+import MathActivityPage from './pages/MathActivityPage';
+import MathPage from './pages/MathPage';
 
 // Custom hook for device optimization
 import { useTabletSize } from './hooks/useTabletSize';
@@ -202,6 +205,14 @@ function App() {
                   
                   {/* Quiz Routes */}
                   <Route path="/quiz/:category" element={<QuizPage />} />
+                  
+                  {/* Story Reader */}
+                  <Route path="/story-reader/:storyId" element={<StoryReaderPage />} />
+                  
+                  {/* Math Pages */}
+                  <Route path="/math" element={<MathPage />} />
+                  <Route path="/subject/math" element={<MathPage />} />
+                  <Route path="/math/:activityId" element={<MathActivityPage />} />
                   
                   {/* Subject Pages */}
                   <Route path="/subject/:subject" element={<SubjectPage />} />
