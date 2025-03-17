@@ -291,127 +291,157 @@ const SubjectsPage = () => {
 
   return (
     <Box
+      component="main"
       sx={{
+        width: '100%',
         minHeight: '100vh',
-        width: '100vw',
-        maxWidth: '100%',
         background: selectedTheme.gradient,
         position: 'relative',
-        overflow: 'hidden',
+        overflowY: 'auto',
+        WebkitOverflowScrolling: 'touch',
         display: 'flex',
-        flexDirection: 'column',
-        padding: 3
+        flexDirection: 'column'
       }}
     >
-      {/* Decorative sprinkles */}
-      {sprinkles.map(sprinkle => (
-        <Sprinkle 
-          key={sprinkle.id}
+      {/* Decorative elements with reduced opacity and size */}
+      {selectedTheme.id === 'icecream' && generateSprinkles().map((sprinkle, index) => (
+        <Sprinkle
+          key={index}
           color={sprinkle.color}
           top={sprinkle.top}
           left={sprinkle.left}
           delay={sprinkle.delay}
         />
       ))}
+      {selectedTheme.id === 'jungle' && (
+        <>
+          <JungleAnimal type="tiger" position={{ top: '5%', left: '5%' }} delay={0.2} />
+          <JungleAnimal type="zebra" position={{ top: '15%', left: '85%' }} delay={0.4} />
+          <JungleAnimal type="giraffe" position={{ top: '75%', left: '10%' }} delay={0.6} />
+        </>
+      )}
 
-      {/* Jungle Animals (only shown when jungle theme is selected) */}
-      {jungleAnimals.map((animal, index) => (
-        <JungleAnimal
-          key={`animal-${index}`}
-          type={animal.type}
-          position={animal.position}
-          delay={animal.delay}
+      {/* Navigation */}
+      <Box
+        sx={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          backdropFilter: 'blur(8px)',
+          borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
+          padding: { xs: 1, sm: 2 }
+        }}
+      >
+        <PageNavigation
+          profile={selectedProfile}
+          theme={selectedTheme}
+          showTitle={true}
+          onBackClick={handleBackToThemes}
+          onHomeClick={handleBackToHome}
         />
-      ))}
+      </Box>
 
-      {/* Top Navigation */}
-      <PageNavigation 
-        profile={selectedProfile}
-        theme={selectedTheme}
-        showTitle={true}
-        title="Subjects"
-        onBackClick={handleBackToThemes}
-        onHomeClick={handleBackToHome}
-        showMuteButton={true}
-      />
-
-      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1, mt: 2, width: '100%' }}>
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+      {/* Main Content */}
+      <Container 
+        maxWidth="lg" 
+        sx={{ 
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: { xs: 2, sm: 3 },
+          py: { xs: 2, sm: 3 },
+          px: { xs: 1, sm: 2, md: 3 }
+        }}
+      >
+        <Typography
+          variant="h3"
+          align="center"
+          sx={{
+            fontWeight: 700,
+            color: selectedTheme.textColor,
+            textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
+            fontSize: { xs: '1.75rem', sm: '2.25rem', md: '2.75rem' },
+            mb: { xs: 2, sm: 3 }
+          }}
         >
-          <Typography 
-            variant="h2" 
-            align="center" 
-            gutterBottom
-            sx={{ 
-              fontWeight: 700, 
-              color: selectedTheme.textColor,
-              textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
-              mb: 4
-            }}
-          >
-            Choose a Subject
-          </Typography>
-        </motion.div>
+          Choose Your Subject
+        </Typography>
 
-        <Grid container spacing={4}>
-          {subjects.map((subject, index) => (
+        <Grid 
+          container 
+          spacing={{ xs: 2, sm: 3, md: 4 }}
+          sx={{ 
+            width: '100%',
+            margin: '0 auto'
+          }}
+        >
+          {subjects.map((subject) => (
             <Grid item xs={12} sm={6} md={4} key={subject.id}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
+                transition={{ duration: 0.5 }}
+                style={{ height: '100%' }}
               >
                 <Card
                   onClick={() => handleSubjectSelect(subject.path)}
                   sx={{
-                    cursor: 'pointer',
-                    background: 'white',
-                    borderRadius: 4,
-                    boxShadow: `0 8px 24px ${selectedTheme.shadowColor}`,
-                    transition: 'all 0.3s ease',
-                    border: selectedTheme.id === 'icecream' 
-                      ? '5px solid #f8bbd0'
-                      : selectedTheme.id === 'jungle'
-                        ? '5px solid #a5d6a7'
-                        : '5px solid #b3e5fc',
                     height: '100%',
+                    cursor: 'pointer',
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    backdropFilter: 'blur(8px)',
+                    borderRadius: 3,
+                    boxShadow: `0 8px 32px ${selectedTheme.shadowColor}`,
+                    transition: 'all 0.3s ease',
                     '&:hover': {
-                      transform: 'translateY(-8px) scale(1.02)',
-                      boxShadow: `0 12px 28px ${selectedTheme.shadowColor}`,
-                      backgroundColor: selectedTheme.backgroundColor
+                      transform: 'translateY(-4px)',
+                      boxShadow: `0 12px 48px ${selectedTheme.shadowColor}`,
+                      backgroundColor: 'rgba(255, 255, 255, 0.95)'
                     }
                   }}
                 >
-                  <CardContent sx={{ p: 4, textAlign: 'center' }}>
+                  <CardContent
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: 2,
+                      p: { xs: 2, sm: 3 },
+                      textAlign: 'center'
+                    }}
+                  >
                     <Box
                       sx={{
-                        width: 80,
-                        height: 80,
-                        borderRadius: '50%',
-                        backgroundColor: selectedTheme.backgroundColor,
                         color: selectedTheme.textColor,
-                        margin: '0 auto 16px',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                        border: `4px solid ${selectedTheme.textColor}`,
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center'
+                        justifyContent: 'center',
+                        p: 1,
+                        borderRadius: '50%',
+                        backgroundColor: 'rgba(255, 255, 255, 0.5)'
                       }}
                     >
                       {subject.icon}
                     </Box>
-                    <Typography 
-                      variant="h4" 
-                      component="h2" 
-                      sx={{ 
-                        fontWeight: 700, 
+                    <Typography
+                      variant="h5"
+                      sx={{
+                        fontWeight: 600,
                         color: selectedTheme.textColor,
+                        fontSize: { xs: '1.25rem', sm: '1.5rem' }
                       }}
                     >
                       {subject.name}
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        color: 'text.secondary',
+                        fontSize: { xs: '0.875rem', sm: '1rem' }
+                      }}
+                    >
+                      {subject.description}
                     </Typography>
                   </CardContent>
                 </Card>

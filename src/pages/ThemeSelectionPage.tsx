@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Box, 
@@ -7,276 +7,235 @@ import {
   CardContent, 
   Container,
   Grid,
-  Fab,
-  Avatar
+  CircularProgress
 } from '@mui/material';
-import { motion } from 'framer-motion';
-import IcecreamIcon from '@mui/icons-material/Icecream';
-import CakeIcon from '@mui/icons-material/Cake';
-import ForestIcon from '@mui/icons-material/Forest';
-import CelebrationIcon from '@mui/icons-material/Celebration';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import HomeIcon from '@mui/icons-material/Home';
-import StarIcon from '@mui/icons-material/Star';
-import FaceIcon from '@mui/icons-material/Face';
-import Face3Icon from '@mui/icons-material/Face3';
-import PageNavigation from '../components/PageNavigation';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../contexts/AppContext';
+import PageNavigation from '../components/PageNavigation';
+import { Theme, Profile } from '../types';
+import { themes } from '../data';
+import logger from '../utils/logger';
 
-// Define profiles
-const profiles = [
-  {
-    id: 'vidushi',
-    name: 'Vidushi',
-    icon: <Face3Icon sx={{ fontSize: 40 }} />,
-    description: 'Girl with Green',
-    backgroundColor: '#c8e6c9', // Light green
-    gradient: 'linear-gradient(135deg, #c8e6c9 0%, #81c784 100%)',
-    shadowColor: 'rgba(129, 199, 132, 0.4)',
-    textColor: '#2e7d32',
-    score: 1250
-  },
-  {
-    id: 'rishika',
-    name: 'Rishika',
-    icon: <Face3Icon sx={{ fontSize: 40 }} />,
-    description: 'Girl with Blue',
-    backgroundColor: '#bbdefb', // Light blue
-    gradient: 'linear-gradient(135deg, #bbdefb 0%, #90caf9 100%)',
-    shadowColor: 'rgba(144, 202, 249, 0.4)',
-    textColor: '#1565c0',
-    score: 980
-  }
-];
+const log = logger.createLogger('ThemeSelectionPage');
 
-// Define themes
-const themes = [
-  {
-    id: 'icecream',
-    name: 'Tasty Treat',
-    icon: <IcecreamIcon sx={{ fontSize: 40 }} />,
-    description: 'Sweet treats and colorful sprinkles',
-    backgroundColor: '#fff8e1', // Light cream
-    gradient: 'linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%)',
-    shadowColor: 'rgba(255, 236, 179, 0.6)',
-    textColor: '#f06292',
-    accentColor: '#7986cb'
-  },
-  {
-    id: 'jungle',
-    name: 'Jungle Book',
-    icon: <ForestIcon sx={{ fontSize: 40 }} />,
-    description: 'Wild adventures in the forest',
-    backgroundColor: '#e8f5e9', // Light green
-    gradient: 'linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)',
-    shadowColor: 'rgba(200, 230, 201, 0.6)',
-    textColor: '#388e3c',
-    accentColor: '#8d6e63'
-  },
-  {
-    id: 'carnival',
-    name: 'Carnival Fun',
-    icon: <CelebrationIcon sx={{ fontSize: 40 }} />,
-    description: 'Exciting games and colorful balloons',
-    backgroundColor: '#e1f5fe', // Light blue
-    gradient: 'linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%)',
-    shadowColor: 'rgba(179, 229, 252, 0.6)',
-    textColor: '#ec407a',
-    accentColor: '#ffd54f'
-  }
-];
-
-// Sprinkle component for decoration
-const Sprinkle = ({ color, top, left, delay }: { color: string, top: string, left: string, delay: number }) => (
-  <motion.div
-    style={{
-      position: 'absolute',
-      top,
-      left,
-      width: '8px',
-      height: '8px',
-      borderRadius: '50%',
-      backgroundColor: color,
-      zIndex: 0
-    }}
-    initial={{ opacity: 0, scale: 0 }}
-    animate={{ opacity: 1, scale: 1 }}
-    transition={{ 
-      duration: 0.5, 
-      delay, 
-      repeat: Infinity,
-      repeatType: 'reverse',
-      repeatDelay: Math.random() * 2
-    }}
-  />
-);
+// Create a temporary theme object from profile for navigation
+const createTempTheme = (profile: Profile): Theme => ({
+  ...profile,
+  accentColor: profile.textColor, // Use textColor as accentColor for consistency
+});
 
 const ThemeSelectionPage = () => {
   const navigate = useNavigate();
-  const { selectedProfile } = useApp();
-  const [selectedTheme, setSelectedTheme] = useState<any>(null);
+  const { selectedProfile, setSelectedTheme } = useApp();
 
   useEffect(() => {
-    // Get selected profile from localStorage
-    const profileId = localStorage.getItem('selectedProfile');
-    
-    // If no profile is selected, redirect to home page
-    if (!profileId) {
+    try {
+      if (!selectedProfile) {
+        log.info('No profile selected, redirecting to home');
+        navigate('/');
+      }
+    } catch (error) {
+      log.error('Error in profile check', error as Error);
       navigate('/');
-      return;
     }
-    
-    // Find the profile by ID
-    const profile = profiles.find(p => p.id === profileId);
-    
-    // If profile not found, redirect to home page
-    if (!profile) {
+  }, [selectedProfile, navigate]);
+
+  const handleThemeSelect = useCallback((theme: Theme) => {
+    try {
+      log.info('Theme selected', { themeId: theme.id });
+      setSelectedTheme(theme);
+      localStorage.setItem('selectedTheme', theme.id);
+      navigate('/subjects');
+    } catch (error) {
+      log.error('Error selecting theme', error as Error, { themeId: theme.id });
+    }
+  }, [navigate, setSelectedTheme]);
+
+  const handleBackToHome = useCallback(() => {
+    try {
+      log.info('Navigating back to home');
       navigate('/');
-      return;
+    } catch (error) {
+      log.error('Error navigating to home', error as Error);
     }
   }, [navigate]);
 
-  // Generate random sprinkles
-  const sprinkles = Array.from({ length: 30 }, (_, i) => ({
-    id: i,
-    color: ['#f8bbd0', '#bbdefb', '#ffcc80', '#c5e1a5', '#b39ddb'][Math.floor(Math.random() * 5)],
-    top: `${Math.random() * 100}%`,
-    left: `${Math.random() * 100}%`,
-    delay: Math.random() * 2
-  }));
-
-  const handleThemeSelect = (theme: any) => {
-    // Save selected theme to localStorage
-    localStorage.setItem('selectedTheme', theme.id);
-    // Navigate to subjects page
-    navigate('/subjects');
-  };
-
-  const handleBackToProfiles = () => {
-    navigate('/');
-  };
-
   if (!selectedProfile) {
-    return <Box sx={{ p: 4, textAlign: 'center' }}>Loading...</Box>;
+    return (
+      <Box 
+        sx={{ 
+          p: 4, 
+          textAlign: 'center',
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
   }
+
+  // Create temporary theme from profile for navigation
+  const tempTheme = createTempTheme(selectedProfile);
 
   return (
     <Box
+      component="main"
       sx={{
+        width: '100%',
         minHeight: '100vh',
         background: selectedProfile.gradient,
         position: 'relative',
-        overflow: 'hidden',
+        overflowY: 'auto',
+        WebkitOverflowScrolling: 'touch',
         display: 'flex',
-        flexDirection: 'column',
-        padding: 3
+        flexDirection: 'column'
       }}
     >
-      {/* Decorative sprinkles */}
-      {sprinkles.map(sprinkle => (
-        <Sprinkle 
-          key={sprinkle.id}
-          color={sprinkle.color}
-          top={sprinkle.top}
-          left={sprinkle.left}
-          delay={sprinkle.delay}
+      {/* Navigation */}
+      <Box
+        sx={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          backdropFilter: 'blur(8px)',
+          borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
+          padding: { xs: 1, sm: 2 }
+        }}
+      >
+        <PageNavigation
+          profile={selectedProfile}
+          theme={tempTheme}
+          showTitle={true}
+          onBackClick={handleBackToHome}
+          onHomeClick={handleBackToHome}
         />
-      ))}
+      </Box>
 
-      {/* Top Navigation */}
-      <PageNavigation 
-        profile={selectedProfile}
-        theme={selectedProfile} // Use profile as theme since we don't have a theme yet
-        showTitle={false}
-        title="Choose Your Theme"
-        onBackClick={handleBackToProfiles}
-        onHomeClick={handleBackToProfiles}
-      />
-
-      <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1, mt: 4 }}>
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+      {/* Main Content */}
+      <Container 
+        maxWidth="lg" 
+        sx={{ 
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: { xs: 2, sm: 3 },
+          py: { xs: 2, sm: 3 },
+          px: { xs: 1, sm: 2, md: 3 }
+        }}
+      >
+        <Typography
+          variant="h3"
+          align="center"
+          sx={{
+            fontWeight: 700,
+            color: selectedProfile.textColor,
+            textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
+            fontSize: { xs: '1.75rem', sm: '2.25rem', md: '2.75rem' },
+            mb: { xs: 2, sm: 3 }
+          }}
         >
-          <Typography 
-            variant="h2" 
-            align="center" 
-            gutterBottom
-            sx={{ 
-              fontWeight: 700, 
-              color: selectedProfile.textColor,
-              textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
-              mb: 4
-            }}
-          >
-            Choose Your Theme
-          </Typography>
-        </motion.div>
+          Choose Your Theme
+        </Typography>
 
-        <Grid container spacing={4} justifyContent="center">
-          {themes.map((theme, index) => (
-            <Grid item xs={12} sm={6} md={4} key={theme.id}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 + index * 0.2 }}
-                whileHover={{ 
-                  scale: 1.05, 
-                  y: -10,
-                  transition: { duration: 0.2 }
-                }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <Card
-                  onClick={() => handleThemeSelect(theme)}
-                  sx={{
-                    cursor: 'pointer',
-                    background: theme.gradient,
-                    borderRadius: 4,
-                    boxShadow: `0 8px 24px ${theme.shadowColor}`,
-                    transition: 'all 0.3s ease',
-                    border: '6px solid white',
-                    height: '100%',
-                    '&:hover': {
-                      boxShadow: `0 12px 28px ${theme.shadowColor}`,
-                    }
-                  }}
+        <Grid 
+          container 
+          spacing={{ xs: 2, sm: 3, md: 4 }}
+          sx={{ 
+            width: '100%',
+            margin: '0 auto'
+          }}
+        >
+          <AnimatePresence>
+            {themes.map((theme: Theme, index: number) => (
+              <Grid item xs={12} sm={6} md={4} key={theme.id}>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  style={{ height: '100%' }}
+                  layout
                 >
-                  <CardContent sx={{ p: 4, textAlign: 'center' }}>
-                    <Box
+                  <Card
+                    onClick={() => handleThemeSelect(theme)}
+                    sx={{
+                      height: '100%',
+                      cursor: 'pointer',
+                      background: theme.gradient,
+                      borderRadius: 3,
+                      boxShadow: `0 8px 32px ${theme.shadowColor}`,
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        transform: 'translateY(-4px)',
+                        boxShadow: `0 12px 48px ${theme.shadowColor}`
+                      }
+                    }}
+                    role="button"
+                    aria-label={`Select ${theme.name} theme`}
+                    tabIndex={0}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        handleThemeSelect(theme);
+                      }
+                    }}
+                  >
+                    <CardContent
                       sx={{
-                        width: 80,
-                        height: 80,
-                        borderRadius: '50%',
-                        backgroundColor: 'white',
-                        color: theme.textColor,
-                        margin: '0 auto 16px',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                        border: `4px solid ${theme.textColor}`,
                         display: 'flex',
+                        flexDirection: 'column',
                         alignItems: 'center',
-                        justifyContent: 'center'
+                        gap: 2,
+                        p: { xs: 2, sm: 3 },
+                        textAlign: 'center'
                       }}
                     >
-                      {theme.icon}
-                    </Box>
-                    <Typography 
-                      variant="h4" 
-                      component="h2" 
-                      sx={{ 
-                        fontWeight: 700, 
-                        color: 'white',
-                        textShadow: '1px 1px 2px rgba(0,0,0,0.2)'
-                      }}
-                    >
-                      {theme.name}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </Grid>
-          ))}
+                      <Box
+                        sx={{
+                          width: { xs: 60, sm: 80 },
+                          height: { xs: 60, sm: 80 },
+                          borderRadius: '50%',
+                          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                          backdropFilter: 'blur(8px)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: theme.textColor,
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                        }}
+                      >
+                        {theme.icon}
+                      </Box>
+                      <Typography
+                        variant="h5"
+                        sx={{
+                          fontWeight: 600,
+                          color: 'white',
+                          fontSize: { xs: '1.25rem', sm: '1.5rem' },
+                          textShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                        }}
+                      >
+                        {theme.name}
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          color: 'rgba(255, 255, 255, 0.9)',
+                          fontSize: { xs: '0.875rem', sm: '1rem' },
+                          textShadow: '0 1px 2px rgba(0,0,0,0.1)'
+                        }}
+                      >
+                        {theme.description}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </Grid>
+            ))}
+          </AnimatePresence>
         </Grid>
       </Container>
     </Box>

@@ -343,16 +343,18 @@ const SubjectPage = () => {
   return (
     <Box
       sx={{
+        width: '100%',
         minHeight: '100vh',
+        maxHeight: '100vh',
         background: selectedTheme.gradient,
         position: 'relative',
-        overflow: 'hidden',
+        overflowY: 'auto',
+        WebkitOverflowScrolling: 'touch',
         display: 'flex',
-        flexDirection: 'column',
-        padding: 3
+        flexDirection: 'column'
       }}
     >
-      {/* Decorative sprinkles */}
+      {/* Decorative sprinkles with reduced opacity */}
       {sprinkles.map(sprinkle => (
         <Sprinkle 
           key={sprinkle.id}
@@ -363,7 +365,7 @@ const SubjectPage = () => {
         />
       ))}
 
-      {/* Jungle Animals (only shown when jungle theme is selected) */}
+      {/* Jungle Animals with reduced opacity */}
       {jungleAnimals.map((animal, index) => (
         <JungleAnimal
           key={`animal-${index}`}
@@ -374,17 +376,44 @@ const SubjectPage = () => {
       ))}
 
       {/* Top Navigation */}
-      <PageNavigation 
-        profile={selectedProfile}
-        theme={selectedTheme}
-        showTitle={false}
-        title={currentSubject.name}
-        onBackClick={handleBackToSubjects}
-        onHomeClick={handleBackToHome}
-        showMuteButton={true}
-      />
+      <Box
+        sx={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          backdropFilter: 'blur(8px)',
+          borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
+          padding: { xs: 1, sm: 2 }
+        }}
+      >
+        <PageNavigation 
+          profile={selectedProfile}
+          theme={selectedTheme}
+          showTitle={false}
+          title={currentSubject.name}
+          onBackClick={handleBackToSubjects}
+          onHomeClick={handleBackToHome}
+          showMuteButton={true}
+        />
+      </Box>
 
-      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+      <Container 
+        maxWidth="lg" 
+        sx={{ 
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: { xs: 2, sm: 3 },
+          py: { xs: 2, sm: 3 },
+          px: { xs: 1, sm: 2, md: 3 },
+          overflowY: 'auto',
+          WebkitOverflowScrolling: 'touch',
+          height: '100%',
+          position: 'relative',
+          zIndex: 1
+        }}
+      >
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -407,19 +436,31 @@ const SubjectPage = () => {
 
         {/* Display topics if available, otherwise show coming soon or redirect for special subjects */}
         {hasTopics ? (
-          <Grid container spacing={4}>
+          <Grid 
+            container 
+            spacing={{ xs: 2, sm: 3, md: 4 }}
+            sx={{ 
+              width: '100%',
+              margin: '0 auto',
+              py: { xs: 2, sm: 3 },
+              flexGrow: 1
+            }}
+          >
             {currentTopics.map((topic, index) => (
               <Grid item xs={12} sm={6} md={4} key={topic.id}>
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
+                  style={{ height: '100%' }}
                 >
                   <Card
                     onClick={() => handleTopicSelect(topic.path)}
                     sx={{
+                      height: '100%',
                       cursor: 'pointer',
-                      background: 'white',
+                      background: 'rgba(255, 255, 255, 0.9)',
+                      backdropFilter: 'blur(8px)',
                       borderRadius: 4,
                       boxShadow: `0 8px 24px ${selectedTheme.shadowColor}`,
                       transition: 'all 0.3s ease',
@@ -428,10 +469,10 @@ const SubjectPage = () => {
                         : selectedTheme.id === 'jungle'
                           ? '5px solid #a5d6a7'
                           : '5px solid #b3e5fc',
-                      height: '100%',
                       '&:hover': {
-                        transform: 'translateY(-8px) scale(1.02)',
-                        boxShadow: `0 8px 24px ${selectedTheme.shadowColor}`,
+                        transform: 'translateY(-4px)',
+                        boxShadow: `0 12px 48px ${selectedTheme.shadowColor}`,
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)'
                       }
                     }}
                   >

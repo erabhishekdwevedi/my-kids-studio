@@ -140,57 +140,75 @@ const Quiz: React.FC<QuizProps> = ({ title, description, questions, category }) 
 
   return (
     <Box
+      component="main"
       sx={{
+        width: '100%',
         minHeight: '100vh',
+        maxHeight: '100vh',
         background: selectedTheme.gradient,
         position: 'relative',
-        overflow: 'hidden',
+        overflowY: 'auto',
+        WebkitOverflowScrolling: 'touch',
         display: 'flex',
-        flexDirection: 'column',
-        padding: 3
+        flexDirection: 'column'
       }}
     >
-      {/* Top Navigation */}
-      <PageNavigation 
-        profile={selectedProfile}
-        theme={selectedTheme}
-        showTitle={false}
-        onBackClick={handleBackToSubject}
-        onHomeClick={handleBackToHome}
-        showMuteButton={true}
-      />
+      <Box
+        sx={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          backdropFilter: 'blur(8px)',
+          borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
+          padding: { xs: 1, sm: 2 }
+        }}
+      >
+        <PageNavigation 
+          profile={selectedProfile}
+          theme={selectedTheme}
+          showTitle={false}
+          onBackClick={handleBackToSubject}
+          onHomeClick={handleBackToHome}
+          showMuteButton={true}
+        />
+      </Box>
 
-      <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1 }}>
-        {/* Quiz Title */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+      <Container 
+        maxWidth="md" 
+        sx={{ 
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: { xs: 2, sm: 3 },
+          py: { xs: 2, sm: 3 },
+          px: { xs: 1, sm: 2, md: 3 },
+          overflowY: 'auto',
+          WebkitOverflowScrolling: 'touch',
+          height: '100%'
+        }}
+      >
+        <Typography 
+          variant="h3" 
+          align="center"
+          sx={{ 
+            fontWeight: 700, 
+            color: selectedTheme.textColor,
+            textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
+            fontSize: { xs: '1.75rem', sm: '2.25rem', md: '2.75rem' }
+          }}
         >
-          <Typography 
-            variant="h3" 
-            align="center" 
-            gutterBottom
-            sx={{ 
-              fontWeight: 700, 
-              color: selectedTheme.textColor,
-              textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
-              mb: 2
-            }}
-          >
-            {title}
-          </Typography>
-        </motion.div>
+          {title}
+        </Typography>
 
-        {/* Progress Bar */}
-        <Box sx={{ mb: 4 }}>
+        <Box sx={{ width: '100%' }}>
           <LinearProgress 
             variant="determinate" 
             value={progress} 
             sx={{ 
-              height: 10, 
-              borderRadius: 5,
-              backgroundColor: 'rgba(255,255,255,0.5)',
+              height: 6,
+              borderRadius: 3,
+              backgroundColor: 'rgba(255,255,255,0.3)',
               '& .MuiLinearProgress-bar': {
                 backgroundColor: selectedTheme.textColor,
               }
@@ -199,79 +217,48 @@ const Quiz: React.FC<QuizProps> = ({ title, description, questions, category }) 
           <Typography 
             variant="body2" 
             align="center" 
-            sx={{ mt: 1, color: selectedTheme.textColor }}
+            sx={{ 
+              mt: 1, 
+              color: selectedTheme.textColor,
+              fontSize: { xs: '0.875rem', sm: '1rem' }
+            }}
           >
             Question {currentQuestionIndex + 1} of {QUESTIONS_PER_ROUND}
           </Typography>
         </Box>
 
-        {!quizCompleted ? (
-          <motion.div
-            key={currentQuestionIndex}
-            initial={{ opacity: 0, x: 100 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -100 }}
-            transition={{ duration: 0.5 }}
-          >
+        <Box sx={{ flex: 1, width: '100%' }}>
+          {!quizCompleted ? (
             <Paper
               elevation={3}
               sx={{
-                p: { xs: 2, sm: 3, md: 4 },
-                borderRadius: 4,
+                width: '100%',
+                borderRadius: 3,
                 backgroundColor: 'white',
-                mb: 4,
-                position: 'relative',
-                '&::before': {
-                  content: '""',
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  borderRadius: 'inherit',
-                  padding: '2px', // Border width
-                  background: `linear-gradient(90deg, 
-                    ${selectedTheme.textColor} ${progress}%, 
-                    rgba(0,0,0,0.1) ${progress}%
-                  )`,
-                  mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-                  maskComposite: 'exclude',
-                  pointerEvents: 'none'
-                },
-                '&::after': {
-                  content: `"${score} points"`,
-                  position: 'absolute',
-                  top: -30,
-                  right: 16,
-                  background: 'white',
-                  padding: '4px 12px',
-                  borderRadius: '16px',
-                  fontSize: '0.9rem',
-                  fontWeight: 600,
-                  color: selectedTheme.textColor,
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                  border: `2px solid ${selectedTheme.textColor}`
-                }
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: { xs: 2, sm: 3 },
+                p: { xs: 2, sm: 3 },
+                maxHeight: { xs: 'calc(100vh - 200px)', sm: 'calc(100vh - 220px)' },
+                overflowY: 'auto',
+                WebkitOverflowScrolling: 'touch'
               }}
             >
-              {/* Image or Question Text based on category */}
               {category === 'capitals' ? (
                 <Typography 
                   variant="h4" 
-                  gutterBottom
+                  align="center"
                   sx={{ 
                     fontWeight: 'bold',
                     color: selectedTheme.textColor,
-                    mb: 4,
-                    textAlign: 'center',
-                    fontSize: { xs: '1.5rem', sm: '1.8rem', md: '2rem' },
+                    fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.75rem' },
                     lineHeight: 1.4,
-                    letterSpacing: '0.02em',
-                    padding: '1em',
-                    borderRadius: '16px',
+                    p: { xs: 2, sm: 3 },
+                    borderRadius: 2,
                     backgroundColor: 'rgba(255,255,255,0.9)',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                    border: '3px solid rgba(0,0,0,0.1)'
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                    border: '2px solid rgba(0,0,0,0.1)'
                   }}
                 >
                   {currentQuestion.question}
@@ -280,55 +267,42 @@ const Quiz: React.FC<QuizProps> = ({ title, description, questions, category }) 
                 <Box
                   sx={{
                     width: '100%',
-                    height: { xs: 175, sm: 245, md: 280 },
-                    borderRadius: 4,
-                    overflow: 'hidden',
-                    mb: 4,
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
-                    backgroundColor: category === 'flags' ? '#f5f5f5' : 'white',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
                     position: 'relative',
-                    border: '5px solid rgba(255,255,255,0.5)',
-                    '&::before': category === 'flags' ? {
-                      content: '""',
+                    paddingTop: category === 'flags' ? '60%' : '56.25%',
+                    backgroundColor: category === 'flags' ? '#f5f5f5' : 'white',
+                    borderRadius: 2,
+                    overflow: 'hidden'
+                  }}
+                >
+                  <Box
+                    component="img"
+                    src={currentQuestion.imageUrl}
+                    alt={`Question ${currentQuestionIndex + 1}`}
+                    sx={{
                       position: 'absolute',
                       top: 0,
                       left: 0,
-                      right: 0,
-                      bottom: 0,
-                      background: 'linear-gradient(45deg, rgba(0,0,0,0.02) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.02) 75%), linear-gradient(45deg, rgba(0,0,0,0.02) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.02) 75%)',
-                      backgroundSize: '20px 20px',
-                      backgroundPosition: '0 0, 10px 10px',
-                      pointerEvents: 'none'
-                    } : {}
-                  }}
-                >
-                  <img 
-                    src={currentQuestion.imageUrl} 
-                    alt={`Question ${currentQuestionIndex + 1}`}
-                    style={{ 
-                      width: category === 'flags' ? '60%' : '70%',
+                      width: '100%',
                       height: '100%',
                       objectFit: category === 'flags' ? 'contain' : 'cover',
-                      filter: category === 'flags' 
-                        ? 'drop-shadow(0 4px 12px rgba(0,0,0,0.2))' 
-                        : 'brightness(1.05) contrast(1.05)',
-                      transition: 'transform 0.3s ease',
-                      transform: selectedOption !== null ? 'scale(1.02)' : 'scale(1)'
-                    }} 
+                      p: category === 'flags' ? 2 : 0
+                    }}
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
                       target.style.display = 'none';
-                      console.error(`Failed to load image: ${currentQuestion.imageUrl}`);
                     }}
                   />
                 </Box>
               )}
 
-              {/* Options */}
-              <Grid container spacing={3}>
+              <Grid 
+                container 
+                spacing={2} 
+                sx={{ 
+                  mt: { xs: 1, sm: 2 },
+                  px: { xs: 1, sm: 2 }
+                }}
+              >
                 {currentQuestion.options.slice(0, 2).map((option, index) => (
                   <Grid item xs={12} sm={6} key={index}>
                     <Button
@@ -336,43 +310,28 @@ const Quiz: React.FC<QuizProps> = ({ title, description, questions, category }) 
                       variant={selectedOption === index ? "contained" : "outlined"}
                       onClick={() => handleOptionSelect(index)}
                       sx={{
-                        p: 3,
-                        borderRadius: 4,
-                        justifyContent: 'center',
-                        textTransform: 'none',
-                        fontSize: { xs: '1.6rem', sm: '1.8rem', md: '2rem' },
+                        py: { xs: 1.5, sm: 2 },
+                        px: { xs: 2, sm: 3 },
+                        borderRadius: 2,
+                        fontSize: { xs: '1rem', sm: '1.25rem' },
                         fontWeight: 600,
-                        minHeight: { xs: 80, sm: 100 },
                         backgroundColor: selectedOption === index 
                           ? (isCorrect ? 'success.light' : 'error.light') 
-                          : 'rgba(255,255,255,0.9)',
-                        color: selectedOption === index 
-                          ? 'white' 
-                          : selectedTheme.textColor,
-                        borderColor: selectedOption === index 
-                          ? 'transparent' 
-                          : selectedTheme.textColor,
-                        borderWidth: 3,
-                        boxShadow: selectedOption === null ? '0 4px 12px rgba(0,0,0,0.1)' : 'none',
-                        transition: 'all 0.3s ease',
+                          : 'white',
+                        color: selectedOption === index ? 'white' : selectedTheme.textColor,
+                        borderColor: selectedTheme.textColor,
+                        borderWidth: 2,
                         '&:hover': {
-                          transform: selectedOption === null ? 'translateY(-2px)' : 'none',
-                          backgroundColor: selectedOption === null 
-                            ? 'rgba(255,255,255,1)' 
-                            : selectedOption === index 
-                              ? (isCorrect ? 'success.light' : 'error.light')
-                              : 'rgba(255,255,255,0.9)',
-                          borderWidth: 3,
-                          boxShadow: selectedOption === null ? '0 6px 16px rgba(0,0,0,0.15)' : 'none'
-                        },
-                        pointerEvents: selectedOption !== null ? 'none' : 'auto'
+                          backgroundColor: selectedOption === null ? 'rgba(255,255,255,0.9)' : undefined,
+                          borderWidth: 2
+                        }
                       }}
                       startIcon={
                         selectedOption === index && showFeedback ? (
                           isCorrect ? (
-                            <CheckCircleIcon sx={{ fontSize: 30 }} />
+                            <CheckCircleIcon sx={{ fontSize: 20 }} />
                           ) : (
-                            <CancelIcon sx={{ fontSize: 30 }} />
+                            <CancelIcon sx={{ fontSize: 20 }} />
                           )
                         ) : null
                       }
@@ -382,24 +341,13 @@ const Quiz: React.FC<QuizProps> = ({ title, description, questions, category }) 
                   </Grid>
                 ))}
               </Grid>
-
-              {isCorrect && showFeedback && (
-                <Confetti active={showConfetti} />
-              )}
-
             </Paper>
-          </motion.div>
-        ) : showRoundComplete ? (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-          >
+          ) : showRoundComplete ? (
             <Paper
               elevation={3}
               sx={{
-                p: 4,
-                borderRadius: 4,
+                p: { xs: 2, sm: 3 },
+                borderRadius: 3,
                 backgroundColor: 'white',
                 textAlign: 'center'
               }}
@@ -442,18 +390,12 @@ const Quiz: React.FC<QuizProps> = ({ title, description, questions, category }) 
                 </Button>
               </Box>
             </Paper>
-          </motion.div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-          >
+          ) : (
             <Paper
               elevation={3}
               sx={{
-                p: 4,
-                borderRadius: 4,
+                p: { xs: 2, sm: 3 },
+                borderRadius: 3,
                 backgroundColor: 'white',
                 textAlign: 'center'
               }}
@@ -561,7 +503,11 @@ const Quiz: React.FC<QuizProps> = ({ title, description, questions, category }) 
                 </Grid>
               </Grid>
             </Paper>
-          </motion.div>
+          )}
+        </Box>
+
+        {isCorrect && showFeedback && (
+          <Confetti active={showConfetti} />
         )}
       </Container>
     </Box>
