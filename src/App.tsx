@@ -7,7 +7,7 @@ import Box from '@mui/material/Box';
 import { AnimatePresence } from 'framer-motion';
 
 // Theme
-import theme from './theme/index';
+import { lightTheme, darkTheme } from './theme/index';
 
 // Pages
 import HomePage from './pages/HomePage';
@@ -24,15 +24,18 @@ import PianoPage from './pages/PianoPage';
 import StoryReaderPage from './pages/StoryReaderPage';
 import MathActivityPage from './pages/MathActivityPage';
 import MathPage from './pages/MathPage';
+import DinosaurPage from './pages/DinosaurPage';
+import GamesPage from './pages/GamesPage';
 
 // Custom hook for device optimization
 import { useTabletSize } from './hooks/useTabletSize';
 
 // Context
-import { AppProvider } from './contexts/AppContext';
+import { AppProvider, useApp } from './contexts/AppContext';
 
 // Components
 import ErrorBoundary from './components/ErrorBoundary';
+import DarkModeToggle from './components/DarkModeToggle';
 
 // Utils
 import logger from './utils/logger';
@@ -40,10 +43,13 @@ import storage from './utils/storage';
 
 const log = logger.createLogger('App');
 
-function App() {
+// Inner component that uses the context
+const AppContent: React.FC = () => {
+  const { isDarkMode } = useApp();
   const { isMobile, isTablet } = useTabletSize();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-  const isMediumScreen = useMediaQuery(theme.breakpoints.between('sm', 'lg'));
+  
+  // Get current theme based on dark mode state
+  const currentTheme = isDarkMode ? darkTheme : lightTheme;
 
   // Repair corrupted localStorage on app startup
   useEffect(() => {
@@ -59,43 +65,164 @@ function App() {
 
   // Determine the appropriate dimensions based on screen size
   const dimensions = useMemo(() => {
-    if (isMobile || isSmallScreen) {
-      return {
-        width: '100vw',
-        height: '100%',
-        maxWidth: '100%',
-        maxHeight: '100%',
-        margin: '0',
-        boxShadow: 'none',
-        border: 'none',
-        borderRadius: '0',
-      };
-    } else if (isTablet || isMediumScreen) {
-      return {
-        width: '100vw',
-        height: '100%',
-        maxWidth: '100%',
-        maxHeight: '100%',
-        margin: '0',
-        boxShadow: 'none',
-        border: 'none',
-        borderRadius: '0',
-      };
-    } else {
-      // Desktop or large screens - still use full width for consistency
-      return {
-        width: '100vw',
-        height: '100%',
-        maxWidth: '100%',
-        maxHeight: '100%',
-        margin: '0',
-        boxShadow: 'none',
-        border: 'none',
-        borderRadius: '0',
-      };
-    }
-  }, [isMobile, isTablet, isSmallScreen, isMediumScreen]);
+    const baseStyle = {
+      width: '100vw',
+      height: '100%',
+      maxWidth: '100%',
+      maxHeight: '100%',
+      margin: '0',
+      boxShadow: 'none',
+      border: 'none',
+      borderRadius: '0',
+    };
+    return baseStyle;
+  }, []);
 
+  return (
+    <ThemeProvider theme={currentTheme}>
+      <CssBaseline />
+      <Router>
+        {/* Global styles to ensure full height usage */}
+        <style>
+          {`
+            html, body, #root {
+              height: 100%;
+              width: 100%;
+              margin: 0;
+              padding: 0;
+              overflow: hidden;
+            }
+            
+            body {
+              min-height: 100vh;
+              min-height: -webkit-fill-available;
+              width: 100vw;
+              max-width: 100%;
+              overflow-x: hidden;
+              background-color: ${currentTheme.palette.background.default};
+              color: ${currentTheme.palette.text.primary};
+              transition: background-color 0.3s ease, color 0.3s ease;
+            }
+            
+            #root {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              background-color: ${currentTheme.palette.background.default};
+              height: 100%;
+              width: 100vw;
+              max-width: 100%;
+            }
+
+            @supports (-webkit-touch-callout: none) {
+              body, html, #root {
+                height: -webkit-fill-available;
+                width: 100vw;
+                max-width: 100%;
+              }
+            }
+          `}
+        </style>
+        
+        {/* Additional touch-specific styles for mobile and tablet */}
+        {(isMobile || isTablet) && (
+          <style>
+            {`
+              html, body {
+                touch-action: manipulation;
+                user-select: none;
+                -webkit-user-select: none;
+                -webkit-tap-highlight-color: transparent;
+                width: 100vw;
+                max-width: 100%;
+              }
+              
+              input, textarea {
+                user-select: text;
+                -webkit-user-select: text;
+              }
+            `}
+          </style>
+        )}
+        
+        {/* Dark Mode Toggle - Shows on all pages */}
+        <DarkModeToggle />
+        
+        <Box
+          sx={{
+            width: dimensions.width,
+            height: dimensions.height,
+            maxWidth: dimensions.maxWidth,
+            maxHeight: dimensions.maxHeight,
+            margin: dimensions.margin,
+            overflow: 'hidden',
+            position: 'relative',
+            boxShadow: dimensions.boxShadow,
+            border: dimensions.border,
+            borderRadius: dimensions.borderRadius,
+            display: 'flex',
+            flexDirection: 'column',
+            flex: 1,
+          }}
+        >
+          <AnimatePresence mode="wait">
+            <Routes>
+              {/* Main Pages */}
+              <Route path="/" element={<HomePage />} />
+              <Route path="/subjects" element={<SubjectsPage />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/theme-selection" element={<ThemeSelectionPage />} />
+              <Route path="/games" element={<GamesPage />} />
+              
+              {/* Games */}
+              <Route path="/snake" element={<SnakePage />} />
+              <Route path="/car-race" element={<CarRacePage />} />
+              <Route path="/drawing-board" element={<DrawingBoardPage />} />
+              <Route path="/piano" element={<PianoPage />} />
+              <Route path="/dinosaur" element={<DinosaurPage />} />
+              
+              {/* Game paths from GamesPage */}
+              <Route path="/games/snake" element={<SnakePage />} />
+              <Route path="/games/car-race" element={<CarRacePage />} />
+              <Route path="/games/dinosaur" element={<DinosaurPage />} />
+              
+              {/* Quiz Routes */}
+              <Route path="/quiz/:category" element={<QuizPage />} />
+              
+              {/* Story Reader */}
+              <Route path="/story-reader/:storyId" element={<StoryReaderPage />} />
+              
+              {/* Math Pages */}
+              <Route path="/math" element={<MathPage />} />
+              <Route path="/subject/math" element={<MathPage />} />
+              <Route path="/math/:activityId" element={<MathActivityPage />} />
+              
+              {/* Subject Pages */}
+              <Route path="/subject/:subject" element={<SubjectPage />} />
+              <Route path="/subject/games" element={<GamesPage />} />
+              <Route path="/subject/:subject/topic/:topic" element={<SubjectPage />} />
+              <Route path="/subject/:subject/topic/:topic/chapter/:chapter" element={<SubjectPage />} />
+              
+              {/* Section Level */}
+              <Route path="/subject/:subject/topic/:topic/chapter/:chapter/section/:section" element={<SubjectPage />} />
+              
+              {/* Redirect profile and settings to coming soon */}
+              <Route path="/profile" element={<ComingSoonPage />} />
+              <Route path="/settings" element={<ComingSoonPage />} />
+              
+              {/* Catch-all route */}
+              <Route path="*" element={<ComingSoonPage />} />
+            </Routes>
+          </AnimatePresence>
+        </Box>
+      </Router>
+    </ThemeProvider>
+  );
+};
+
+// Main App component
+function App() {
   // Handle errors at the application level
   const handleError = (error: Error, errorInfo: React.ErrorInfo) => {
     log.error('Application error caught by ErrorBoundary', error, { errorInfo });
@@ -104,135 +231,7 @@ function App() {
   return (
     <ErrorBoundary onError={handleError}>
       <AppProvider>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <Router>
-            {/* Global styles to ensure full height usage */}
-            <style>
-              {`
-                html, body, #root {
-                  height: 100%;
-                  width: 100%;
-                  margin: 0;
-                  padding: 0;
-                  overflow: hidden;
-                }
-                
-                body {
-                  min-height: 100vh;
-                  min-height: -webkit-fill-available;
-                  width: 100vw;
-                  max-width: 100%;
-                  overflow-x: hidden;
-                }
-                
-                #root {
-                  display: flex;
-                  flex-direction: column;
-                  align-items: center;
-                  justify-content: center;
-                  background-color: #f5f5f5;
-                  height: 100%;
-                  width: 100vw;
-                  max-width: 100%;
-                }
-
-                @supports (-webkit-touch-callout: none) {
-                  body, html, #root {
-                    height: -webkit-fill-available;
-                    width: 100vw;
-                    max-width: 100%;
-                  }
-                }
-              `}
-            </style>
-            
-            {/* Additional touch-specific styles for mobile and tablet */}
-            {(isMobile || isTablet) && (
-              <style>
-                {`
-                  html, body {
-                    touch-action: manipulation;
-                    user-select: none;
-                    -webkit-user-select: none;
-                    -webkit-tap-highlight-color: transparent;
-                    width: 100vw;
-                    max-width: 100%;
-                  }
-                  
-                  input, textarea {
-                    user-select: text;
-                    -webkit-user-select: text;
-                  }
-                `}
-              </style>
-            )}
-            
-            <Box
-              sx={{
-                width: dimensions.width,
-                height: dimensions.height,
-                maxWidth: dimensions.maxWidth,
-                maxHeight: dimensions.maxHeight,
-                margin: dimensions.margin,
-                overflow: 'hidden',
-                position: 'relative',
-                boxShadow: dimensions.boxShadow,
-                border: dimensions.border,
-                borderRadius: dimensions.borderRadius,
-                display: 'flex',
-                flexDirection: 'column',
-                flex: 1,
-              }}
-            >
-              <AnimatePresence mode="wait">
-                <Routes>
-                  {/* Main Pages */}
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/subjects" element={<SubjectsPage />} />
-                  <Route path="/dashboard" element={<DashboardPage />} />
-                  <Route path="/theme-selection" element={<ThemeSelectionPage />} />
-                  
-                  {/* Games */}
-                  <Route path="/snake" element={<SnakePage />} />
-                  <Route path="/car-race" element={<CarRacePage />} />
-                  <Route path="/drawing-board" element={<DrawingBoardPage />} />
-                  <Route path="/piano" element={<PianoPage />} />
-                  
-                  {/* Game paths from GamesPage */}
-                  <Route path="/games/snake" element={<SnakePage />} />
-                  <Route path="/games/car-race" element={<CarRacePage />} />
-                  
-                  {/* Quiz Routes */}
-                  <Route path="/quiz/:category" element={<QuizPage />} />
-                  
-                  {/* Story Reader */}
-                  <Route path="/story-reader/:storyId" element={<StoryReaderPage />} />
-                  
-                  {/* Math Pages */}
-                  <Route path="/math" element={<MathPage />} />
-                  <Route path="/subject/math" element={<MathPage />} />
-                  <Route path="/math/:activityId" element={<MathActivityPage />} />
-                  
-                  {/* Subject Pages */}
-                  <Route path="/subject/:subject" element={<SubjectPage />} />
-                  <Route path="/subject/:subject/topic/:topic" element={<SubjectPage />} />
-                  <Route path="/subject/:subject/topic/:topic/chapter/:chapter" element={<SubjectPage />} />
-                  
-                  {/* Section Level */}
-                  <Route path="/subject/:subject/topic/:topic/chapter/:chapter/section/:section" element={<SubjectPage />} />
-                  
-                  {/* Redirect profile and settings to coming soon */}
-                  <Route path="/profile" element={<ComingSoonPage />} />
-                  <Route path="/settings" element={<ComingSoonPage />} />
-                  
-                  {/* Catch-all route */}
-                  <Route path="*" element={<ComingSoonPage />} />
-                </Routes>
-              </AnimatePresence>
-            </Box>
-          </Router>
-        </ThemeProvider>
+        <AppContent />
       </AppProvider>
     </ErrorBoundary>
   );

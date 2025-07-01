@@ -24,6 +24,7 @@ import IcecreamIcon from '@mui/icons-material/Icecream';
 import CakeIcon from '@mui/icons-material/Cake';
 import ForestIcon from '@mui/icons-material/Forest';
 import CelebrationIcon from '@mui/icons-material/Celebration';
+import PetsIcon from '@mui/icons-material/Pets';
 import PageNavigation from '../components/PageNavigation';
 import { useApp } from '../contexts/AppContext';
 
@@ -64,6 +65,16 @@ const games: Game[] = [
     rating: 4.7,
     color: '#e8f5e9',
     path: '/snake'
+  },
+  {
+    title: 'Dino Jump',
+    description: 'Help the dinosaur jump over cacti and birds in this endless running adventure!',
+    icon: <PetsIcon fontSize="large" color="primary" />,
+    category: 'Arcade',
+    ageRange: '4-10 years',
+    rating: 4.8,
+    color: '#fff3e0',
+    path: '/dinosaur'
   }
 ];
 

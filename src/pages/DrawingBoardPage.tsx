@@ -77,6 +77,13 @@ const DrawingBoardPage: React.FC = () => {
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   const [selectedTool, setSelectedTool] = useState<DrawingTool>('brush');
   const [lastPosition, setLastPosition] = useState({ x: 0, y: 0 });
+  const [isCanvasReady, setIsCanvasReady] = useState(false);
+
+  // Debug canvas size
+  useEffect(() => {
+    console.log('Canvas size updated:', canvasSize);
+    setIsCanvasReady(canvasSize.width > 0 && canvasSize.height > 0);
+  }, [canvasSize]);
 
   // Tool options
   const toolOptions = useMemo<Record<DrawingTool, ToolOption>>(() => ({
@@ -141,49 +148,77 @@ const DrawingBoardPage: React.FC = () => {
       const container = containerRef.current;
       const rect = container.getBoundingClientRect();
       
-      // Set canvas size to match container
-      const newWidth = rect.width;
-      const newHeight = rect.height;
+      // Ensure minimum canvas size for iPad
+      const minWidth = 320;
+      const minHeight = 240;
+      const newWidth = Math.max(rect.width || minWidth, minWidth);
+      const newHeight = Math.max(rect.height || minHeight, minHeight);
       
       setCanvasSize({ width: newWidth, height: newHeight });
       
-      // Update canvas dimensions
-      canvas.width = newWidth;
-      canvas.height = newHeight;
+      // Update canvas dimensions with device pixel ratio for crisp display
+      const devicePixelRatio = window.devicePixelRatio || 1;
+      
+      // Set the internal size (memory size)
+      canvas.width = newWidth * devicePixelRatio;
+      canvas.height = newHeight * devicePixelRatio;
+      
+      // Scale the context to ensure correct drawing operations
+      ctx.scale(devicePixelRatio, devicePixelRatio);
+      
+      // Set the display size (CSS size)
+      canvas.style.width = newWidth + 'px';
+      canvas.style.height = newHeight + 'px';
       
       // Restore drawing after resize
       if (drawingHistory.length > 0 && historyIndex >= 0) {
-        ctx.putImageData(drawingHistory[historyIndex], 0, 0);
+        try {
+          ctx.putImageData(drawingHistory[historyIndex], 0, 0);
+        } catch (error) {
+          console.warn('Failed to restore canvas history:', error);
+          // Fallback: clear canvas with white background
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, newWidth, newHeight);
+        }
       } else {
         // Clear canvas with white background
         ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillRect(0, 0, newWidth, newHeight);
         
         // Save initial state
-        const initialState = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        setDrawingHistory([initialState]);
-        setHistoryIndex(0);
+        try {
+          const initialState = ctx.getImageData(0, 0, newWidth, newHeight);
+          setDrawingHistory([initialState]);
+          setHistoryIndex(0);
+        } catch (error) {
+          console.warn('Failed to save initial canvas state:', error);
+        }
       }
     };
 
-    // Prevent touch scrolling on canvas
+    // Prevent touch scrolling on canvas and improve touch performance
     const preventTouchScroll = (e: TouchEvent) => {
-      if (e.target === canvas) {
+      if (e.target === canvas || canvas.contains(e.target as Node)) {
         e.preventDefault();
+        e.stopPropagation();
       }
     };
 
     // Add event listeners
     window.addEventListener('resize', updateCanvasSize);
+    window.addEventListener('orientationchange', updateCanvasSize);
     document.addEventListener('touchmove', preventTouchScroll, { passive: false });
+    document.addEventListener('touchstart', preventTouchScroll, { passive: false });
 
-    // Initial setup
-    updateCanvasSize();
+    // Initial setup with a slight delay to ensure container is rendered
+    setTimeout(updateCanvasSize, 100);
 
     // Cleanup
     return () => {
       window.removeEventListener('resize', updateCanvasSize);
+      window.removeEventListener('orientationchange', updateCanvasSize);
       document.removeEventListener('touchmove', preventTouchScroll);
+      document.removeEventListener('touchstart', preventTouchScroll);
     };
   }, [drawingHistory, historyIndex]);
 
@@ -219,7 +254,7 @@ const DrawingBoardPage: React.FC = () => {
     // Apply tool settings
     ctx.strokeStyle = selectedTool === 'eraser' ? '#ffffff' : color;
     ctx.lineWidth = toolOptions[selectedTool].lineWidth(brushSize);
-    ctx.globalCompositeOperation = 'source-over'; // Reset composite operation
+    ctx.globalCompositeOperation = selectedTool === 'eraser' ? 'destination-out' : 'source-over';
     
     // Apply tool-specific settings
     toolOptions[selectedTool].apply(ctx);
@@ -227,6 +262,10 @@ const DrawingBoardPage: React.FC = () => {
     // Start a new path
     ctx.beginPath();
     ctx.moveTo(x, y);
+    
+    // Draw a single point for small touches
+    ctx.lineTo(x + 0.1, y + 0.1);
+    ctx.stroke();
   }, [brushSize, color, selectedTool, toolOptions]);
 
   // Draw
@@ -287,6 +326,7 @@ const DrawingBoardPage: React.FC = () => {
 
   // Handle mouse/touch events
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -294,7 +334,9 @@ const DrawingBoardPage: React.FC = () => {
   };
 
   const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
-    if (e.touches.length > 0) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.touches.length === 1) { // Only handle single touch
       const rect = e.currentTarget.getBoundingClientRect();
       const touch = e.touches[0];
       const x = touch.clientX - rect.left;
@@ -304,20 +346,30 @@ const DrawingBoardPage: React.FC = () => {
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    draw(x, y);
+    if (isDrawing) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      draw(x, y);
+    }
   };
 
   const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
-    if (e.touches.length > 0) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.touches.length === 1 && isDrawing) { // Only handle single touch
       const rect = e.currentTarget.getBoundingClientRect();
       const touch = e.touches[0];
       const x = touch.clientX - rect.left;
       const y = touch.clientY - rect.top;
       draw(x, y);
     }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    stopDrawing();
   };
 
   // Clear canvas
@@ -599,9 +651,34 @@ const DrawingBoardPage: React.FC = () => {
                   backgroundColor: '#f5f5f5',
                   borderRadius: 1,
                   overflow: 'hidden',
-                  boxShadow: 'inset 0 0 5px rgba(0,0,0,0.1)'
+                  boxShadow: 'inset 0 0 5px rgba(0,0,0,0.1)',
+                  minHeight: { xs: '400px', sm: '500px', md: '600px' }, // Ensure minimum height
+                  width: '100%',
+                  // iPad specific optimizations
+                  WebkitTouchCallout: 'none',
+                  WebkitTextSizeAdjust: 'none',
+                  WebkitTapHighlightColor: 'transparent',
+                  WebkitUserSelect: 'none',
+                  userSelect: 'none'
                 }}
               >
+                {!isCanvasReady && (
+                  <Box sx={{ 
+                    position: 'absolute', 
+                    top: '50%', 
+                    left: '50%', 
+                    transform: 'translate(-50%, -50%)',
+                    textAlign: 'center',
+                    zIndex: 1
+                  }}>
+                    <Typography variant="h6" color="text.secondary">
+                      Preparing Canvas...
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Size: {canvasSize.width} x {canvasSize.height}
+                    </Typography>
+                  </Box>
+                )}
                 <canvas
                   ref={canvasRef}
                   width={canvasSize.width}
@@ -612,14 +689,23 @@ const DrawingBoardPage: React.FC = () => {
                   onMouseLeave={stopDrawing}
                   onTouchStart={handleTouchStart}
                   onTouchMove={handleTouchMove}
-                  onTouchEnd={stopDrawing}
+                  onTouchEnd={handleTouchEnd}
+                  onTouchCancel={stopDrawing}
                   style={{
                     display: 'block',
                     width: '100%',
                     height: '100%',
                     cursor: toolOptions[selectedTool].cursor,
-                    touchAction: 'none' // Prevent scrolling on touch devices
-                  }}
+                    touchAction: 'none', // Prevent all touch gestures
+                    // Additional iPad optimizations
+                    WebkitTouchCallout: 'none',
+                    WebkitUserSelect: 'none',
+                    WebkitTapHighlightColor: 'transparent',
+                    userSelect: 'none',
+                    // Prevent context menu on long press
+                    WebkitUserDrag: 'none',
+                    opacity: isCanvasReady ? 1 : 0.5
+                  } as React.CSSProperties}
                 />
               </Box>
             </Paper>
