@@ -9,10 +9,8 @@ const log = logger.createLogger('AppContext');
 interface AppContextType {
   selectedProfile: Profile | null;
   selectedTheme: Theme | null;
-  isDarkMode: boolean;
   setSelectedProfile: (profile: Profile) => void;
   setSelectedTheme: (theme: Theme) => void;
-  toggleDarkMode: () => void;
   updateScore: (points: number) => void;
 }
 
@@ -25,7 +23,6 @@ interface AppProviderProps {
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [selectedProfile, setSelectedProfileState] = useState<Profile | null>(null);
   const [selectedTheme, setSelectedThemeState] = useState<Theme | null>(null);
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
 
   useEffect(() => {
     // Load profile from localStorage with proper error handling
@@ -53,14 +50,30 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
         }
       }
 
-      // Load dark mode preference from localStorage
-      const darkModePreference = storage.getItem<boolean>('isDarkMode', false);
-      setIsDarkMode(darkModePreference);
-      log.info('Loaded dark mode preference from storage', { isDarkMode: darkModePreference });
     } catch (error) {
       log.error('Error loading user preferences', error as Error);
     }
   }, []);
+
+  // Ensure defaults for profile and theme to reduce clicks and avoid gating
+  useEffect(() => {
+    try {
+      if (!selectedProfile && profiles.length > 0) {
+        const defaultProfile = profiles[0];
+        setSelectedProfileState(defaultProfile);
+        storage.setItem('selectedProfile', defaultProfile.id);
+        log.info('Default profile set', { profileId: defaultProfile.id });
+      }
+      if (!selectedTheme && themes.length > 0) {
+        const defaultTheme = themes[0];
+        setSelectedThemeState(defaultTheme);
+        storage.setItem('selectedTheme', defaultTheme.id);
+        log.info('Default theme set', { themeId: defaultTheme.id });
+      }
+    } catch (error) {
+      log.error('Error setting default profile/theme', error as Error);
+    }
+  }, [selectedProfile, selectedTheme]);
 
   const setSelectedProfile = useCallback((profile: Profile) => {
     storage.setItem('selectedProfile', profile.id);
@@ -73,13 +86,6 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     setSelectedThemeState(theme);
     log.info('Theme selected', { themeId: theme.id });
   }, []);
-
-  const toggleDarkMode = useCallback(() => {
-    const newDarkMode = !isDarkMode;
-    storage.setItem('isDarkMode', newDarkMode);
-    setIsDarkMode(newDarkMode);
-    log.info('Dark mode toggled', { isDarkMode: newDarkMode });
-  }, [isDarkMode]);
 
   const updateScore = useCallback((points: number) => {
     if (selectedProfile) {
@@ -107,12 +113,10 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const contextValue = useMemo(() => ({
     selectedProfile, 
     selectedTheme, 
-    isDarkMode,
     setSelectedProfile, 
     setSelectedTheme,
-    toggleDarkMode,
     updateScore
-  }), [selectedProfile, selectedTheme, isDarkMode, setSelectedProfile, setSelectedTheme, toggleDarkMode, updateScore]);
+  }), [selectedProfile, selectedTheme, setSelectedProfile, setSelectedTheme, updateScore]);
 
   return (
     <AppContext.Provider value={contextValue}>

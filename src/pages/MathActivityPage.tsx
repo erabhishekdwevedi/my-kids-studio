@@ -25,36 +25,12 @@ import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import { mathActivities, MathActivity, MathQuestion } from '../data/mathData';
 import { useApp } from '../contexts/AppContext';
 import PageNavigation from '../components/PageNavigation';
-import BackgroundAnimals from '../components/BackgroundAnimals';
 import MathNotepad from '../components/MathNotepad';
 import Confetti from '../components/Confetti';
 
 const MotionPaper = motion(Paper);
 
-// Sprinkle component for decoration
-const Sprinkle = ({ color, top, left, delay }: { color: string, top: string, left: string, delay: number }) => (
-  <motion.div
-    style={{
-      position: 'absolute',
-      top,
-      left,
-      width: '8px',
-      height: '8px',
-      borderRadius: '50%',
-      backgroundColor: color,
-      zIndex: 0
-    }}
-    initial={{ opacity: 0, scale: 0 }}
-    animate={{ opacity: 1, scale: 1 }}
-    transition={{ 
-      duration: 0.5, 
-      delay, 
-      repeat: Infinity,
-      repeatType: 'reverse',
-      repeatDelay: Math.random() * 2
-    }}
-  />
-);
+// Decorative elements removed
 
 const MathActivityPage: React.FC = () => {
   const { activityId } = useParams<{ activityId: string }>();
@@ -71,26 +47,7 @@ const MathActivityPage: React.FC = () => {
   const [score, setScore] = useState<number>(0);
   const [showResults, setShowResults] = useState<boolean>(false);
   
-  // Generate random sprinkles based on theme
-  const generateSprinkles = () => {
-    if (!selectedTheme) return [];
-    
-    const colors = selectedTheme.id === 'icecream' 
-      ? ['#f8bbd0', '#bbdefb', '#ffcc80', '#c5e1a5', '#b39ddb']
-      : selectedTheme.id === 'jungle'
-        ? ['#a5d6a7', '#c8e6c9', '#ffcc80', '#bcaaa4', '#81c784']
-        : ['#f8bbd0', '#bbdefb', '#ffe082', '#b39ddb', '#90caf9'];
-    
-    return Array.from({ length: 30 }, (_, i) => ({
-      id: i,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      top: `${Math.random() * 100}%`,
-      left: `${Math.random() * 100}%`,
-      delay: Math.random() * 2
-    }));
-  };
-
-  const sprinkles = generateSprinkles();
+  
   
   // Load activity data
   useEffect(() => {
@@ -200,11 +157,7 @@ const MathActivityPage: React.FC = () => {
         minHeight: '100vh',
         width: '100vw',
         maxWidth: '100%',
-        background: selectedTheme.id === 'icecream'
-          ? 'linear-gradient(135deg, #fff8e1 0%, #ffecb3 50%, #ffe0b2 100%)'
-          : selectedTheme.id === 'jungle'
-            ? 'linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 50%, #b9f6ca 100%)'
-            : 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%)',
+        backgroundColor: 'background.default',
         position: 'relative',
         overflow: 'hidden',
         display: 'flex',
@@ -212,19 +165,7 @@ const MathActivityPage: React.FC = () => {
         padding: 3
       }}
     >
-      {/* Background Animals */}
-      <BackgroundAnimals theme={selectedTheme} />
-
-      {/* Decorative sprinkles */}
-      {sprinkles.map(sprinkle => (
-        <Sprinkle 
-          key={sprinkle.id}
-          color={sprinkle.color}
-          top={sprinkle.top}
-          left={sprinkle.left}
-          delay={sprinkle.delay}
-        />
-      ))}
+      
 
       {/* Top Navigation */}
       <PageNavigation 
@@ -245,8 +186,7 @@ const MathActivityPage: React.FC = () => {
               variant="h6" 
               sx={{ 
                 fontWeight: 'bold',
-                color: 'white',
-                textShadow: '1px 1px 2px rgba(0,0,0,0.2)'
+                color: 'text.primary'
               }}
             >
               Question {currentQuestionIndex + 1} of {activity.questions.length}

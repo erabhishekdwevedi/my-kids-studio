@@ -252,15 +252,12 @@ const DashboardPage: React.FC = () => {
         height: '100vh',
         display: 'flex',
         flexDirection: 'column',
-        background: currentTheme.background,
+        backgroundColor: 'background.default',
         transition: 'all 0.5s ease',
         position: 'relative'
       }}
     >
-      {/* Decorative Sprinkles */}
-      {sprinkles.map((sprinkle, i) => (
-        <Sprinkle key={i} {...sprinkle} />
-      ))}
+      
 
       {/* Main Content */}
       <Box sx={{ flexGrow: 1, p: 4, overflow: 'auto', position: 'relative', zIndex: 1 }}>
@@ -273,7 +270,7 @@ const DashboardPage: React.FC = () => {
               alignItems: 'center', 
               mb: 5,
               pb: 3,
-              borderBottom: currentTheme.borderStyle
+              borderBottom: '1px solid rgba(0,0,0,0.12)'
             }}
           >
             <MotionBox

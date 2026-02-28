@@ -29,10 +29,7 @@ import FlagIcon from '@mui/icons-material/Flag';
 import LocationCityIcon from '@mui/icons-material/LocationCity';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import PersonIcon from '@mui/icons-material/Person';
-import { generateSprinkles, getThemeColors, generateJungleAnimals } from '../utils/animations';
 import PageNavigation from '../components/PageNavigation';
-import Sprinkle from '../components/Sprinkle';
-import JungleAnimal from '../components/JungleAnimal';
 import { panchatantraStories } from '../data/storyData';
 import StoryCard from '../components/StoryCard';
 import { useTheme } from '@mui/material/styles';
@@ -267,11 +264,11 @@ const SubjectPage = () => {
         setSelectedTheme(theme);
       } else {
         // If theme not found, redirect to theme selection
-        navigate('/theme-selection');
+        navigate('/subjects');
       }
     } else {
       // If no theme selected, redirect to theme selection
-      navigate('/theme-selection');
+      navigate('/subjects');
     }
 
     // Determine current subject based on path
@@ -282,18 +279,7 @@ const SubjectPage = () => {
     }
   }, [navigate, location.pathname]);
 
-  // Generate random sprinkles based on theme
-  const sprinkles = useMemo(() => {
-    if (!selectedTheme) return [];
-    
-    const colors = getThemeColors(selectedTheme.id);
-    return generateSprinkles(30, colors);
-  }, [selectedTheme]);
-
-  // Generate jungle animals if jungle theme is selected
-  const jungleAnimals = useMemo(() => {
-    return selectedTheme?.id === 'jungle' ? generateJungleAnimals() : [];
-  }, [selectedTheme?.id]);
+  // Decorative elements removed for neutral look
 
   // Check if the current subject has topics
   const hasTopics = currentSubject && topicsBySubject[currentSubject.id as keyof typeof topicsBySubject];
@@ -346,7 +332,7 @@ const SubjectPage = () => {
         width: '100%',
         minHeight: '100vh',
         maxHeight: '100vh',
-        background: selectedTheme.gradient,
+        backgroundColor: 'background.default',
         position: 'relative',
         overflowY: 'auto',
         WebkitOverflowScrolling: 'touch',
@@ -354,26 +340,7 @@ const SubjectPage = () => {
         flexDirection: 'column'
       }}
     >
-      {/* Decorative sprinkles with reduced opacity */}
-      {sprinkles.map(sprinkle => (
-        <Sprinkle 
-          key={sprinkle.id}
-          color={sprinkle.color}
-          top={sprinkle.top}
-          left={sprinkle.left}
-          delay={sprinkle.delay}
-        />
-      ))}
-
-      {/* Jungle Animals with reduced opacity */}
-      {jungleAnimals.map((animal, index) => (
-        <JungleAnimal
-          key={`animal-${index}`}
-          type={animal.type}
-          position={animal.position}
-          delay={animal.delay}
-        />
-      ))}
+      
 
       {/* Top Navigation */}
       <Box
@@ -425,8 +392,7 @@ const SubjectPage = () => {
             gutterBottom
             sx={{ 
               fontWeight: 700, 
-              color: selectedTheme.textColor,
-              textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
+              color: 'text.primary',
               mb: 2
             }}
           >
@@ -460,18 +426,14 @@ const SubjectPage = () => {
                       height: '100%',
                       cursor: 'pointer',
                       background: 'rgba(255, 255, 255, 0.9)',
-                      backdropFilter: 'blur(8px)',
+                      backdropFilter: 'none',
                       borderRadius: 4,
-                      boxShadow: `0 8px 24px ${selectedTheme.shadowColor}`,
+                      boxShadow: '0 8px 16px rgba(0,0,0,0.08)',
                       transition: 'all 0.3s ease',
-                      border: selectedTheme.id === 'icecream' 
-                        ? '5px solid #f8bbd0'
-                        : selectedTheme.id === 'jungle'
-                          ? '5px solid #a5d6a7'
-                          : '5px solid #b3e5fc',
+                      border: '1px solid rgba(0,0,0,0.12)',
                       '&:hover': {
                         transform: 'translateY(-4px)',
-                        boxShadow: `0 12px 48px ${selectedTheme.shadowColor}`,
+                        boxShadow: '0 12px 24px rgba(0,0,0,0.12)',
                         backgroundColor: 'rgba(255, 255, 255, 0.95)'
                       }
                     }}
@@ -483,8 +445,7 @@ const SubjectPage = () => {
                         gutterBottom
                         sx={{ 
                           fontWeight: 700, 
-                          color: selectedTheme.textColor,
-                          textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
+                          color: 'text.primary',
                           mb: 2
                         }}
                       >
@@ -494,8 +455,7 @@ const SubjectPage = () => {
                         variant="body2" 
                         align="center" 
                         sx={{ 
-                          color: selectedTheme.textColor,
-                          textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
+                          color: 'text.secondary',
                           mb: 2
                         }}
                       >
@@ -511,22 +471,7 @@ const SubjectPage = () => {
           // Special handling for math subject
           currentSubject.id === 'math' ? (
             <Box sx={{ textAlign: 'center', mt: 2 }}>
-              <Button
-                variant="contained"
-                color="primary"
-                size="large"
-                onClick={() => navigate('/math')}
-                sx={{
-                  px: 4,
-                  py: 2,
-                  borderRadius: 2,
-                  fontSize: '1.2rem',
-                  backgroundColor: selectedTheme.textColor,
-                  '&:hover': {
-                    backgroundColor: selectedTheme.textColor + 'dd',
-                  }
-                }}
-              >
+              <Button variant="contained" size="large" onClick={() => navigate('/math')}>
                 Go to Math Activities
               </Button>
             </Box>
@@ -543,7 +488,7 @@ const SubjectPage = () => {
               gutterBottom
               sx={{ 
                 fontWeight: 'bold',
-                color: selectedTheme?.textColor || theme.palette.text.primary,
+                color: theme.palette.text.primary,
                 mb: 3
               }}
             >

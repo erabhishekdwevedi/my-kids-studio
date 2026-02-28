@@ -8,22 +8,14 @@ import {
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import ConstructionIcon from '@mui/icons-material/Construction';
-import Sprinkle from '../components/Sprinkle';
 import { useApp } from '../contexts/AppContext';
-import { generateSprinkles, getThemeColors } from '../utils/animations';
 import PageNavigation from '../components/PageNavigation';
 
 const ComingSoonPage: React.FC = () => {
   const navigate = useNavigate();
   const { selectedProfile, selectedTheme } = useApp();
 
-  // Generate random sprinkles for decoration
-  const sprinkles = useMemo(() => {
-    if (!selectedTheme) return [];
-    
-    const colors = getThemeColors(selectedTheme.id);
-    return generateSprinkles(30, colors);
-  }, [selectedTheme]);
+  // Decorative elements removed
 
   // Redirect if no profile or theme is selected
   React.useEffect(() => {
@@ -72,16 +64,7 @@ const ComingSoonPage: React.FC = () => {
         alignItems: 'center',
         padding: { xs: 2, sm: 3, md: 4 }
       }}>
-        {/* Decorative sprinkles */}
-        {sprinkles.map(sprinkle => (
-          <Sprinkle 
-            key={sprinkle.id}
-            color={sprinkle.color}
-            top={sprinkle.top}
-            left={sprinkle.left}
-            delay={sprinkle.delay}
-          />
-        ))}
+        
         
         <Box
           sx={{
@@ -106,9 +89,8 @@ const ComingSoonPage: React.FC = () => {
                 p: { xs: 3, sm: 4, md: 5 },
                 borderRadius: 4,
                 textAlign: 'center',
-                background: 'rgba(255, 255, 255, 0.9)',
-                backdropFilter: 'blur(5px)',
-                border: '2px dashed #f06292',
+                backgroundColor: 'background.paper',
+                border: '1px dashed rgba(0,0,0,0.2)',
                 width: '100%'
               }}
             >
@@ -122,7 +104,7 @@ const ComingSoonPage: React.FC = () => {
                   repeatType: 'loop',
                 }}
               >
-                <ConstructionIcon sx={{ fontSize: { xs: 60, sm: 70, md: 80 }, color: '#f06292', mb: 2 }} />
+                <ConstructionIcon sx={{ fontSize: { xs: 60, sm: 70, md: 80 }, color: 'text.primary', mb: 2 }} />
               </motion.div>
               
               <Typography 
@@ -130,8 +112,8 @@ const ComingSoonPage: React.FC = () => {
                 component="h1" 
                 gutterBottom 
                 sx={{ 
-                  fontWeight: 'bold', 
-                  color: '#5d4037',
+                  fontWeight: 'bold',
+                  color: 'text.primary',
                   fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' }
                 }}
               >
@@ -141,8 +123,8 @@ const ComingSoonPage: React.FC = () => {
               <Typography 
                 variant="h5" 
                 sx={{ 
-                  mb: 4, 
-                  color: '#8d6e63',
+                  mb: 4,
+                  color: 'text.secondary',
                   fontSize: { xs: '1.2rem', sm: '1.4rem', md: '1.5rem' }
                 }}
               >
@@ -152,8 +134,8 @@ const ComingSoonPage: React.FC = () => {
               <Typography 
                 variant="body1" 
                 sx={{ 
-                  mb: 4, 
-                  color: '#8d6e63',
+                  mb: 4,
+                  color: 'text.secondary',
                   fontSize: { xs: '0.9rem', sm: '1rem', md: '1.1rem' }
                 }}
               >

@@ -68,6 +68,65 @@ export const tabletOptimizedAnimation = (animation: Variants): Variants => {
   return optimized;
 };
 
+// Reduced motion preference helper
+export const isReducedMotionPreferred = (): boolean => {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+    return false;
+  }
+  try {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  } catch {
+    return false;
+  }
+};
+
+// Wrap variants to respect reduced motion (fallback to simple fade/appear)
+export const respectReducedMotion = (variants: Variants): Variants => {
+  if (!isReducedMotionPreferred()) return variants;
+  return {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { duration: 0.2, ease: 'linear' } }
+  };
+};
+
+// Playful attention pulses
+export const attentionPulse: Variants = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: {
+    opacity: 1,
+    scale: [1, 1.08, 1],
+    transition: {
+      duration: 0.6,
+      ease: 'easeInOut',
+    }
+  }
+};
+
+// Gentle bounce for hover
+export const bounce: Variants = {
+  hidden: { y: 0, opacity: 1 },
+  visible: {
+    y: [0, -6, 0],
+    opacity: 1,
+    transition: {
+      duration: 0.4,
+      ease: 'easeOut'
+    }
+  }
+};
+
+// Squish effect for press/tap
+export const squishPress: Variants = {
+  hidden: { scale: 1 },
+  visible: {
+    scale: [1, 0.96, 1],
+    transition: {
+      duration: 0.15,
+      ease: 'easeOut'
+    }
+  }
+};
+
 /**
  * Generates an array of sprinkle objects for decorative purposes
  * @param count Number of sprinkles to generate

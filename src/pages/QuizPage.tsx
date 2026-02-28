@@ -6,6 +6,7 @@ import Quiz from '../components/Quiz';
 import { initSpeech, speak, stop } from '../utils/textToSpeech';
 import PageNavigation from '../components/PageNavigation';
 import { useApp } from '../contexts/AppContext';
+import { useWorld } from '../contexts/WorldContext';
 
 const QuizPage: React.FC = () => {
   const { category } = useParams<{ category: string }>();
@@ -13,6 +14,7 @@ const QuizPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { selectedProfile, selectedTheme } = useApp();
+  const { updateCollection } = useWorld();
 
   // Initialize text-to-speech on component mount
   useEffect(() => {
@@ -141,12 +143,19 @@ const QuizPage: React.FC = () => {
 
   const quizCategoryData = gkQuizData[category as keyof typeof gkQuizData];
 
+  const handleQuizComplete = (score: number) => {
+    // Award stars based on performance
+    const starsEarned = Math.ceil(score / 10); // 1 star per 10 points
+    updateCollection('stars', starsEarned);
+  };
+
   return (
     <Quiz
       title={quizCategoryData.title}
       description={quizCategoryData.description}
       questions={quizCategoryData.questions}
       category={category}
+      onComplete={handleQuizComplete}
     />
   );
 };

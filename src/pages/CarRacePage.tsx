@@ -214,7 +214,7 @@ const CarRacePage = () => {
       <Box
         sx={{
           minHeight: '100vh',
-          background: selectedTheme.gradient,
+          backgroundColor: 'background.default',
           position: 'relative',
           overflow: 'hidden',
           display: 'flex',
@@ -223,16 +223,7 @@ const CarRacePage = () => {
           fontFamily: theme.typography.fontFamily, // Apply font family to the root element
         }}
       >
-        {/* Decorative sprinkles */}
-        {sprinkles.map(sprinkle => (
-          <Sprinkle 
-            key={sprinkle.id}
-            color={sprinkle.color}
-            top={sprinkle.top}
-            left={sprinkle.left}
-            delay={sprinkle.delay}
-          />
-        ))}
+        
 
         {/* Top Navigation */}
         <PageNavigation 

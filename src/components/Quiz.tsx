@@ -25,11 +25,12 @@ interface QuizProps {
   description: string;
   questions: QuizQuestion[];
   category: string;
+  onComplete?: (score: number) => void;
 }
 
 const QUESTIONS_PER_ROUND = 10;
 
-const Quiz: React.FC<QuizProps> = ({ title, description, questions, category }) => {
+const Quiz: React.FC<QuizProps> = ({ title, description, questions, category, onComplete }) => {
   const navigate = useNavigate();
   const { selectedProfile, selectedTheme, updateScore } = useApp();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -93,10 +94,15 @@ const Quiz: React.FC<QuizProps> = ({ title, description, questions, category }) 
         setShowRoundComplete(true);
       } else {
         setQuizCompleted(true);
+        const finalScore = score + (correct ? 10 : 0);
         if (selectedProfile) {
-          updateScore(score + (correct ? 10 : 0));
+          updateScore(finalScore);
         }
-        speak(`Quiz completed! Your score is ${score + (correct ? 10 : 0)} points.`, 1);
+        // Call onComplete callback if provided
+        if (onComplete) {
+          onComplete(finalScore);
+        }
+        speak(`Quiz completed! Your score is ${finalScore} points.`, 1);
       }
     }, 1500);
   };
@@ -145,7 +151,7 @@ const Quiz: React.FC<QuizProps> = ({ title, description, questions, category }) 
         width: '100%',
         minHeight: '100vh',
         maxHeight: '100vh',
-        background: selectedTheme.gradient,
+        backgroundColor: 'background.default',
         position: 'relative',
         overflowY: 'auto',
         WebkitOverflowScrolling: 'touch',

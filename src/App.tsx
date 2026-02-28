@@ -1,41 +1,23 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { lazy, Suspense, useMemo, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 import { AnimatePresence } from 'framer-motion';
 
 // Theme
-import { lightTheme, darkTheme } from './theme/index';
-
-// Pages
-import HomePage from './pages/HomePage';
-import SubjectsPage from './pages/SubjectsPage';
-import SubjectPage from './pages/SubjectPage';
-import ComingSoonPage from './pages/ComingSoonPage';
-import CarRacePage from './pages/CarRacePage';
-import SnakePage from './pages/SnakePage';
-import DashboardPage from './pages/DashboardPage';
-import DrawingBoardPage from './pages/DrawingBoardPage';
-import ThemeSelectionPage from './pages/ThemeSelectionPage';
-import QuizPage from './pages/QuizPage';
-import PianoPage from './pages/PianoPage';
-import StoryReaderPage from './pages/StoryReaderPage';
-import MathActivityPage from './pages/MathActivityPage';
-import MathPage from './pages/MathPage';
-import DinosaurPage from './pages/DinosaurPage';
-import GamesPage from './pages/GamesPage';
+import { lightTheme } from './theme/index';
 
 // Custom hook for device optimization
 import { useTabletSize } from './hooks/useTabletSize';
 
 // Context
-import { AppProvider, useApp } from './contexts/AppContext';
+import { AppProvider } from './contexts/AppContext';
+import { WorldProvider } from './contexts/WorldContext';
 
 // Components
 import ErrorBoundary from './components/ErrorBoundary';
-import DarkModeToggle from './components/DarkModeToggle';
 
 // Utils
 import logger from './utils/logger';
@@ -43,13 +25,93 @@ import storage from './utils/storage';
 
 const log = logger.createLogger('App');
 
+// Lazy load pages for better performance
+// Main Home Page
+const HomeTreePageV2 = lazy(() => import('./pages/world/HomeTreePageV2'));
+
+// Active App Pages
+const StoryBeachPage = lazy(() => import('./pages/world/StoryBeachPage'));
+const ScienceMountainPage = lazy(() => import('./pages/world/ScienceMountainPage'));
+const WonderPlazaPage = lazy(() => import('./pages/world/WonderPlazaPage'));
+const ComingSoonPage = lazy(() => import('./pages/ComingSoonPage'));
+
+// Games - Old versions (kept for backward compatibility) - commented out as they're not used
+// const CarRacePage = lazy(() => import('./pages/CarRacePage'));
+// const SnakePage = lazy(() => import('./pages/SnakePage'));
+// const DinosaurPage = lazy(() => import('./pages/DinosaurPage'));
+// const DrawingBoardPage = lazy(() => import('./pages/DrawingBoardPage'));
+// const PianoPage = lazy(() => import('./pages/PianoPage'));
+
+// World-Class Apps - Games
+const SnakeGameApp = lazy(() => import('./pages/apps/SnakeGameApp'));
+const CarRaceGameApp = lazy(() => import('./pages/apps/CarRaceGameApp'));
+const DinosaurGameApp = lazy(() => import('./pages/apps/DinosaurGameApp'));
+
+// World-Class Apps - Music
+const PianoApp = lazy(() => import('./pages/apps/PianoApp'));
+
+// World-Class Apps - Creative
+const DrawingBoardApp = lazy(() => import('./pages/apps/DrawingBoardApp'));
+
+// Learning Pages
+const QuizPage = lazy(() => import('./pages/QuizPage'));
+const StoryReaderPage = lazy(() => import('./pages/StoryReaderPage'));
+const MathActivityPage = lazy(() => import('./pages/MathActivityPage'));
+
+// World-Class Apps - Math
+const CountingApp = lazy(() => import('./pages/apps/CountingApp'));
+const ReverseCountingApp = lazy(() => import('./pages/apps/ReverseCountingApp'));
+const AdditionApp = lazy(() => import('./pages/apps/AdditionApp'));
+const SubtractionApp = lazy(() => import('./pages/apps/SubtractionApp'));
+const TablesApp = lazy(() => import('./pages/apps/TablesApp'));
+const OddEvenApp = lazy(() => import('./pages/apps/OddEvenApp'));
+
+// World-Class Apps - Quiz
+const FlagsQuizApp = lazy(() => import('./pages/apps/AllQuizApps').then(module => ({ default: module.FlagsQuizApp })));
+const CapitalsQuizApp = lazy(() => import('./pages/apps/AllQuizApps').then(module => ({ default: module.CapitalsQuizApp })));
+const MonumentsQuizApp = lazy(() => import('./pages/apps/AllQuizApps').then(module => ({ default: module.MonumentsQuizApp })));
+const PeopleQuizApp = lazy(() => import('./pages/apps/AllQuizApps').then(module => ({ default: module.PeopleQuizApp })));
+
+// World-Class Apps - Discovery
+const ABCApp = lazy(() => import('./pages/apps/ABCApp'));
+const AnimalsApp = lazy(() => import('./pages/apps/AnimalsApp'));
+const SpaceApp = lazy(() => import('./pages/apps/SpaceApp'));
+const NatureApp = lazy(() => import('./pages/apps/NatureApp'));
+const ShapesApp = lazy(() => import('./pages/apps/ShapesApp'));
+
+// World-Class Apps - Puzzle
+const MemoryApp = lazy(() => import('./pages/apps/MemoryApp'));
+const PuzzlesApp = lazy(() => import('./pages/apps/PuzzlesApp'));
+
+// World-Class Apps - Creative & Learning
+const ColoringApp = lazy(() => import('./pages/apps/ColoringApp'));
+const ReadingApp = lazy(() => import('./pages/apps/ReadingApp'));
+
+// Legacy (for backward compatibility - redirects to home)
+const HomePage = lazy(() => import('./pages/HomePage'));
+
+// Loading component
+const LoadingFallback: React.FC = () => (
+  <Box
+    sx={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '100vh',
+      width: '100vw',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+    }}
+  >
+    <CircularProgress size={60} sx={{ color: 'white' }} />
+  </Box>
+);
+
 // Inner component that uses the context
 const AppContent: React.FC = () => {
-  const { isDarkMode } = useApp();
   const { isMobile, isTablet } = useTabletSize();
   
-  // Get current theme based on dark mode state
-  const currentTheme = isDarkMode ? darkTheme : lightTheme;
+  // Always use light theme
+  const currentTheme = lightTheme;
 
   // Repair corrupted localStorage on app startup
   useEffect(() => {
@@ -146,9 +208,6 @@ const AppContent: React.FC = () => {
           </style>
         )}
         
-        {/* Dark Mode Toggle - Shows on all pages */}
-        <DarkModeToggle />
-        
         <Box
           sx={{
             width: dimensions.width,
@@ -167,53 +226,84 @@ const AppContent: React.FC = () => {
           }}
         >
           <AnimatePresence mode="wait">
-            <Routes>
-              {/* Main Pages */}
-              <Route path="/" element={<HomePage />} />
-              <Route path="/subjects" element={<SubjectsPage />} />
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/theme-selection" element={<ThemeSelectionPage />} />
-              <Route path="/games" element={<GamesPage />} />
-              
-              {/* Games */}
-              <Route path="/snake" element={<SnakePage />} />
-              <Route path="/car-race" element={<CarRacePage />} />
-              <Route path="/drawing-board" element={<DrawingBoardPage />} />
-              <Route path="/piano" element={<PianoPage />} />
-              <Route path="/dinosaur" element={<DinosaurPage />} />
-              
-              {/* Game paths from GamesPage */}
-              <Route path="/games/snake" element={<SnakePage />} />
-              <Route path="/games/car-race" element={<CarRacePage />} />
-              <Route path="/games/dinosaur" element={<DinosaurPage />} />
-              
-              {/* Quiz Routes */}
+            <Suspense fallback={<LoadingFallback />}>
+              <Routes>
+              {/* Home Route */}
+              <Route path="/" element={<HomeTreePageV2 />} />
+
+              {/* Math Apps - World Class */}
+              <Route path="/math/counting" element={<CountingApp />} />
+              <Route path="/math/reverse-counting" element={<ReverseCountingApp />} />
+              <Route path="/math/addition" element={<AdditionApp />} />
+              <Route path="/math/subtraction" element={<SubtractionApp />} />
+              <Route path="/math/tables" element={<TablesApp />} />
+              <Route path="/math/odd-even" element={<OddEvenApp />} />
+              <Route path="/math/:activityId" element={<MathActivityPage />} />
+
+              {/* Learning Apps */}
+              <Route path="/reading" element={<ReadingApp />} />
+              <Route path="/stories" element={<StoryBeachPage />} />
+              <Route path="/science" element={<ScienceMountainPage />} />
+              <Route path="/numbers" element={<ComingSoonPage />} />
+
+              {/* Creative Apps */}
+              <Route path="/drawing-board" element={<DrawingBoardApp />} />
+              <Route path="/coloring" element={<ColoringApp />} />
+              <Route path="/piano" element={<PianoApp />} />
+              <Route path="/music/melodies" element={<ComingSoonPage />} />
+
+              {/* Quiz Apps - World Class */}
+              <Route path="/quiz/flags" element={<FlagsQuizApp />} />
+              <Route path="/quiz/capitals" element={<CapitalsQuizApp />} />
+              <Route path="/quiz/monuments" element={<MonumentsQuizApp />} />
+              <Route path="/quiz/people" element={<PeopleQuizApp />} />
+
+              {/* Games & Puzzles */}
+              <Route path="/puzzles" element={<PuzzlesApp />} />
+              <Route path="/memory" element={<MemoryApp />} />
+              <Route path="/quiz" element={<WonderPlazaPage />} />
               <Route path="/quiz/:category" element={<QuizPage />} />
-              
+
+              {/* Redirect old /games route to home */}
+              <Route path="/games" element={<HomeTreePageV2 />} />
+
+              {/* Discovery Apps */}
+              <Route path="/alphabet" element={<ABCApp />} />
+              <Route path="/animals" element={<AnimalsApp />} />
+              <Route path="/space" element={<SpaceApp />} />
+              <Route path="/nature" element={<NatureApp />} />
+              <Route path="/shapes" element={<ShapesApp />} />
+
+              {/* Individual Games */}
+              <Route path="/snake" element={<SnakeGameApp />} />
+              <Route path="/car-race" element={<CarRaceGameApp />} />
+              <Route path="/dinosaur" element={<DinosaurGameApp />} />
+              <Route path="/games/snake" element={<SnakeGameApp />} />
+              <Route path="/games/car-race" element={<CarRaceGameApp />} />
+              <Route path="/games/dinosaur" element={<DinosaurGameApp />} />
+
               {/* Story Reader */}
               <Route path="/story-reader/:storyId" element={<StoryReaderPage />} />
-              
-              {/* Math Pages */}
-              <Route path="/math" element={<MathPage />} />
-              <Route path="/subject/math" element={<MathPage />} />
-              <Route path="/math/:activityId" element={<MathActivityPage />} />
-              
-              {/* Subject Pages */}
-              <Route path="/subject/:subject" element={<SubjectPage />} />
-              <Route path="/subject/games" element={<GamesPage />} />
-              <Route path="/subject/:subject/topic/:topic" element={<SubjectPage />} />
-              <Route path="/subject/:subject/topic/:topic/chapter/:chapter" element={<SubjectPage />} />
-              
-              {/* Section Level */}
-              <Route path="/subject/:subject/topic/:topic/chapter/:chapter/section/:section" element={<SubjectPage />} />
-              
+
+              {/* Redirect old routes to home */}
+              <Route path="/home" element={<HomePage />} />
+              <Route path="/subjects" element={<HomeTreePageV2 />} />
+              <Route path="/dashboard" element={<HomeTreePageV2 />} />
+              <Route path="/subject/:subject" element={<HomeTreePageV2 />} />
+              <Route path="/subject/games" element={<HomeTreePageV2 />} />
+              <Route path="/subject/math" element={<HomeTreePageV2 />} />
+              <Route path="/subject/:subject/topic/:topic" element={<HomeTreePageV2 />} />
+              <Route path="/subject/:subject/topic/:topic/chapter/:chapter" element={<HomeTreePageV2 />} />
+              <Route path="/subject/:subject/topic/:topic/chapter/:chapter/section/:section" element={<HomeTreePageV2 />} />
+
               {/* Redirect profile and settings to coming soon */}
               <Route path="/profile" element={<ComingSoonPage />} />
               <Route path="/settings" element={<ComingSoonPage />} />
-              
+
               {/* Catch-all route */}
               <Route path="*" element={<ComingSoonPage />} />
             </Routes>
+            </Suspense>
           </AnimatePresence>
         </Box>
       </Router>
@@ -231,7 +321,9 @@ function App() {
   return (
     <ErrorBoundary onError={handleError}>
       <AppProvider>
-        <AppContent />
+        <WorldProvider>
+          <AppContent />
+        </WorldProvider>
       </AppProvider>
     </ErrorBoundary>
   );

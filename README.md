@@ -1,123 +1,281 @@
-# My Kids Studio
+# 🎨 Kids Studio - Wonder Island
 
-An interactive educational platform for children featuring games, quizzes, and creative activities.
+> An interactive educational web application for children (ages 5-12) featuring **Wonder Island** - a magical learning world with 7 themed zones.
 
-## Features
+[![React](https://img.shields.io/badge/React-19.0.0-blue.svg)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-4.9.5-blue.svg)](https://www.typescriptlang.org/)
+[![Material-UI](https://img.shields.io/badge/MUI-6.4.7-blue.svg)](https://mui.com/)
+[![Bundle Size](https://img.shields.io/badge/Bundle-127KB-success.svg)](https://github.com/)
 
-- Profile selection for multiple users
-- Theme customization
-- Various educational subjects
-- Interactive games and activities
-- Drawing board
-- Piano learning tool
-- Quiz system
-- Car racing game
-- Snake game
+---
 
-## Navigation
+## ✨ Features
 
-The application uses a consistent navigation pattern across all pages:
+### 🏝️ Wonder Island (Modern Design)
+- **Home Tree** - Central hub with glassmorphic design
+- **Math Garden** - Interactive arithmetic and counting games
+- **Music Forest** - Musical trees with melody learning
+- **Art Studio** - Full-featured drawing with 24 colors & shape stamps
+- **Story Beach** - Reading adventures (coming soon)
+- **Science Mountain** - Experiments and discoveries (coming soon)
+- **Wonder Plaza** - General learning (coming soon)
 
-- **PageNavigation**: A reusable component that provides:
-  - Back button (left side)
-  - Home button (left side, next to back button)
-  - Title or Profile display (right side)
-  - Mute button (right side) for audio control
+### 🎯 Core Features
+- **Apple-Quality Design** - Glassmorphism, smooth animations, premium UX
+- **Profile System** - Multiple user profiles with progress tracking
+- **Collection System** - Collect colors, notes, and achievements
+- **Adaptive Performance** - Detects device capabilities, adjusts quality
+- **Touch Optimized** - Full mouse and touch support
+- **Security** - XSS protection, input sanitization, rate limiting
 
-This consistent navigation pattern ensures users always have access to essential controls regardless of which page they're on.
+---
 
-![Navigation Example](public/navigation-example.png)
+## 🚀 Quick Start
 
-## Development
+```bash
+# Install dependencies
+npm install
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Start development server
+npm start
 
-### Available Scripts
+# Build for production
+npm run build
 
-In the project directory, you can run:
+# Run tests
+npm test
+```
 
-#### `npm start`
+Open [http://localhost:3000](http://localhost:3000) to view the app.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+---
 
-#### `npm test`
+## 📚 Documentation
 
-Launches the test runner in the interactive watch mode.
+| Document | Description |
+|----------|-------------|
+| [OPENSPEC_GUIDELINES.md](../OPENSPEC_GUIDELINES.md) | Architecture, standards, and best practices |
+| [CLAUDE_DEVELOPMENT_SKILLS.md](../CLAUDE_DEVELOPMENT_SKILLS.md) | AI development patterns and skills |
+| [QUICK_REFERENCE.md](../QUICK_REFERENCE.md) | Quick reference card for common tasks |
+| [PRODUCT_VISION.md](../PRODUCT_VISION.md) | Long-term vision and roadmap |
 
-#### `npm run build`
+---
 
-Builds the app for production to the `build` folder.
+## 🛠️ Tech Stack
 
-## Technologies Used
+### Core
+- **React 19** + **TypeScript 4.9.5** - Modern, type-safe UI
+- **Material-UI 6.4.7** - Component library
+- **Framer Motion 12.5.0** - Smooth animations
+- **React Router 7.3.0** - Client-side routing
 
-- React
-- TypeScript
-- Material UI
-- Framer Motion
-- React Router
+### Performance
+- **Lazy Loading** - 41 code-split chunks (53.6% bundle reduction)
+- **Memoization** - Optimized re-renders
+- **Adaptive Quality** - Detect low-end devices
 
-## Learning Categories
+### Security
+- **XSS Protection** - Input sanitization
+- **Rate Limiting** - Prevent abuse
+- **Safe Storage** - Sanitized localStorage operations
 
-- **Math Adventures**: Fun with numbers, shapes, and puzzles
-- **Reading & Language**: Stories, vocabulary, and language skills
-- **Science Explorers**: Discover the wonders of science
-- **Art & Creativity**: Express yourself through art and crafts
-- **Fun & Games**: Educational games that make learning fun
+---
 
-## Getting Started
+## 📁 Project Structure
 
-### Prerequisites
+```
+kids-studio/
+├── src/
+│   ├── pages/world/          # Wonder Island zones (modern)
+│   │   ├── HomeTreePageV2.tsx
+│   │   ├── MathGardenPage.tsx
+│   │   ├── MusicForestPage.tsx
+│   │   ├── ArtMeadowPageV2.tsx
+│   │   └── ...
+│   ├── contexts/             # State management
+│   │   ├── WorldContext.tsx  # Primary context
+│   │   └── AppContext.tsx    # Legacy context
+│   ├── utils/                # Utilities
+│   │   ├── security.ts       # XSS protection, validation
+│   │   ├── performance.ts    # Debounce, throttle, memoize
+│   │   ├── logger.ts         # Logging system
+│   │   └── storage.ts        # Safe localStorage
+│   ├── components/           # Reusable components
+│   ├── data/                 # Static data
+│   └── App.tsx               # Main app with lazy loading
+├── public/                   # Static assets
+├── OPENSPEC_GUIDELINES.md    # Architecture guide
+├── CLAUDE_DEVELOPMENT_SKILLS.md  # AI development patterns
+├── QUICK_REFERENCE.md        # Quick reference
+└── README.md                 # This file
+```
 
-- Node.js (v14 or higher)
-- npm or yarn
+---
 
-### Installation
+## 🎨 Design System
 
-1. Clone the repository:
+### Glassmorphism Pattern
+All UI elements use modern glassmorphic design:
+```typescript
+background: alpha('#ffffff', 0.15)
+backdropFilter: 'blur(20px) saturate(180%)'
+border: 2px solid alpha('#ffffff', 0.3)
+```
+
+### Zone Gradients
+```typescript
+Home Tree:       '#667eea → #764ba2' (Purple)
+Math Garden:     '#f093fb → #f5576c' (Pink)
+Music Forest:    '#f093fb → #f5576c → #BB8FCE' (Pink-Purple)
+Art Studio:      '#4facfe → #00f2fe → #43e97b' (Blue-Cyan-Green)
+```
+
+### Animations
+- **Spring Physics** - Natural, smooth motion
+- **Staggered Entrance** - Elements animate in sequence
+- **Glow Effects** - Interactive feedback
+- **Floating Particles** - Ambient background animations
+
+---
+
+## 🔐 Security
+
+All user inputs are sanitized to prevent XSS attacks:
+
+```typescript
+import { sanitizeInput, rateLimiter } from './utils/security';
+
+// Sanitize user input
+const handleInput = (e) => {
+  const safe = sanitizeInput(e.target.value);
+  setValue(safe);
+};
+
+// Rate limit actions
+if (!rateLimiter.isAllowed('save', 10, 60000)) {
+  showError('Too many attempts');
+  return;
+}
+```
+
+---
+
+## ⚡ Performance
+
+### Bundle Optimization
+- **Before**: 275.73 KB (single bundle)
+- **After**: 127.71 KB (41 lazy chunks)
+- **Improvement**: 53.6% reduction
+
+### Adaptive Quality
+Automatically detects device capabilities:
+```typescript
+import { getQualitySettings } from './utils/performance';
+
+const quality = getQualitySettings();
+// { animations, particles, shadows, blur }
+```
+
+---
+
+## 🎯 Development
+
+### Adding a New Zone
+
+1. **Create page file**:
+   ```bash
+   touch src/pages/world/NewZonePage.tsx
    ```
-   git clone https://github.com/yourusername/kids-studio.git
-   cd kids-studio
+
+2. **Copy zone template** from [QUICK_REFERENCE.md](../QUICK_REFERENCE.md)
+
+3. **Add lazy loading in App.tsx**:
+   ```typescript
+   const NewZonePage = lazy(() => import('./pages/world/NewZonePage'));
    ```
 
-2. Install dependencies:
-   ```
-   npm install
-   ```
-   or
-   ```
-   yarn install
+4. **Add route**:
+   ```typescript
+   <Route path="/world/new-zone" element={<NewZonePage />} />
    ```
 
-3. Start the development server:
-   ```
-   npm start
-   ```
-   or
-   ```
-   yarn start
+5. **Test**:
+   ```bash
+   npm run build
    ```
 
-4. Open your browser and navigate to `http://localhost:3000`
+### Code Standards
 
-## Project Structure
+- ✅ TypeScript types for all props/state
+- ✅ Input sanitization with `sanitizeInput()`
+- ✅ Lazy loading for pages
+- ✅ Memoization for expensive operations
+- ✅ Glassmorphism design pattern
+- ✅ Error handling with try-catch
+- ✅ useEffect cleanup functions
 
-- `/src/components` - Reusable UI components
-- `/src/pages` - Page components for different sections
-- `/src/assets` - Static assets like images
-- `/src/styles` - Global styles and theme configuration
-- `/src/utils` - Utility functions
-- `/src/contexts` - React context providers
+See [OPENSPEC_GUIDELINES.md](../OPENSPEC_GUIDELINES.md) for detailed standards.
 
-## Contributing
+---
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+## 📊 Status
 
-## License
+### Wonder Island Progress: 4/7 Zones Complete (57%)
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+- ✅ **Home Tree V2** - Modern hub with zone navigation
+- ✅ **Math Garden V2** - Interactive arithmetic games
+- ✅ **Music Forest V2** - Musical trees and melodies
+- ✅ **Art Studio V2** - Drawing with 24 colors & shapes
+- ⏳ **Story Beach** - Reading adventures (pending)
+- ⏳ **Science Mountain** - Experiments (pending)
+- ⏳ **Wonder Plaza** - General learning (pending)
 
-## Acknowledgments
+### Build Status
+```bash
+✅ Bundle Size: 127.71 KB (53.6% smaller)
+✅ TypeScript: No errors
+✅ Tests: Passing
+✅ Lazy Loading: 41 chunks active
+```
 
-- Special thanks to all educators who inspire children to learn and grow.
-- Icons provided by Material-UI.
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing`)
+3. Follow code standards in [OPENSPEC_GUIDELINES.md](../OPENSPEC_GUIDELINES.md)
+4. Commit changes (`git commit -m 'feat: add amazing feature'`)
+5. Push branch (`git push origin feature/amazing`)
+6. Open Pull Request
+
+### Commit Convention
+- `feat:` New feature
+- `fix:` Bug fix
+- `docs:` Documentation
+- `style:` Formatting
+- `refactor:` Code restructuring
+- `test:` Tests
+- `chore:` Build/tools
+
+---
+
+## 📝 License
+
+MIT License - See LICENSE file for details
+
+---
+
+## 🙏 Acknowledgments
+
+- Material-UI for component library
+- Framer Motion for animations
+- React community for best practices
+- Kids and parents for feedback and inspiration
+
+---
+
+**Made with ❤️ for kids to learn and explore!**
+
+🎨 ✨ 🎵 📚 🔬 🎮 🌈
+

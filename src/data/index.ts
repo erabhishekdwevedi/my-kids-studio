@@ -47,10 +47,10 @@ export const themes: Theme[] = [
     name: 'Tasty Treat',
     icon: React.createElement(IcecreamIcon, { sx: { fontSize: 40 } }),
     description: 'Sweet treats and colorful sprinkles',
-    backgroundColor: '#fff8e1', // Light cream
-    gradient: 'linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%)',
-    shadowColor: 'rgba(255, 236, 179, 0.6)',
-    textColor: '#f06292',
+    backgroundColor: '#FFE4E9', // Warm pink
+    gradient: 'linear-gradient(135deg, #FFB3C1 0%, #FFD6A5 100%)',
+    shadowColor: 'rgba(255, 179, 193, 0.35)',
+    textColor: '#BF125D',
     accentColor: '#7986cb'
   },
   {
@@ -69,10 +69,10 @@ export const themes: Theme[] = [
     name: 'Carnival Fun',
     icon: React.createElement(CelebrationIcon, { sx: { fontSize: 40 } }),
     description: 'Exciting games and colorful balloons',
-    backgroundColor: '#e1f5fe', // Light blue
-    gradient: 'linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%)',
-    shadowColor: 'rgba(179, 229, 252, 0.6)',
-    textColor: '#ec407a',
+    backgroundColor: '#FFE4E9',
+    gradient: 'linear-gradient(135deg, #FFB3C1 0%, #FFD6A5 100%)',
+    shadowColor: 'rgba(255, 179, 193, 0.35)',
+    textColor: '#D81B60',
     accentColor: '#ffd54f'
   }
 ];

@@ -43,31 +43,6 @@ const profiles = [
   }
 ];
 
-// Sprinkle component for decoration
-const Sprinkle = ({ color, top, left, delay }: { color: string, top: string, left: string, delay: number }) => (
-  <motion.div
-    style={{
-      position: 'absolute',
-      top,
-      left,
-      width: '8px',
-      height: '8px',
-      borderRadius: '50%',
-      backgroundColor: color,
-      zIndex: 0
-    }}
-    initial={{ opacity: 0, scale: 0 }}
-    animate={{ opacity: 1, scale: 1 }}
-    transition={{ 
-      duration: 0.5, 
-      delay, 
-      repeat: Infinity,
-      repeatType: 'reverse',
-      repeatDelay: Math.random() * 2
-    }}
-  />
-);
-
 const HomePage = () => {
   const navigate = useNavigate();
   const theme = useTheme();
@@ -75,29 +50,19 @@ const HomePage = () => {
   const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
   const { selectedProfile } = useApp();
 
-  // Generate random sprinkles - fewer on mobile for performance
-  const sprinkleCount = isMobile ? 15 : isTablet ? 20 : 30;
-  const sprinkles = Array.from({ length: sprinkleCount }, (_, i) => ({
-    id: i,
-    color: ['#c8e6c9', '#bbdefb', '#ffcc80', '#f8bbd0', '#b39ddb'][Math.floor(Math.random() * 5)],
-    top: `${Math.random() * 100}%`,
-    left: `${Math.random() * 100}%`,
-    delay: Math.random() * 2
-  }));
+  // Decorative elements removed for simplified default styling
 
   const handleProfileSelect = (profileId: string) => {
-    // Store selected profile in localStorage
+    // Store selected profile in localStorage and go straight to subjects
     localStorage.setItem('selectedProfile', profileId);
-    
-    // Navigate to theme selection page
-    navigate('/theme-selection');
+    navigate('/subjects');
   };
 
   return (
     <Box
       className="page-container vh-fix"
       sx={{
-        background: 'linear-gradient(135deg, #fff8e1 0%, #fffde7 100%)',
+        backgroundColor: 'background.default',
         position: 'relative',
         overflow: 'hidden',
         display: 'flex',
@@ -107,16 +72,7 @@ const HomePage = () => {
         padding: { xs: 2, sm: 3, md: 4 }
       }}
     >
-      {/* Decorative sprinkles */}
-      {sprinkles.map(sprinkle => (
-        <Sprinkle 
-          key={sprinkle.id}
-          color={sprinkle.color}
-          top={sprinkle.top}
-          left={sprinkle.left}
-          delay={sprinkle.delay}
-        />
-      ))}
+      {/* Decorative elements removed */}
 
 
 
@@ -132,8 +88,7 @@ const HomePage = () => {
             gutterBottom
             sx={{ 
               fontWeight: 700, 
-              color: '#f06292',
-              textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
+              color: 'text.primary',
               mb: { xs: 1, sm: 2 },
               fontSize: { xs: '2.5rem', sm: '3rem', md: '3.5rem' }
             }}
@@ -146,8 +101,7 @@ const HomePage = () => {
             align="center" 
             sx={{ 
               mb: { xs: 3, sm: 4, md: 6 }, 
-              color: '#8d6e63',
-              opacity: 0.9,
+              color: 'text.secondary',
               fontSize: { xs: '1.5rem', sm: '1.8rem', md: '2rem' }
             }}
           >

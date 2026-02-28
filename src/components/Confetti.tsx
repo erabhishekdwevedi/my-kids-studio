@@ -5,9 +5,13 @@ import { motion } from 'framer-motion';
 
 interface ConfettiProps {
   active: boolean;
+  colors?: string[];
+  pieces?: number;
 }
 
-const Confetti: React.FC<ConfettiProps> = ({ active }) => {
+const DEFAULT_COLORS = ['#FFD700', '#FFA500', '#FF69B4', '#00CED1', '#98FB98', '#DDA0DD'];
+
+const Confetti: React.FC<ConfettiProps> = ({ active, colors = DEFAULT_COLORS, pieces = 300 }) => {
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
@@ -45,12 +49,12 @@ const Confetti: React.FC<ConfettiProps> = ({ active }) => {
       <ReactConfetti
         width={windowSize.width}
         height={windowSize.height}
-        numberOfPieces={300}
+        numberOfPieces={pieces}
         recycle={false}
         tweenDuration={4000}
         gravity={0.25}
         initialVelocityY={20}
-        colors={['#FFD700', '#FFA500', '#FF69B4', '#00CED1', '#98FB98', '#DDA0DD']}
+        colors={colors}
         style={{
           position: 'fixed',
           top: 0,

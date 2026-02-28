@@ -13,20 +13,12 @@ import ForestIcon from '@mui/icons-material/Forest';
 import CelebrationIcon from '@mui/icons-material/Celebration';
 import IcecreamIcon from '@mui/icons-material/Icecream';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
-import PsychologyIcon from '@mui/icons-material/Psychology';
-import BrushIcon from '@mui/icons-material/Brush';
-import MusicNoteIcon from '@mui/icons-material/MusicNote';
-import CalculateIcon from '@mui/icons-material/Calculate';
-import ScienceIcon from '@mui/icons-material/Science';
-import PetsIcon from '@mui/icons-material/Pets';
-import CrisisAlertIcon from '@mui/icons-material/CrisisAlert';
-import EmojiNatureIcon from '@mui/icons-material/EmojiNature';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-import FlightIcon from '@mui/icons-material/Flight';
 import Face3Icon from '@mui/icons-material/Face3';
 import { useApp } from '../contexts/AppContext';
 import PageNavigation from '../components/PageNavigation';
+import { subjects as catalogSubjects, topicsBySubject, type CatalogSubject, type CatalogTopic } from '../data/catalog';
+ 
 
 // Define profiles
 const profiles = [
@@ -91,115 +83,8 @@ const themes = [
   }
 ];
 
-// Define subjects
-const subjects = [
-  {
-    id: 'gk',
-    name: 'General Knowledge',
-    icon: <PsychologyIcon sx={{ fontSize: 40 }} />,
-    path: '/subject/gk',
-    description: 'Learn interesting facts about the world'
-  },
-  {
-    id: 'story',
-    name: 'Story Time',
-    icon: <AutoStoriesIcon sx={{ fontSize: 40 }} />,
-    path: '/subject/story',
-    description: 'Enjoy exciting stories and adventures'
-  },
-  {
-    id: 'art',
-    name: 'Art & Craft',
-    icon: <BrushIcon sx={{ fontSize: 40 }} />,
-    path: '/subject/art',
-    description: 'Create beautiful art and crafts'
-  },
-  {
-    id: 'music',
-    name: 'Music & Dance',
-    icon: <MusicNoteIcon sx={{ fontSize: 40 }} />,
-    path: '/subject/music',
-    description: 'Sing, dance and have fun with music'
-  },
-  {
-    id: 'math',
-    name: 'Math Magic',
-    icon: <CalculateIcon sx={{ fontSize: 40 }} />,
-    path: '/subject/math',
-    description: 'Solve puzzles and learn numbers'
-  },
-
-  {
-    id: 'games',
-    name: 'Fun Games',
-    icon: <SportsEsportsIcon sx={{ fontSize: 40 }} />,
-    path: '/subject/games',
-    description: 'Play educational games and have fun'
-  }
-  
-];
-
-// Sprinkle component for decoration
-const Sprinkle = ({ color, top, left, delay }: { color: string, top: string, left: string, delay: number }) => (
-  <motion.div
-    style={{
-      position: 'absolute',
-      top,
-      left,
-      width: '8px',
-      height: '8px',
-      borderRadius: '50%',
-      backgroundColor: color,
-      zIndex: 0
-    }}
-    initial={{ opacity: 0, scale: 0 }}
-    animate={{ opacity: 1, scale: 1 }}
-    transition={{ 
-      duration: 0.5, 
-      delay, 
-      repeat: Infinity,
-      repeatType: 'reverse',
-      repeatDelay: Math.random() * 2
-    }}
-  />
-);
-
-// Jungle Animal component for decoration
-const JungleAnimal = ({ type, position, delay }: { type: 'tiger' | 'zebra' | 'giraffe', position: { top: string, left: string }, delay: number }) => {
-  const getAnimalIcon = () => {
-    switch(type) {
-      case 'tiger':
-        return <PetsIcon sx={{ fontSize: 60, color: '#ef6c00' }} />;
-      case 'zebra':
-        return <CrisisAlertIcon sx={{ fontSize: 60, color: '#424242' }} />;
-      case 'giraffe':
-        return <EmojiNatureIcon sx={{ fontSize: 60, color: '#ffa000' }} />;
-      default:
-        return null;
-    }
-  };
-
-  return (
-    <motion.div
-      style={{
-        position: 'absolute',
-        top: position.top,
-        left: position.left,
-        zIndex: 0,
-        opacity: 0.6
-      }}
-      initial={{ opacity: 0, scale: 0 }}
-      animate={{ opacity: 0.6, scale: 1 }}
-      transition={{ 
-        duration: 0.8, 
-        delay,
-      }}
-      whileHover={{ scale: 1.2, opacity: 0.9 }}
-    >
-      {getAnimalIcon()}
-    </motion.div>
-  );
-};
+// Use shared subjects catalog
+const subjects = catalogSubjects;
 
 const SubjectsPage = () => {
   const navigate = useNavigate();
@@ -229,11 +114,11 @@ const SubjectsPage = () => {
         // No need to set selectedTheme here, as it's already handled in useApp
       } else {
         // If theme not found, redirect to theme selection
-        navigate('/theme-selection');
+        navigate('/subjects');
       }
     } else {
       // If no theme selected, redirect to theme selection
-      navigate('/theme-selection');
+      navigate('/subjects');
     }
   }, [navigate]);
 
@@ -277,8 +162,32 @@ const SubjectsPage = () => {
     }
   };
 
+  const handleTopicSelect = (path: string) => {
+    if (path === '/subject/games/topic/car-race') {
+      navigate('/car-race');
+    } else if (path === '/subject/games/topic/snake') {
+      navigate('/snake');
+    } else if (path === '/subject/art/topic/drawing-board') {
+      navigate('/drawing-board');
+    } else if (path === '/subject/music/topic/piano') {
+      navigate('/piano');
+    } else if (path === '/subject/gk/topic/flags') {
+      navigate('/quiz/flags');
+    } else if (path === '/subject/gk/topic/capitals') {
+      navigate('/quiz/capitals');
+    } else if (path === '/subject/gk/topic/monuments') {
+      navigate('/quiz/monuments');
+    } else if (path === '/subject/gk/topic/people') {
+      navigate('/quiz/people');
+    } else if (path === '/subject/math') {
+      navigate('/math');
+    } else {
+      navigate(path);
+    }
+  };
+
   const handleBackToThemes = () => {
-    navigate('/theme-selection');
+    navigate('/subjects');
   };
 
   const handleBackToHome = () => {
@@ -295,7 +204,7 @@ const SubjectsPage = () => {
       sx={{
         width: '100%',
         minHeight: '100vh',
-        background: selectedTheme.gradient,
+        backgroundColor: 'background.default',
         position: 'relative',
         overflowY: 'auto',
         WebkitOverflowScrolling: 'touch',
@@ -303,23 +212,7 @@ const SubjectsPage = () => {
         flexDirection: 'column'
       }}
     >
-      {/* Decorative elements with reduced opacity and size */}
-      {selectedTheme.id === 'icecream' && generateSprinkles().map((sprinkle, index) => (
-        <Sprinkle
-          key={index}
-          color={sprinkle.color}
-          top={sprinkle.top}
-          left={sprinkle.left}
-          delay={sprinkle.delay}
-        />
-      ))}
-      {selectedTheme.id === 'jungle' && (
-        <>
-          <JungleAnimal type="tiger" position={{ top: '5%', left: '5%' }} delay={0.2} />
-          <JungleAnimal type="zebra" position={{ top: '15%', left: '85%' }} delay={0.4} />
-          <JungleAnimal type="giraffe" position={{ top: '75%', left: '10%' }} delay={0.6} />
-        </>
-      )}
+      
 
       {/* Navigation */}
       <Box
@@ -354,101 +247,86 @@ const SubjectsPage = () => {
           px: { xs: 1, sm: 2, md: 3 }
         }}
       >
-        <Typography
-          variant="h3"
-          align="center"
-          sx={{
-            fontWeight: 700,
-            color: selectedTheme.textColor,
-            textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
-            fontSize: { xs: '1.75rem', sm: '2.25rem', md: '2.75rem' },
-            mb: { xs: 2, sm: 3 }
-          }}
-        >
-          Choose Your Subject
-        </Typography>
-
-        <Grid 
-          container 
-          spacing={{ xs: 2, sm: 3, md: 4 }}
-          sx={{ 
-            width: '100%',
-            margin: '0 auto'
-          }}
-        >
-          {subjects.map((subject) => (
-            <Grid item xs={12} sm={6} md={4} key={subject.id}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                style={{ height: '100%' }}
+        {subjects.map((subject: CatalogSubject) => {
+          return (
+          <Box key={subject.id} sx={{ mb: { xs: 3, sm: 4, md: 5 } }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+              <Box sx={{ color: 'text.primary' }}>{subject.icon}</Box>
+              <Typography
+                variant="h4"
+                sx={{
+                  fontWeight: 700,
+                  color: 'text.primary'
+                }}
               >
-                <Card
-                  onClick={() => handleSubjectSelect(subject.path)}
-                  sx={{
-                    height: '100%',
-                    cursor: 'pointer',
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                    backdropFilter: 'blur(8px)',
-                    borderRadius: 3,
-                    boxShadow: `0 8px 32px ${selectedTheme.shadowColor}`,
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      transform: 'translateY(-4px)',
-                      boxShadow: `0 12px 48px ${selectedTheme.shadowColor}`,
-                      backgroundColor: 'rgba(255, 255, 255, 0.95)'
-                    }
-                  }}
-                >
-                  <CardContent
-                    sx={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      gap: 2,
-                      p: { xs: 2, sm: 3 },
-                      textAlign: 'center'
-                    }}
+                {subject.name}
+              </Typography>
+            </Box>
+            <Grid container spacing={{ xs: 2, sm: 3, md: 4 }}>
+              {(topicsBySubject[subject.id] || []).map((topic: CatalogTopic) => (
+                <Grid item xs={12} sm={6} md={4} key={`${subject.id}-${topic.id}`}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    style={{ height: '100%' }}
                   >
-                    <Box
+                    <Card
+                      onClick={() => handleTopicSelect(topic.path)}
                       sx={{
-                        color: selectedTheme.textColor,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        p: 1,
-                        borderRadius: '50%',
-                        backgroundColor: 'rgba(255, 255, 255, 0.5)'
+                        height: '100%',
+                        cursor: 'pointer',
+                        backgroundColor: '#ffffff',
+                        borderRadius: 3,
+                        border: '1px solid rgba(0,0,0,0.08)',
+                        boxShadow: '0 8px 16px rgba(0,0,0,0.08)',
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          transform: 'translateY(-4px)',
+                          boxShadow: '0 12px 24px rgba(0,0,0,0.12)'
+                        }
                       }}
                     >
-                      {subject.icon}
-                    </Box>
-                    <Typography
-                      variant="h5"
-                      sx={{
-                        fontWeight: 600,
-                        color: selectedTheme.textColor,
-                        fontSize: { xs: '1.25rem', sm: '1.5rem' }
-                      }}
-                    >
-                      {subject.name}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      sx={{
-                        color: 'text.secondary',
-                        fontSize: { xs: '0.875rem', sm: '1rem' }
-                      }}
-                    >
-                      {subject.description}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </motion.div>
+                      <CardContent
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          gap: 2,
+                          p: { xs: 2, sm: 3 },
+                          textAlign: 'center'
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            color: 'text.primary',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            p: 1,
+                            borderRadius: '50%',
+                            backgroundColor: 'transparent'
+                          }}
+                        >
+                          {topic.icon}
+                        </Box>
+                        <Typography
+                          variant="h6"
+                          sx={{
+                            fontWeight: 600,
+                            color: 'text.primary'
+                          }}
+                        >
+                          {topic.name}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                </Grid>
+              ))}
             </Grid>
-          ))}
-        </Grid>
+          </Box>
+        );})}
       </Container>
     </Box>
   );

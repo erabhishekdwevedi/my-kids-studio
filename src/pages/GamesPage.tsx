@@ -189,11 +189,11 @@ const GamesPage: React.FC = () => {
         // selectedTheme is managed by useApp, no need to set it here
       } else {
         // If theme not found, redirect to theme selection
-        navigate('/theme-selection');
+        navigate('/subjects');
       }
     } else {
       // If no theme selected, redirect to theme selection
-      navigate('/theme-selection');
+      navigate('/subjects');
     }
   }, [navigate]);
 
@@ -239,7 +239,7 @@ const GamesPage: React.FC = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        background: selectedTheme.gradient,
+        backgroundColor: 'background.default',
         position: 'relative',
         overflow: 'hidden',
         display: 'flex',
@@ -247,16 +247,7 @@ const GamesPage: React.FC = () => {
         padding: 3
       }}
     >
-      {/* Decorative sprinkles */}
-      {sprinkles.map(sprinkle => (
-        <Sprinkle 
-          key={sprinkle.id}
-          color={sprinkle.color}
-          top={sprinkle.top}
-          left={sprinkle.left}
-          delay={sprinkle.delay}
-        />
-      ))}
+      
 
       {/* Top Navigation */}
       <PageNavigation 
@@ -278,12 +269,7 @@ const GamesPage: React.FC = () => {
             variant="h2" 
             align="center" 
             gutterBottom
-            sx={{ 
-              fontWeight: 700, 
-              color: selectedTheme.textColor,
-              textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
-              mb: 4
-            }}
+            sx={{ fontWeight: 700, color: 'text.primary', mb: 4 }}
           >
             Fun Games
           </Typography>
@@ -304,7 +290,7 @@ const GamesPage: React.FC = () => {
                     display: 'flex',
                     flexDirection: 'column',
                     transition: '0.3s',
-                    bgcolor: game.color,
+                    bgcolor: 'background.paper',
                     '&:hover': {
                       transform: 'translateY(-8px)',
                       boxShadow: 6,

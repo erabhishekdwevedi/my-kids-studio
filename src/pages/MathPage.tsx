@@ -11,55 +11,12 @@ import MathCard from '../components/MathCard';
 import { useApp } from '../contexts/AppContext';
 import PageNavigation from '../components/PageNavigation';
 
-// Sprinkle component for decoration
-const Sprinkle = ({ color, top, left, delay }: { color: string, top: string, left: string, delay: number }) => (
-  <motion.div
-    style={{
-      position: 'absolute',
-      top,
-      left,
-      width: '8px',
-      height: '8px',
-      borderRadius: '50%',
-      backgroundColor: color,
-      zIndex: 0
-    }}
-    initial={{ opacity: 0, scale: 0 }}
-    animate={{ opacity: 1, scale: 1 }}
-    transition={{ 
-      duration: 0.5, 
-      delay, 
-      repeat: Infinity,
-      repeatType: 'reverse',
-      repeatDelay: Math.random() * 2
-    }}
-  />
-);
 
 const MathPage: React.FC = () => {
   const navigate = useNavigate();
   const { selectedTheme, selectedProfile } = useApp();
   
-  // Generate random sprinkles based on theme
-  const generateSprinkles = () => {
-    if (!selectedTheme) return [];
-    
-    const colors = selectedTheme.id === 'icecream' 
-      ? ['#f8bbd0', '#bbdefb', '#ffcc80', '#c5e1a5', '#b39ddb']
-      : selectedTheme.id === 'jungle'
-        ? ['#a5d6a7', '#c8e6c9', '#ffcc80', '#bcaaa4', '#81c784']
-        : ['#f8bbd0', '#bbdefb', '#ffe082', '#b39ddb', '#90caf9'];
-    
-    return Array.from({ length: 30 }, (_, i) => ({
-      id: i,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      top: `${Math.random() * 100}%`,
-      left: `${Math.random() * 100}%`,
-      delay: Math.random() * 2
-    }));
-  };
-
-  const sprinkles = generateSprinkles();
+  // Decorative elements removed
 
   const handleBackToSubjects = () => {
     navigate('/subjects');
@@ -79,7 +36,7 @@ const MathPage: React.FC = () => {
         minHeight: '100vh',
         width: '100vw',
         maxWidth: '100%',
-        background: selectedTheme.gradient,
+        backgroundColor: 'background.default',
         position: 'relative',
         overflow: 'hidden',
         display: 'flex',
@@ -87,16 +44,7 @@ const MathPage: React.FC = () => {
         padding: 3
       }}
     >
-      {/* Decorative sprinkles */}
-      {sprinkles.map(sprinkle => (
-        <Sprinkle 
-          key={sprinkle.id}
-          color={sprinkle.color}
-          top={sprinkle.top}
-          left={sprinkle.left}
-          delay={sprinkle.delay}
-        />
-      ))}
+      
 
       {/* Top Navigation */}
       <PageNavigation 

@@ -79,30 +79,6 @@ const themes = [
   }
 ];
 
-// Sprinkle component for decoration
-const Sprinkle = ({ color, top, left, delay }: { color: string, top: string, left: string, delay: number }) => (
-  <motion.div
-    style={{
-      position: 'absolute',
-      top,
-      left,
-      width: '8px',
-      height: '8px',
-      borderRadius: '50%',
-      backgroundColor: color,
-      zIndex: 0
-    }}
-    initial={{ opacity: 0, scale: 0 }}
-    animate={{ opacity: 1, scale: 1 }}
-    transition={{ 
-      duration: 0.5, 
-      delay, 
-      repeat: Infinity,
-      repeatType: 'reverse',
-      repeatDelay: Math.random() * 2
-    }}
-  />
-);
 
 const ArtPage: React.FC = () => {
   const navigate = useNavigate();
@@ -133,34 +109,15 @@ const ArtPage: React.FC = () => {
         setSelectedTheme(theme);
       } else {
         // If theme not found, redirect to theme selection
-        navigate('/theme-selection');
+        navigate('/subjects');
       }
     } else {
       // If no theme selected, redirect to theme selection
-      navigate('/theme-selection');
+      navigate('/subjects');
     }
   }, [navigate]);
 
-  // Generate random sprinkles based on theme
-  const generateSprinkles = () => {
-    if (!selectedTheme) return [];
-    
-    const colors = selectedTheme.id === 'icecream' 
-      ? ['#f8bbd0', '#bbdefb', '#ffcc80', '#c5e1a5', '#b39ddb']
-      : selectedTheme.id === 'jungle'
-        ? ['#a5d6a7', '#c8e6c9', '#ffcc80', '#bcaaa4', '#81c784']
-        : ['#f8bbd0', '#bbdefb', '#ffe082', '#b39ddb', '#90caf9'];
-    
-    return Array.from({ length: 30 }, (_, i) => ({
-      id: i,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      top: `${Math.random() * 100}%`,
-      left: `${Math.random() * 100}%`,
-      delay: Math.random() * 2
-    }));
-  };
-
-  const sprinkles = generateSprinkles();
+  // Decorative elements removed
 
   const handleOpenDrawingBoard = () => {
     navigate('/art/drawing-board');
@@ -182,7 +139,7 @@ const ArtPage: React.FC = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        background: selectedTheme.gradient,
+        backgroundColor: 'background.default',
         position: 'relative',
         overflow: 'hidden',
         display: 'flex',
@@ -190,16 +147,7 @@ const ArtPage: React.FC = () => {
         padding: 0
       }}
     >
-      {/* Decorative sprinkles */}
-      {sprinkles.map(sprinkle => (
-        <Sprinkle 
-          key={sprinkle.id}
-          color={sprinkle.color}
-          top={sprinkle.top}
-          left={sprinkle.left}
-          delay={sprinkle.delay}
-        />
-      ))}
+      
 
       {/* Top Navigation */}
       <TopMenu showTitle={false} />

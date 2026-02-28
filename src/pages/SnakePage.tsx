@@ -211,7 +211,7 @@ const SnakePage = () => {
           minHeight: '100vh',
           width: '100vw',
           maxWidth: '100%',
-          background: selectedTheme.gradient,
+          backgroundColor: 'background.default',
           position: 'relative',
           overflow: 'hidden',
           display: 'flex',
@@ -220,16 +220,7 @@ const SnakePage = () => {
           fontFamily: theme.typography.fontFamily, // Apply font family to the root element
         }}
       >
-        {/* Decorative sprinkles */}
-        {sprinkles.map(sprinkle => (
-          <Sprinkle 
-            key={sprinkle.id}
-            color={sprinkle.color}
-            top={sprinkle.top}
-            left={sprinkle.left}
-            delay={sprinkle.delay}
-          />
-        ))}
+        
 
         {/* Top Navigation */}
         <PageNavigation 
@@ -252,12 +243,7 @@ const SnakePage = () => {
               variant="h2" 
               align="center" 
               gutterBottom
-              sx={{ 
-                fontWeight: 700, 
-                color: selectedTheme.textColor,
-                textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
-                mb: 2
-              }}
+              sx={{ fontWeight: 700, color: 'text.primary', mb: 2 }}
             >
               Snake Game
             </Typography>
@@ -289,7 +275,7 @@ const SnakePage = () => {
               <SnakeGame 
                 ref={gameRef}
                 onScoreChange={handleScoreChange}
-                themeColor={selectedTheme.textColor}
+                themeColor={'#555555'}
               />
             </Box>
             

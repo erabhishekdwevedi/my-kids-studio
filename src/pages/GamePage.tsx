@@ -183,11 +183,11 @@ const GamePage = () => {
         setSelectedTheme(theme);
       } else {
         // If theme not found, redirect to theme selection
-        navigate('/theme-selection');
+        navigate('/subjects');
       }
     } else {
       // If no theme selected, redirect to theme selection
-      navigate('/theme-selection');
+      navigate('/subjects');
     }
 
     // Set current game based on gameId
@@ -254,7 +254,7 @@ const GamePage = () => {
       <Box
         sx={{
           minHeight: '100vh',
-          background: selectedTheme.gradient,
+          backgroundColor: 'background.default',
           position: 'relative',
           overflow: 'hidden',
           display: 'flex',
@@ -263,16 +263,7 @@ const GamePage = () => {
           fontFamily: theme.typography.fontFamily, // Apply font family to the root element
         }}
       >
-        {/* Decorative sprinkles */}
-        {sprinkles.map(sprinkle => (
-          <Sprinkle 
-            key={sprinkle.id}
-            color={sprinkle.color}
-            top={sprinkle.top}
-            left={sprinkle.left}
-            delay={sprinkle.delay}
-          />
-        ))}
+        
 
         {/* Top Navigation */}
         <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', mb: 4, zIndex: 10 }}>
@@ -298,27 +289,27 @@ const GamePage = () => {
               borderRadius: 30,
               padding: '4px 16px 4px 4px',
               boxShadow: '0px 3px 8px rgba(0,0,0,0.2)',
-              border: `2px solid ${selectedProfile.textColor}`,
+              border: '1px solid rgba(0,0,0,0.12)',
             }}
           >
             <Avatar
               sx={{
                 width: 40,
                 height: 40,
-                backgroundColor: selectedProfile.backgroundColor,
-                color: selectedProfile.textColor,
+                backgroundColor: 'transparent',
+                color: 'text.primary',
                 marginRight: 1,
-                border: `2px solid ${selectedProfile.textColor}`
+                border: '1px solid rgba(0,0,0,0.12)'
               }}
             >
               {selectedProfile.icon}
             </Avatar>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <StarIcon sx={{ color: '#ffd54f', fontSize: 20, marginRight: 0.5 }} />
+              <StarIcon sx={{ color: 'text.primary', fontSize: 20, marginRight: 0.5 }} />
               <Typography 
                 sx={{ 
                   fontWeight: 'bold', 
-                  color: selectedProfile.textColor,
+                  color: 'text.primary',
                   fontSize: '1rem'
                 }}
               >
@@ -393,18 +384,19 @@ const GamePage = () => {
                       position: 'absolute', 
                       top: 10, 
                       right: 10, 
-                      backgroundColor: selectedTheme.backgroundColor,
+                      backgroundColor: 'background.paper',
                       padding: '5px 15px',
                       borderRadius: 20,
                       display: 'flex',
-                      alignItems: 'center'
+                      alignItems: 'center',
+                      border: '1px solid rgba(0,0,0,0.12)'
                     }}
                   >
-                    <StarIcon sx={{ color: '#ffd54f', fontSize: 20, marginRight: 0.5 }} />
+                    <StarIcon sx={{ color: 'text.primary', fontSize: 20, marginRight: 0.5 }} />
                     <Typography 
                       sx={{ 
                         fontWeight: 'bold', 
-                        color: selectedTheme.textColor,
+                        color: 'text.primary',
                         fontSize: '1rem',
                         fontFamily: theme.typography.fontFamily // Apply consistent font
                       }}
@@ -438,7 +430,7 @@ const GamePage = () => {
                 borderRadius: 4,
                 padding: 2,
                 boxShadow: '0px 4px 10px rgba(0,0,0,0.2)',
-                border: `2px solid ${selectedTheme.textColor}`,
+                border: '1px solid rgba(0,0,0,0.12)',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -467,11 +459,10 @@ const GamePage = () => {
               
               {/* Up Button */}
               <IconButton 
-                color="primary" 
                 sx={{ 
-                  backgroundColor: selectedTheme.backgroundColor,
-                  color: selectedTheme.textColor,
-                  '&:hover': { backgroundColor: selectedTheme.accentColor, color: 'white' },
+                  backgroundColor: 'background.paper',
+                  color: 'text.primary',
+                  '&:hover': { backgroundColor: 'action.hover' },
                   mb: 1,
                   mt: 3, // Added margin top to make space for drag handle
                   width: 80,
@@ -486,11 +477,10 @@ const GamePage = () => {
               {/* Middle Row (Left, Right) */}
               <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', mb: 1 }}>
                 <IconButton 
-                  color="primary" 
                   sx={{ 
-                    backgroundColor: selectedTheme.backgroundColor,
-                    color: selectedTheme.textColor,
-                    '&:hover': { backgroundColor: selectedTheme.accentColor, color: 'white' },
+                    backgroundColor: 'background.paper',
+                    color: 'text.primary',
+                    '&:hover': { backgroundColor: 'action.hover' },
                     width: 80,
                     height: 80,
                     boxShadow: '0px 4px 8px rgba(0,0,0,0.2)'
@@ -501,11 +491,10 @@ const GamePage = () => {
                 </IconButton>
 
                 <IconButton 
-                  color="primary" 
                   sx={{ 
-                    backgroundColor: selectedTheme.backgroundColor,
-                    color: selectedTheme.textColor,
-                    '&:hover': { backgroundColor: selectedTheme.accentColor, color: 'white' },
+                    backgroundColor: 'background.paper',
+                    color: 'text.primary',
+                    '&:hover': { backgroundColor: 'action.hover' },
                     width: 80,
                     height: 80,
                     boxShadow: '0px 4px 8px rgba(0,0,0,0.2)'
@@ -518,11 +507,10 @@ const GamePage = () => {
 
               {/* Down Button */}
               <IconButton 
-                color="primary" 
                 sx={{ 
-                  backgroundColor: selectedTheme.backgroundColor,
-                  color: selectedTheme.textColor,
-                  '&:hover': { backgroundColor: selectedTheme.accentColor, color: 'white' },
+                  backgroundColor: 'background.paper',
+                  color: 'text.primary',
+                  '&:hover': { backgroundColor: 'action.hover' },
                   width: 80,
                   height: 80,
                   boxShadow: '0px 4px 8px rgba(0,0,0,0.2)'

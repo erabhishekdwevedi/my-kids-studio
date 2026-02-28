@@ -384,7 +384,7 @@ const PianoPage: React.FC = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        background: selectedTheme.gradient,
+        backgroundColor: 'background.default',
         position: 'relative',
         overflow: 'hidden',
         display: 'flex',
