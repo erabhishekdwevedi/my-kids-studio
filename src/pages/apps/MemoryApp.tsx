@@ -1,7 +1,7 @@
 // Memory Game App - World-Class
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, Container, alpha } from '@mui/material';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import AppNavigation from '../../components/AppNavigation';
 
 const GRADIENT = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';

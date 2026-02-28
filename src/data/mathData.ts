@@ -1,19 +1,6 @@
 import { ReactNode } from 'react';
-import LooksOneIcon from '@mui/icons-material/LooksOne';
-import Filter1Icon from '@mui/icons-material/Filter1';
-import Filter2Icon from '@mui/icons-material/Filter2';
-import Filter3Icon from '@mui/icons-material/Filter3';
-import Filter4Icon from '@mui/icons-material/Filter4';
-import Filter5Icon from '@mui/icons-material/Filter5';
-import Filter6Icon from '@mui/icons-material/Filter6';
-import Filter7Icon from '@mui/icons-material/Filter7';
-import Filter8Icon from '@mui/icons-material/Filter8';
-import Filter9Icon from '@mui/icons-material/Filter9';
-import Filter9PlusIcon from '@mui/icons-material/Filter9Plus';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
-import CalculateIcon from '@mui/icons-material/Calculate';
-import SwapVertIcon from '@mui/icons-material/SwapVert';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import FormatListNumberedRtlIcon from '@mui/icons-material/FormatListNumberedRtl';
 import GridOnIcon from '@mui/icons-material/GridOn';
@@ -637,7 +624,7 @@ export const mathActivities: MathActivity[] = [
   }
 ];
 
-export default {
+const mathData = {
   mathActivities,
   countingQuestions,
   reverseCountingQuestions,
@@ -645,4 +632,6 @@ export default {
   additionQuestions,
   subtractionQuestions,
   oddEvenQuestions
-}; 
+};
+
+export default mathData; 

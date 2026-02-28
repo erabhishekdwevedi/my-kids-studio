@@ -1,5 +1,3 @@
-import { ReactNode } from 'react';
-
 export interface StoryPage {
   id: string;
   content: string;
@@ -184,7 +182,9 @@ export const allStories: Story[] = [
   // Add more story collections here as they are created
 ];
 
-export default {
+const storyData = {
   panchatantraStories,
   allStories
-}; 
+};
+
+export default storyData; 

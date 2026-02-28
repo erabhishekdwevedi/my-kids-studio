@@ -1,21 +1,17 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Box, 
-  Typography, 
-  Card, 
-  CardContent, 
-  Avatar, 
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  Avatar,
   Container,
-  Grid,
-  useMediaQuery,
-  useTheme
+  Grid
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import IcecreamIcon from '@mui/icons-material/Icecream';
 import CakeIcon from '@mui/icons-material/Cake';
-import PageNavigation from '../components/PageNavigation';
-import { useApp } from '../contexts/AppContext';
 
 // Define profiles
 const profiles = [
@@ -45,10 +41,6 @@ const profiles = [
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
-  const { selectedProfile } = useApp();
 
   // Decorative elements removed for simplified default styling
 

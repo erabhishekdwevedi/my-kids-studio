@@ -1,9 +1,8 @@
 // Jigsaw Puzzle App - World-Class
 import React, { useState } from 'react';
-import { Box, Typography, Container, alpha, Button } from '@mui/material';
+import { Box, Typography, Container, alpha } from '@mui/material';
 import { motion } from 'framer-motion';
 import AppNavigation from '../../components/AppNavigation';
-import ShuffleIcon from '@mui/icons-material/Shuffle';
 
 const GRADIENT = 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)';
 

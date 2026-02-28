@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { Box, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
-import ColorLensIcon from '@mui/icons-material/ColorLens';
 import PaletteIcon from '@mui/icons-material/Palette';
 import BrushIcon from '@mui/icons-material/Brush';
 
