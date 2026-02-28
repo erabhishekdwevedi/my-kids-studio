@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Generate Favicon</title>
+</head>
+<body>
+  <canvas id="canvas" width="512" height="512"></canvas>
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    // Gradient background
+    const gradient = ctx.createLinearGradient(0, 0, 512, 512);
+    gradient.addColorStop(0, '#667eea');
+    gradient.addColorStop(0.5, '#764ba2');
+    gradient.addColorStop(1, '#f093fb');
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 512, 512);
+
+    // Draw emoji
+    ctx.font = 'bold 320px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('🎨', 256, 256);
+
+    // Download links
+    document.body.innerHTML += '<h2>Right-click and Save As:</h2>';
+
+    // 512x512
+    const link512 = document.createElement('a');
+    link512.download = 'logo512.png';
+    link512.href = canvas.toDataURL();
+    link512.textContent = 'Download logo512.png';
+    document.body.appendChild(link512);
+    document.body.appendChild(document.createElement('br'));
+
+    // 192x192
+    const canvas192 = document.createElement('canvas');
+    canvas192.width = 192;
+    canvas192.height = 192;
+    const ctx192 = canvas192.getContext('2d');
+    ctx192.drawImage(canvas, 0, 0, 192, 192);
+    const link192 = document.createElement('a');
+    link192.download = 'logo192.png';
+    link192.href = canvas192.toDataURL();
+    link192.textContent = 'Download logo192.png';
+    document.body.appendChild(link192);
+    document.body.appendChild(document.createElement('br'));
+
+    // 32x32 (favicon)
+    const canvas32 = document.createElement('canvas');
+    canvas32.width = 32;
+    canvas32.height = 32;
+    const ctx32 = canvas32.getContext('2d');
+    ctx32.drawImage(canvas, 0, 0, 32, 32);
+    const link32 = document.createElement('a');
+    link32.download = 'favicon-32x32.png';
+    link32.href = canvas32.toDataURL();
+    link32.textContent = 'Download favicon-32x32.png';
+    document.body.appendChild(link32);
+  </script>
+</body>
+</html>
