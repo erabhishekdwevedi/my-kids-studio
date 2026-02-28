@@ -47,6 +47,7 @@ const DrawingBoardApp: React.FC = () => {
 
     // Save initial state
     saveToHistory();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional mount-only init, color/brushSize set in separate effect
   }, []);
 
   useEffect(() => {

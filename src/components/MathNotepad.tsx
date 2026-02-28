@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { Box, IconButton, Typography, Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CreateIcon from '@mui/icons-material/Create';
@@ -69,7 +69,7 @@ const MathNotepad: React.FC<MathNotepadProps> = ({
     ctx.stroke();
   };
 
-  const initCanvas = () => {
+  const initCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -86,13 +86,13 @@ const MathNotepad: React.FC<MathNotepadProps> = ({
 
     ctx.scale(dpr, dpr);
     drawGrid(ctx, rect.width, rect.height);
-  };
+  }, []);
 
   useEffect(() => {
     initCanvas();
     window.addEventListener('resize', initCanvas);
     return () => window.removeEventListener('resize', initCanvas);
-  }, []);
+  }, [initCanvas]);
 
   const getPoint = (event: { clientX: number; clientY: number } | Touch): Point => {
     const canvas = canvasRef.current!;

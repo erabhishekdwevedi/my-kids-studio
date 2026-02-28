@@ -195,6 +195,54 @@ export const WorldProvider: React.FC<WorldProviderProps> = ({ children }) => {
     wonderButtonFoundToday: false
   });
 
+  // Update weather based on real time
+  const updateWeatherBasedOnTime = useCallback(() => {
+    const hour = new Date().getHours();
+    let timeOfDay: WeatherState['timeOfDay'];
+    let type: WeatherState['type'];
+
+    if (hour >= 5 && hour < 12) {
+      timeOfDay = 'morning';
+      type = 'sunny';
+    } else if (hour >= 12 && hour < 17) {
+      timeOfDay = 'afternoon';
+      type = 'sunny';
+    } else if (hour >= 17 && hour < 20) {
+      timeOfDay = 'evening';
+      type = 'cloudy';
+    } else {
+      timeOfDay = 'night';
+      type = 'starry';
+    }
+
+    setWorldState(prev => ({
+      ...prev,
+      weather: {
+        type,
+        intensity: 0.7,
+        timeOfDay
+      }
+    }));
+  }, []);
+
+  // Place Wonder Button in random location
+  const placeWonderButton = useCallback(() => {
+    const unlockedZones = worldState.unlockedZones;
+    const randomZone = unlockedZones[Math.floor(Math.random() * unlockedZones.length)];
+    const randomX = Math.random() * 80 + 10; // 10-90%
+    const randomY = Math.random() * 80 + 10; // 10-90%
+
+    setWorldState(prev => ({
+      ...prev,
+      wonderButtonLocation: {
+        zoneId: randomZone,
+        x: randomX,
+        y: randomY
+      },
+      wonderButtonFoundToday: false
+    }));
+  }, [worldState.unlockedZones]);
+
   // Initialize: Load or create profile
   useEffect(() => {
     try {
@@ -259,7 +307,7 @@ export const WorldProvider: React.FC<WorldProviderProps> = ({ children }) => {
     } catch (error) {
       log.error('Error initializing world', error as Error);
     }
-  }, []);
+  }, [placeWonderButton, updateWeatherBasedOnTime]);
 
   // Save profile whenever it changes
   useEffect(() => {
@@ -281,54 +329,6 @@ export const WorldProvider: React.FC<WorldProviderProps> = ({ children }) => {
   useEffect(() => {
     storage.setItem('worldState', worldState);
   }, [worldState]);
-
-  // Update weather based on real time
-  const updateWeatherBasedOnTime = useCallback(() => {
-    const hour = new Date().getHours();
-    let timeOfDay: WeatherState['timeOfDay'];
-    let type: WeatherState['type'];
-
-    if (hour >= 5 && hour < 12) {
-      timeOfDay = 'morning';
-      type = 'sunny';
-    } else if (hour >= 12 && hour < 17) {
-      timeOfDay = 'afternoon';
-      type = 'sunny';
-    } else if (hour >= 17 && hour < 20) {
-      timeOfDay = 'evening';
-      type = 'cloudy';
-    } else {
-      timeOfDay = 'night';
-      type = 'starry';
-    }
-
-    setWorldState(prev => ({
-      ...prev,
-      weather: {
-        type,
-        intensity: 0.7,
-        timeOfDay
-      }
-    }));
-  }, []);
-
-  // Place Wonder Button in random location
-  const placeWonderButton = useCallback(() => {
-    const unlockedZones = worldState.unlockedZones;
-    const randomZone = unlockedZones[Math.floor(Math.random() * unlockedZones.length)];
-    const randomX = Math.random() * 80 + 10; // 10-90%
-    const randomY = Math.random() * 80 + 10; // 10-90%
-
-    setWorldState(prev => ({
-      ...prev,
-      wonderButtonLocation: {
-        zoneId: randomZone,
-        x: randomX,
-        y: randomY
-      },
-      wonderButtonFoundToday: false
-    }));
-  }, [worldState.unlockedZones]);
 
   // Create new profile
   const createProfile = useCallback((name: string, avatar: string) => {

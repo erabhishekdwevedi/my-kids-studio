@@ -39,7 +39,7 @@ const MemoryApp: React.FC = () => {
           setCards(prev => prev.map((card, idx) =>
             idx === first || idx === second ? { ...card, isMatched: true } : card
           ));
-          setScore(score + 20);
+          setScore(s => s + 20);
           setFlippedCards([]);
           setIsChecking(false);
         }, 600);
@@ -53,9 +53,9 @@ const MemoryApp: React.FC = () => {
           setIsChecking(false);
         }, 1000);
       }
-      setMoves(moves + 1);
+      setMoves(m => m + 1);
     }
-  }, [flippedCards]);
+  }, [flippedCards, cards]);
 
   const handleCardClick = (index: number) => {
     if (isChecking || flippedCards.length === 2 || cards[index].isFlipped || cards[index].isMatched) {

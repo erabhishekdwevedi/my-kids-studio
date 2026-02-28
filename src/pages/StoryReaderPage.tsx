@@ -20,7 +20,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import VolumeOffIcon from '@mui/icons-material/VolumeOff';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
-import { allStories, Story, StoryPage } from '../data/storyData';
+import { allStories, Story } from '../data/storyData';
 import logger from '../utils/logger';
 import { useApp } from '../contexts/AppContext';
 

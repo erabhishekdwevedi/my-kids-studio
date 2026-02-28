@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle, useCallback } from 'react';
 import { Box, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 import PaletteIcon from '@mui/icons-material/Palette';
@@ -111,12 +111,27 @@ const SnakeGame = forwardRef<SnakeGameHandle, SnakeGameProps>(({ onScoreChange, 
   const [snakeColors, setSnakeColors] = useState<string[]>([]);
   const [confetti, setConfetti] = useState<{ x: number, y: number, color: string, active: boolean }>({ x: 0, y: 0, color: '', active: false });
   
-  // Initialize game
-  useEffect(() => {
-    resetGame();
+  // Place color item at random position
+  const placeColorItem = useCallback((currentSnake: Position[]) => {
+    const newColorItem = {
+      x: Math.floor(Math.random() * GRID_SIZE),
+      y: Math.floor(Math.random() * GRID_SIZE),
+      color: CRAYON_COLORS[Math.floor(Math.random() * CRAYON_COLORS.length)]
+    };
+    
+    // Make sure color item is not on the snake
+    const isOnSnake = currentSnake.some(segment => 
+      segment.x === newColorItem.x && segment.y === newColorItem.y
+    );
+    
+    if (isOnSnake) {
+      placeColorItem(currentSnake);
+    } else {
+      setColorItem(newColorItem);
+    }
   }, []);
-  
-  const resetGame = () => {
+
+  const resetGame = useCallback(() => {
     // Create initial snake in the middle of the grid
     const initialSnake: Position[] = [];
     const middleY = Math.floor(GRID_SIZE / 2);
@@ -141,7 +156,12 @@ const SnakeGame = forwardRef<SnakeGameHandle, SnakeGameProps>(({ onScoreChange, 
     
     // Place color item at random position
     placeColorItem(initialSnake);
-  };
+  }, [onScoreChange, placeColorItem]);
+  
+  // Initialize game
+  useEffect(() => {
+    resetGame();
+  }, [resetGame]);
   
   // Expose methods to parent component via ref
   useImperativeHandle(ref, () => ({
@@ -167,37 +187,6 @@ const SnakeGame = forwardRef<SnakeGameHandle, SnakeGameProps>(({ onScoreChange, 
       }
     }
   }));
-  
-  // Place color item at random position
-  const placeColorItem = (currentSnake: Position[]) => {
-    const newColorItem = {
-      x: Math.floor(Math.random() * GRID_SIZE),
-      y: Math.floor(Math.random() * GRID_SIZE),
-      color: CRAYON_COLORS[Math.floor(Math.random() * CRAYON_COLORS.length)]
-    };
-    
-    // Make sure color item is not on the snake
-    const isOnSnake = currentSnake.some(segment => 
-      segment.x === newColorItem.x && segment.y === newColorItem.y
-    );
-    
-    if (isOnSnake) {
-      placeColorItem(currentSnake);
-    } else {
-      setColorItem(newColorItem);
-    }
-  };
-  
-  // Game loop
-  useEffect(() => {
-    if (!gameStarted || gameOver) return;
-    
-    const gameInterval = setInterval(() => {
-      moveSnake();
-    }, gameSpeed);
-    
-    return () => clearInterval(gameInterval);
-  }, [snake, direction, gameStarted, gameOver, gameSpeed, snakeColors]);
   
   // Move snake
   const moveSnake = () => {
@@ -288,6 +277,18 @@ const SnakeGame = forwardRef<SnakeGameHandle, SnakeGameProps>(({ onScoreChange, 
     });
   };
   
+  // Game loop
+  useEffect(() => {
+    if (!gameStarted || gameOver) return;
+    
+    const gameInterval = setInterval(() => {
+      moveSnake();
+    }, gameSpeed);
+    
+    return () => clearInterval(gameInterval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- moveSnake captures game state, interval reset would break game loop
+  }, [snake, direction, gameStarted, gameOver, gameSpeed, snakeColors]);
+  
   // Handle keyboard controls
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -330,7 +331,7 @@ const SnakeGame = forwardRef<SnakeGameHandle, SnakeGameProps>(({ onScoreChange, 
     window.addEventListener('keydown', handleKeyDown);
     
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [gameStarted, gameOver, direction]);
+  }, [gameStarted, gameOver, direction, resetGame]);
   
   // Calculate cell size based on grid
   const cellSize = 100 / GRID_SIZE;

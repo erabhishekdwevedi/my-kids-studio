@@ -6,7 +6,6 @@ import {
   Button, 
   Paper, 
   Grid,
-  IconButton,
   Radio,
   RadioGroup,
   FormControlLabel,
@@ -17,12 +16,11 @@ import {
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import { useParams, useNavigate } from 'react-router-dom';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import ReplayIcon from '@mui/icons-material/Replay';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-import { mathActivities, MathActivity, MathQuestion } from '../data/mathData';
+import { mathActivities, MathActivity } from '../data/mathData';
 import { useApp } from '../contexts/AppContext';
 import PageNavigation from '../components/PageNavigation';
 import MathNotepad from '../components/MathNotepad';

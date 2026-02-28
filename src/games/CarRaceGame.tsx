@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle, useMemo, useCallback } from 'react';
 import { Box, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 import SpeedIcon from '@mui/icons-material/Speed';
@@ -222,7 +222,6 @@ const CarRaceGame = forwardRef<CarRaceGameHandle, CarRaceGameProps>(({ onScoreCh
   const gameAreaRef = useRef<HTMLDivElement>(null);
   const [playerPosition, setPlayerPosition] = useState<Position>({ x: 50, y: 85 }); // Moved player down to 85%
   const [playerLane, setPlayerLane] = useState<number>(0); // Start in left lane (0-indexed)
-  const [targetLane, setTargetLane] = useState<number>(0); // Target lane for smooth animation
   const [obstacles, setObstacles] = useState<Obstacle[]>([]);
   const [gameOver, setGameOver] = useState<boolean>(false);
   const [score, setScore] = useState<number>(0);
@@ -231,35 +230,32 @@ const CarRaceGame = forwardRef<CarRaceGameHandle, CarRaceGameProps>(({ onScoreCh
   const [gameSpeed, setGameSpeed] = useState<number>(50); // milliseconds between updates
   const [roadSpeed, setRoadSpeed] = useState<number>(3); // Reduced from 5 to 3 for slower initial speed
   const [roadOffset, setRoadOffset] = useState<number>(0); // For road animation
-  const [showDebug, setShowDebug] = useState<boolean>(false); // Debug mode off by default
+  const [showDebug] = useState<boolean>(false); // Debug mode off by default
   const [crashPosition, setCrashPosition] = useState<Position | null>(null); // Track crash position for blast animation
   const [showBlast, setShowBlast] = useState<boolean>(false); // Control blast animation visibility
-  
-  const obstacleTypes = ['car', 'truck', 'traffic'];
   
   // Road configuration - road with 2 lanes
   const roadLeft = 25; // Road starts at 25% from left
   const roadWidth = 50; // Road width is 50% of screen
   
-  // Adjusted lane positions for 2 lanes
-  const lanes = [
+  // Adjusted lane positions for 2 lanes - memoized to prevent useEffect re-runs
+  const lanes = useMemo(() => [
     roadLeft + roadWidth * 0.25, // Left lane (about 37.5%)
     roadLeft + roadWidth * 0.75  // Right lane (about 62.5%)
-  ];
+  ], [roadLeft, roadWidth]);
   
   // Reset game function
-  const resetGame = () => {
+  const resetGame = useCallback(() => {
     setGameOver(false);
     setScore(0);
     setCarsAvoided(0);
     setObstacles([]);
     setPlayerLane(0); // Start in left lane
-    setTargetLane(0); // Reset target lane
     setPlayerPosition({ x: lanes[0], y: 85 }); // Reset to 85% down in left lane
     setGameSpeed(50);
     setRoadSpeed(3); // Reduced from 5 to 3
     onScoreChange(0);
-  };
+  }, [lanes, onScoreChange]);
   
   // Expose methods to parent component via ref
   useImperativeHandle(ref, () => ({
@@ -279,14 +275,12 @@ const CarRaceGame = forwardRef<CarRaceGameHandle, CarRaceGameProps>(({ onScoreCh
           if (playerLane > 0) {
             // Directly set player lane for immediate response
             setPlayerLane(0);
-            setTargetLane(0);
           }
           break;
         case 'right':
           if (playerLane < lanes.length - 1) {
             // Directly set player lane for immediate response
             setPlayerLane(1);
-            setTargetLane(1);
           }
           break;
         default:
@@ -294,11 +288,6 @@ const CarRaceGame = forwardRef<CarRaceGameHandle, CarRaceGameProps>(({ onScoreCh
       }
     }
   }));
-  
-  // Initialize targetLane
-  useEffect(() => {
-    setTargetLane(playerLane);
-  }, [playerLane]);
   
   // Update player position based on lane - with smooth transition
   useEffect(() => {
@@ -440,10 +429,6 @@ const CarRaceGame = forwardRef<CarRaceGameHandle, CarRaceGameProps>(({ onScoreCh
     
     const checkCollisions = () => {
       for (const obstacle of obstacles) {
-        // Calculate collision box sizes based on vehicle types
-        const playerWidth = 30; // Width of player car in percentage of lane
-        const obstacleWidth = obstacle.type === 'truck' ? 35 : obstacle.type === 'car' ? 30 : 20;
-        
         // Calculate vertical distance
         const verticalDistance = Math.abs(obstacle.position.y - playerPosition.y);
         const verticalThreshold = 15; // Reduced from 20 to match sedan shape
@@ -499,14 +484,12 @@ const CarRaceGame = forwardRef<CarRaceGameHandle, CarRaceGameProps>(({ onScoreCh
           if (playerLane > 0) {
             // Direct lane switching
             setPlayerLane(0);
-            setTargetLane(0);
           }
           break;
         case 'ArrowRight':
           if (playerLane < lanes.length - 1) {
             // Direct lane switching
             setPlayerLane(1);
-            setTargetLane(1);
           }
           break;
         default:
@@ -517,7 +500,7 @@ const CarRaceGame = forwardRef<CarRaceGameHandle, CarRaceGameProps>(({ onScoreCh
     window.addEventListener('keydown', handleKeyDown);
     
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [gameStarted, gameOver, playerLane, lanes.length]);
+  }, [gameStarted, gameOver, playerLane, lanes.length, resetGame]);
   
   // Get obstacle component based on type
   const getObstacleComponent = (obstacle: Obstacle) => {
