@@ -1,7 +1,7 @@
 // Counting App (1-20) - World-Class Implementation
 // Beautiful, interactive counting with animations
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Box, Typography, Button, Container, alpha } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import AppNavigation from '../../components/AppNavigation';
